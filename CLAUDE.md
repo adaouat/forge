@@ -7,10 +7,10 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-# CLAUDE.md — adaouat-core
+# CLAUDE.md — forge
 
 Shared foundation for the `github.com/adaouat/*` CLIs — currently `bifrost` (atomic
-deployment, `../bifrost`) and `heraut` (release management, `../heraut`). Core provides the
+deployment, `../bifrost`) and `heraut` (release management, `../heraut`). Forge provides the
 common CLI runtime packages **and** the canonical scaffolding (`.claude/rules`, `.config`
 tooling, docs/CI templates) those apps share.
 
@@ -18,14 +18,14 @@ tooling, docs/CI templates) those apps share.
 
 Pre-implementation. The plan is written; no code yet.
 
-- [ADR-0001](docs/adr/0001-shared-core-module.md) — why core exists, the extraction bar,
+- [ADR-0001](docs/adr/0001-shared-core-module.md) — why forge exists, the extraction bar,
   and what is in/out of scope.
 - [docs/tasks/roadmap.md](docs/tasks/roadmap.md) — the build plan (M0–M6) with per-task
   checklist. **Read this before starting any work** and follow the two-step roadmap flow.
 
 ## What belongs here (and what doesn't)
 
-Core carries **zero domain logic**. A thing is extracted only if it clears the bar:
+Forge carries **zero domain logic**. A thing is extracted only if it clears the bar:
 **identical** across both apps + **stable contract** + **≥2 real consumers**. This is YAGNI
 applied to the shared layer — *three similar lines beat a premature abstraction*.
 

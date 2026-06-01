@@ -1,4 +1,4 @@
-# ADR-0001 — Extract a shared `adaouat-core` module
+# ADR-0001 — Extract the shared `forge` module
 
 **Status:** Proposed
 **Date:** 2026-06-01
@@ -18,18 +18,18 @@ independently grown near-identical infrastructure:
   `.claude/rules/{workflow,testing,coding,claude}.md`, conventional commits, TDD.
 
 The duplication has already started to drift (diverged copies of the UI status helpers,
-different exec-injection seams, slightly skewed dependency pins). `adaouat-core` exists to
+different exec-injection seams, slightly skewed dependency pins). `forge` exists to
 hold the shared foundation before the drift gets worse.
 
 ## Decision
 
-Create `adaouat-core` as **both** a runtime Go module (imported by the apps) **and** the
+Create `forge` as **both** a runtime Go module (imported by the apps) **and** the
 canonical home for shared scaffolding (`.claude/rules`, `.config` tooling, docs/CI
 templates).
 
 ### Extraction bar
 
-A thing is extracted into core only if it clears all three:
+A thing is extracted into forge only if it clears all three:
 
 1. **Identical** — the same code/intent already exists in both apps (or is trivially
    generalizable to both), not merely "similar-looking".
@@ -39,7 +39,7 @@ A thing is extracted into core only if it clears all three:
    other has a committed near-term need.
 
 This bar is the project's own rule applied to itself: *"three similar lines is better than
-a premature abstraction"* and YAGNI. Core carries **zero domain logic**.
+a premature abstraction"* and YAGNI. Forge carries **zero domain logic**.
 
 ### In scope — runtime packages (Tier 1)
 
@@ -68,13 +68,13 @@ the CI/goreleaser/Dockerfile patterns.
 
 ## Consequences
 
-- **One coupling point.** A breaking change to a core package needs its own ADR and a
+- **One coupling point.** A breaking change to a forge package needs its own ADR and a
   coordinated bump across both apps. Mitigated by keeping packages small and independently
   importable so each app pulls only what it needs.
 - **Dependency alignment.** The apps currently pin slightly different versions
-  (lipgloss v2.0.1/v2.0.2, bubbles v2.0.0/v2.1.0, cobra 1.9.1/1.10.2). Core forces a single
+  (lipgloss v2.0.1/v2.0.2, bubbles v2.0.0/v2.1.0, cobra 1.9.1/1.10.2). Forge forces a single
   baseline — a one-time reconciliation cost (see roadmap M0).
-- **`charm.land` registry convention is preserved** in core (never
+- **`charm.land` registry convention is preserved** in forge (never
   `github.com/charmbracelet/<module>` as a direct dependency).
 - Migration is incremental, one package per roadmap task, with `replace` directives during
   development and local copies deleted only after the shared package is wired and green.

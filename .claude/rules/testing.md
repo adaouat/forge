@@ -10,7 +10,7 @@ If the user asks you to skip tests, push back and explain why. Do not silently a
 
 ## Coverage discipline
 
-Every exported function in core has tests — core is consumed by two repos, so an untested
+Every exported function in forge has tests — forge is consumed by two repos, so an untested
 edge case becomes two repos' bug. Each package ships with the tests that already covered it
 in its source app, ported, plus any gaps closed.
 
@@ -35,7 +35,7 @@ for _, tc := range tests {
 
 ## `exectest.MockRunner` — the contract-test workhorse
 
-core ships `exec/exectest` so consumers (and core's own tests) can assert *which CLI args
+forge ships `exec/exectest` so consumers (and forge's own tests) can assert *which CLI args
 were passed* without touching real exec. `MockRunner` implements `exec.Runner`, queues
 responses FIFO, and records every `Call`:
 

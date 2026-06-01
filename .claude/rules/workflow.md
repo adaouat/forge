@@ -22,7 +22,7 @@ All commits follow [Conventional Commits](https://www.conventionalcommits.org/).
 
 | Type       | Use for                                                    |
 |------------|------------------------------------------------------------|
-| `feat`     | New exported behaviour in a core package                   |
+| `feat`     | New exported behaviour in a forge package                  |
 | `fix`      | Bug fix in existing behaviour                              |
 | `docs`     | `docs/specs/`, `docs/adr/`, README, in-code doc comments   |
 | `chore`    | Tool config, repo housekeeping, dependency bumps           |
@@ -95,7 +95,7 @@ lowercase kebab-case (`m1-exec-extraction.md`); never keep the auto-generated ra
 
 ## Releases
 
-core is a **library** — there is no binary and no GoReleaser. A release is a `v*` git tag;
+forge is a **library** — there is no binary and no GoReleaser. A release is a `v*` git tag;
 consumers pick it up by bumping their `go.mod` and running `go mod tidy`. A tag that changes
 an exported contract is preceded by the ADR that justifies it.
 </content>

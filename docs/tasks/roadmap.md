@@ -1,4 +1,4 @@
-# adaouat-core — build roadmap
+# forge — build roadmap
 
 Shared foundation for the `github.com/adaouat/*` CLIs (`bifrost`, `heraut`). The rationale,
 extraction bar, and in/out scope live in [ADR-0001](../adr/0001-shared-core-module.md).
@@ -7,7 +7,7 @@ one-paragraph note recording actual decisions and deviations.
 
 ## Principles (recap)
 
-- **Extraction bar:** identical + stable contract + ≥2 real consumers. Core holds **zero
+- **Extraction bar:** identical + stable contract + ≥2 real consumers. Forge holds **zero
   domain logic**. When in doubt, leave it in the app.
 - **Migration is incremental:** one package per task, behind a `replace` directive, local
   copy deleted only after the shared one is wired and tests are green in both apps.
@@ -16,8 +16,16 @@ one-paragraph note recording actual decisions and deviations.
 
 ## Open decisions (resolve in M0)
 
-- [ ] **Module path** — `github.com/adaouat/core` (clean) vs `github.com/adaouat/adaouat-core`
-  (matches the repo dir). Pick one before the first `go.mod`; it is painful to change later.
+- [x] **Module path** — resolved: `github.com/adaouat/forge`. Chosen over `…/core` and
+  `…/adaouat-core`. `adaouat` means "tools" in Arabic, so the org *is* the toolbox and the
+  apps (`bifrost`, `heraut`) are finished tools; `forge` names this shared library as *where
+  the tools are made*. It's a short, idiomatic leaf with no stutter (`adaouat/forge`, not
+  `adaouat/adaouat-core`) and no `core`/stdlib shadowing. Consequence: the GitHub repo must be
+  `adaouat/forge` (module path == repo URL for `go get`, barring a vanity import). The
+  `adaouat-core` / `Core` name references in CLAUDE.md, ADR-0001, and this file were swept to
+  `forge` immediately. Still pending (manual, not yet done): the GitHub repo slug and the local
+  dir rename — both land with the M0 `go.mod` init task. The `0001-shared-core-module.md`
+  filename is kept as-is (ADR slugs stay stable).
 - [ ] **Dependency baseline** — adopt the newer pin of each skewed dep (lipgloss v2.0.2,
   bubbles v2.1.0, cobra 1.10.2) unless a changelog flags a regression. Record the chosen
   matrix here.
@@ -36,12 +44,12 @@ one-paragraph note recording actual decisions and deviations.
       become downstream-synced from here. **Done:** merged the union of both apps' rules,
       stripped app-specifics (deploy strategies, containers/`testcontainers`, hexagonal
       layer tables, `--output` modes), and followed heraut's testing model (allows
-      `t.TempDir`) over bifrost's container-only one since core needs FS tests for config.
-      Added a core-specific "extraction bar / what belongs in core" rule and a "public API
+      `t.TempDir`) over bifrost's container-only one since forge needs FS tests for config.
+      Added a forge-specific "extraction bar / what belongs in forge" rule and a "public API
       is a contract" section. Wired into `CLAUDE.md` via `@import`.
 - [ ] Create `docs/{specs,adr,tasks}` skeleton; copy ADR-0001 and this roadmap in.
 - [ ] CI workflow (`.github/workflows/ci.yml`): build + `go test ./...` + golangci-lint on
-      PR. No release workflow yet — core is tagged by hand until v0.1.0.
+      PR. No release workflow yet — forge is tagged by hand until v0.1.0.
 - [ ] Resolve the **dependency baseline** decision above and pin it in `go.mod`.
 
 ## M1 — `exec` runner + `exectest` (first extraction, lowest risk)
@@ -94,12 +102,12 @@ one-paragraph note recording actual decisions and deviations.
 
 ## M6 — Finalize & cut v0.1.0
 
-- [ ] Drop all `replace` directives; tag `adaouat-core` `v0.1.0`.
+- [ ] Drop all `replace` directives; tag `forge` `v0.1.0`.
 - [ ] Bump bifrost and heraut to depend on the tagged version; `go mod tidy` both.
 - [ ] Per-package contract ADRs in `docs/adr/` (one per Tier-1 package whose interface is
       now load-bearing across two repos).
 - [ ] Document the Tier-2 sync workflow (how an app refreshes its `.claude/rules` /
-      `.config` from core) in `docs/guides/`.
+      `.config` from forge) in `docs/guides/`.
 
 ---
 

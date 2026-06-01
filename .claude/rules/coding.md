@@ -1,8 +1,8 @@
 # Coding rules
 
-## What belongs in core
+## What belongs in forge
 
-core is a **library**, imported by ≥2 repos. Before writing anything, check it against the
+forge is a **library**, imported by ≥2 repos. Before writing anything, check it against the
 extraction bar in [ADR-0001](../../docs/adr/0001-shared-core-module.md): identical across
 consumers + stable contract + ≥2 real consumers. **Zero domain logic** lives here.
 
@@ -11,7 +11,7 @@ package without a roadmap task and (for a load-bearing interface) an ADR.
 
 ## Public API is a contract
 
-Because two repos import core, every exported identifier is a contract, not an internal
+Because two repos import forge, every exported identifier is a contract, not an internal
 detail.
 
 - Keep the exported surface **minimal and deliberate**. Unexport anything a consumer does
@@ -20,7 +20,7 @@ detail.
   consumers — never a silent edit.
 - **Accept interfaces, return structs.** Signatures take the narrowest interface that works
   and never mention an app-specific type.
-- No app-specific names, constants, or assumptions leak into core. Parameterize instead
+- No app-specific names, constants, or assumptions leak into forge. Parameterize instead
   (e.g. config path resolution takes the app name; it does not hardcode `heraut`).
 
 ## Error handling
@@ -32,7 +32,7 @@ detail.
 - **Expose sentinels/typed errors at package boundaries** so consumers can classify failures
   (e.g. `exitcode` maps them to process codes).
 - **Never panic in library code** — return an error.
-- **Never call `os.Exit` anywhere in core.** Core is imported; only the consuming app's
+- **Never call `os.Exit` anywhere in forge.** Forge is imported; only the consuming app's
   `main` decides the process exit code (that is what the `exitcode` package is for).
 
 ## Code quality

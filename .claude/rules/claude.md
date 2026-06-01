@@ -2,12 +2,12 @@
 
 ## Guard the extraction bar
 
-adaouat-core is the shared foundation for the `github.com/adaouat/*` CLIs. Its defining
+forge is the shared foundation for the `github.com/adaouat/*` CLIs. Its defining
 constraint is **what does NOT go in it**.
 
-- Core holds **zero domain logic**. If asked to add deployment, release, versioning, hook,
+- Forge holds **zero domain logic**. If asked to add deployment, release, versioning, hook,
   or any app-specific behaviour here, push back and point at [ADR-0001](../../docs/adr/0001-shared-core-module.md).
-- A thing earns a place in core only if it clears the bar: **identical** across consumers +
+- A thing earns a place in forge only if it clears the bar: **identical** across consumers +
   **stable contract** + **≥2 real consumers**. "Similar-looking" is not "identical".
 - When in doubt, it belongs in the consuming app, not here. Surface the conflict; let the
   user decide.
