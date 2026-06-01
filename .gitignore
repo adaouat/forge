@@ -1,0 +1,15 @@
+# Build outputs
+/heraut
+*.test
+/dist
+/coverage.out
+/cover_config.out
+
+# IDE
+/.idea
+
+# Mise
+/.config/mise/config.local.toml
+
+# Claude Code — local-only permissions
+/.claude/settings.local.json
