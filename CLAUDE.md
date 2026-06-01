@@ -1,3 +1,8 @@
+@.claude/rules/workflow.md
+@.claude/rules/testing.md
+@.claude/rules/coding.md
+@.claude/rules/claude.md
+
 # CLAUDE.md
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.

@@ -31,9 +31,14 @@ one-paragraph note recording actual decisions and deviations.
 - [ ] Initialize the Go module (chosen path, `go 1.26`), `LICENSE.md`, empty `README.md`.
 - [ ] Mirror `.config/` tooling from the apps: `mise`, `hk/config.pkl`, `cocogitto`,
       `typos`, `yamlfmt`. Align tool versions (hk 1.46, goreleaser n/a — library).
-- [ ] Port `.claude/rules/{workflow,testing,coding,claude}.md` as the **canonical** set;
+- [x] Port `.claude/rules/{workflow,testing,coding,claude}.md` as the **canonical** set;
       adapt for a library (no `--output` modes, no deploy specifics). The apps' copies
-      become downstream-synced from here.
+      become downstream-synced from here. **Done:** merged the union of both apps' rules,
+      stripped app-specifics (deploy strategies, containers/`testcontainers`, hexagonal
+      layer tables, `--output` modes), and followed heraut's testing model (allows
+      `t.TempDir`) over bifrost's container-only one since core needs FS tests for config.
+      Added a core-specific "extraction bar / what belongs in core" rule and a "public API
+      is a contract" section. Wired into `CLAUDE.md` via `@import`.
 - [ ] Create `docs/{specs,adr,tasks}` skeleton; copy ADR-0001 and this roadmap in.
 - [ ] CI workflow (`.github/workflows/ci.yml`): build + `go test ./...` + golangci-lint on
       PR. No release workflow yet — core is tagged by hand until v0.1.0.
