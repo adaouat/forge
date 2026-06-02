@@ -168,7 +168,14 @@ one-paragraph note recording actual decisions and deviations.
       `exitcode.Resolve`/`Wrap` through the facade, so the ~100 `exitcode.*` call sites and
       `exitcode_test.go` are untouched. No `go.mod` change (forge already wired in M1.3). 839
       tests green.
-- [ ] Migrate bifrost `cmd/bifrost/main.go` + `internal/cmderr`.
+- [x] Migrate bifrost `cmd/bifrost/main.go` + `internal/cmderr`. **Done** (bifrost commit
+      `6a8e2d5`): `internal/cmderr.ExitError` is now a type alias for forge's
+      `exitcode.ExitError`, so the ~16 `&cmderr.ExitError{Code, Message}` construction sites,
+      the `internal/cmd/errors.go` back-compat alias, and the `*cmderr.ExitError` test
+      references all keep working with no edits. `main.go` dropped its hand-rolled
+      `errors.As`/`os.Exit(1)` fallback for `os.Exit(exitcode.Resolve(err))`. No `go.mod`
+      change (forge wired in M1.4). 153 tests green incl. `-tags integration`. **M2 complete:**
+      `exitcode` has two real consumers; both apps' mains share one `Resolve`.
 
 ## M3 — `ui`
 
