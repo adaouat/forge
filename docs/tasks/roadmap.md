@@ -160,7 +160,14 @@ one-paragraph note recording actual decisions and deviations.
       keeps its own. The "main.go glue helper" is `Resolve` itself: both mains collapse to
       `os.Exit(exitcode.Resolve(err))` (forge must never call `os.Exit`, so it returns the code
       only). 8 tests ported + bifrost-shape coverage; suite at 27.
-- [ ] Migrate heraut `cmd/heraut/main.go` + `internal/exitcode` + `internal/cmd/exit.go`.
+- [x] Migrate heraut `cmd/heraut/main.go` + `internal/exitcode` + `internal/cmd/exit.go`.
+      **Done** (heraut commit `cfb2dfe`): `internal/exitcode` is now a thin facade — keeps the
+      Spec 01 code values (`Config`/`Runtime`/`Promotion` are domain) and delegates `Wrap`/
+      `Resolve` to forge; the local `Error` type was dropped (nothing referenced it directly).
+      `main.go` and `internal/cmd/exit.go` were left unchanged: they keep calling
+      `exitcode.Resolve`/`Wrap` through the facade, so the ~100 `exitcode.*` call sites and
+      `exitcode_test.go` are untouched. No `go.mod` change (forge already wired in M1.3). 839
+      tests green.
 - [ ] Migrate bifrost `cmd/bifrost/main.go` + `internal/cmderr`.
 
 ## M3 — `ui`
