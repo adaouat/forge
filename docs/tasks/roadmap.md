@@ -41,8 +41,12 @@ one-paragraph note recording actual decisions and deviations.
       and the installed toolchain). `LICENSE.md` mirrors the apps' MIT (Brice CHATARD, 2026).
       `README.md` is a short stub (title, one-liner, pointers to ADR-0001 and the roadmap)
       rather than literally empty — an empty file is a worse landing page than three lines.
-- [ ] Mirror `.config/` tooling from the apps: `mise`, `hk/config.pkl`, `cocogitto`,
-      `typos`, `yamlfmt`. Align tool versions (hk 1.46, goreleaser n/a — library).
+- [x] Mirror `.config/` tooling from the apps: `mise`, `hk/config.pkl`, `cocogitto`,
+      `typos`, `yamlfmt`. Align tool versions (hk 1.46, goreleaser n/a — library). **Done:**
+      the tree was copied from heraut, then adapted for a library — dropped the `build`/`run`
+      mise tasks (no binary, no `cmd/`), removed `goreleaser` (n/a) and `hadolint` (no
+      Dockerfile) from the tool set plus the hadolint linter from `hk/config.pkl`, and
+      regenerated `mise.lock` via `mise lock`. Hooks wired via `hk install`.
 - [x] Port `.claude/rules/{workflow,testing,coding,claude}.md` as the **canonical** set;
       adapt for a library (no `--output` modes, no deploy specifics). The apps' copies
       become downstream-synced from here. **Done:** merged the union of both apps' rules,

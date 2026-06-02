@@ -12,7 +12,6 @@ local codeLinters = new Mapping<String, Step> {
   ["go_fmt"] = Builtins.go_fmt
   ["golangci_lint"] = Builtins.golangci_lint
   ["actionlint"] = Builtins.actionlint
-  ["hadolint"] = Builtins.hadolint
   ["gomod_tidy"] = Builtins.gomod_tidy
   // hack to pass configuration to yamlfmt/typos
   // it's duplicated from Builtins
