@@ -36,7 +36,11 @@ one-paragraph note recording actual decisions and deviations.
 
 ## M0 — Module foundation & scaffold (Tier 2)
 
-- [ ] Initialize the Go module (chosen path, `go 1.26`), `LICENSE.md`, empty `README.md`.
+- [x] Initialize the Go module (`github.com/adaouat/forge`, `go 1.26.3`), `LICENSE.md`,
+      `README.md`. **Done:** `go mod init` pinned the go directive to `1.26.3` (matching heraut
+      and the installed toolchain). `LICENSE.md` mirrors the apps' MIT (Brice CHATARD, 2026).
+      `README.md` is a short stub (title, one-liner, pointers to ADR-0001 and the roadmap)
+      rather than literally empty — an empty file is a worse landing page than three lines.
 - [ ] Mirror `.config/` tooling from the apps: `mise`, `hk/config.pkl`, `cocogitto`,
       `typos`, `yamlfmt`. Align tool versions (hk 1.46, goreleaser n/a — library).
 - [x] Port `.claude/rules/{workflow,testing,coding,claude}.md` as the **canonical** set;
