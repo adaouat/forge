@@ -97,8 +97,16 @@ one-paragraph note recording actual decisions and deviations.
       commit stays green and self-contained — `FakeBin` lands in M1.2 (it can't import this
       package's test the other way around). `testify v1.11.1` pinned (the apps' version) as the
       first real dependency.
-- [ ] `exec/exectest`: `MockRunner` (FIFO queued responses, recorded `Calls`) + `FakeBin`,
-      ported from heraut `internal/testutil`.
+- [x] `exec/exectest`: `MockRunner` (FIFO queued responses, recorded `Calls`) + `FakeBin`,
+      ported from heraut `internal/testutil`. **Done:** ported `MockRunner`, `Call`,
+      `NewMockRunner`, `QueueResponse` and `FakeBin` verbatim (only the doc comment changed:
+      "port.Runner" → "exec.Runner"), split across `mockrunner.go` / `fakebin.go` like the
+      source, with a `var _ exec.Runner = (*MockRunner)(nil)` assertion. Left behind in
+      heraut's `testutil`: `constants.go` (domain binary names like `Cog`/`GitCliff`/
+      `Communique`) and the `mock_generator`/`mock_platform` doubles — all domain, none clear
+      the extraction bar. The deferred `FakeBin` runner coverage from M1.1 is recovered here:
+      `TestFakeBin_installsRunnableScriptOnPath` drives a `CmdRunner` against an installed
+      fake binary (exectest's external test imports both `exec` and `exectest`).
 - [ ] Wire into **heraut** behind a `replace` directive: delete `internal/adapter/exec` and
       the runner half of `internal/testutil`, repoint imports. Full suite green.
 - [ ] Wire into **bifrost**: replace the `var execCommand = exec.Command` seam in
