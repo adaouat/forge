@@ -130,9 +130,21 @@ one-paragraph note recording actual decisions and deviations.
       `CmdRunner` sets `cmd.Dir` only when non-empty; `exectest.Call` gained a `Dir` field and
       `MockRunner.RunDir` records it. 5 new tests; suite at 19. ADR-0002 committed first
       (`e9a7fd4`).
-- [ ] Wire into **bifrost**: replace the `var execCommand = exec.Command` seam in
+- [x] Wire into **bifrost**: replace the `var execCommand = exec.Command` seam in
       `internal/hooks` with the `exec.Runner` interface (the hook runner takes a `Runner`).
-      Hook unit tests use `exectest.MockRunner`. Full suite green.
+      Hook unit tests use `exectest.MockRunner`. Full suite green. **Done** (bifrost commit
+      `bd36ca8`): `Run`/`RunInteractive`/`RunWithEvents`/`runOne` now take a `forgeexec.Runner`
+      (injected, not a global). The atomic `Deployer` holds one (`forgeexec.New(false,false)`,
+      so its constructor signature is unchanged); `activate`/`rollback` build one locally.
+      `runOne` calls `RunDir` to preserve per-hook `cmd.Dir`, and recovers the exit code via
+      `errors.As(runErr, *exec.ExitError)` since forge wraps with `%w`. The 17 hook tests
+      dropped the `os/exec` `TestHelperProcess`/`captureExec` subprocess dance for
+      `exectest.MockRunner`; `TestRun_CmdDirOverridesWorkingDir` now asserts `Calls[0].Dir`.
+      Behaviour preserved; 152 tests green, `golangci-lint` clean (incl. `-tags integration`).
+      One documented nuance: forge's error embeds captured stderr, so an `allow_fail` warning
+      now repeats the stderr it already streamed — a richer-text deviation, not a contract
+      change. **M1 complete:** `exec` + `exec/exectest` now have two real consumers, clearing
+      ADR-0001's bar.
 
 ## M2 — `exitcode`
 
