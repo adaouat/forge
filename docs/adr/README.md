@@ -5,3 +5,4 @@ ADRs document significant architectural choices: what was decided, why, and what
 | ADR | Title | Status |
 |---|---|---|
 | [0001](0001-shared-core-module.md) | Extract the shared `forge` module | Accepted |
+| [0002](0002-exec-runner-working-directory.md) | `exec.Runner` gains a working-directory method | Accepted |
