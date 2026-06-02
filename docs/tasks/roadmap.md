@@ -55,7 +55,12 @@ one-paragraph note recording actual decisions and deviations.
       `t.TempDir`) over bifrost's container-only one since forge needs FS tests for config.
       Added a forge-specific "extraction bar / what belongs in forge" rule and a "public API
       is a contract" section. Wired into `CLAUDE.md` via `@import`.
-- [ ] Create `docs/{specs,adr,tasks}` skeleton; copy ADR-0001 and this roadmap in.
+- [x] Create `docs/{specs,adr,tasks}` skeleton; copy ADR-0001 and this roadmap in. **Done:**
+      `adr/` and `tasks/` already held ADR-0001 and this roadmap; added `docs/specs/` and an
+      index `README.md` in each of `docs/`, `adr/`, `specs/`, `tasks/` (mirroring the apps'
+      convention, which forge now canonicalizes). ADR-0001 is listed as *Proposed* — its actual
+      status; flipping it to Accepted is a separate call. The stray empty `docs/plans/` is left
+      untracked (plans live in `.claude/plans/` per `workflow.md`).
 - [ ] CI workflow (`.github/workflows/ci.yml`): build + `go test ./...` + golangci-lint on
       PR. No release workflow yet — forge is tagged by hand until v0.1.0.
 - [ ] Resolve the **dependency baseline** decision above and pin it in `go.mod`.
