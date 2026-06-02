@@ -107,8 +107,20 @@ one-paragraph note recording actual decisions and deviations.
       the extraction bar. The deferred `FakeBin` runner coverage from M1.1 is recovered here:
       `TestFakeBin_installsRunnableScriptOnPath` drives a `CmdRunner` against an installed
       fake binary (exectest's external test imports both `exec` and `exectest`).
-- [ ] Wire into **heraut** behind a `replace` directive: delete `internal/adapter/exec` and
-      the runner half of `internal/testutil`, repoint imports. Full suite green.
+- [x] Wire into **heraut** behind a `replace` directive: delete `internal/adapter/exec` and
+      the runner half of `internal/testutil`, repoint imports. Full suite green. **Done**
+      (heraut commit `493b1d5`): added `replace github.com/adaouat/forge => ../forge` (+ a
+      `v0.0.0` require placeholder, dropped at M6 when forge is tagged). Key decision:
+      `internal/port.Runner` became a **type alias** `= exec.Runner` rather than being deleted
+      — this leaves heraut's ~25 hexagonal `port.Runner` call sites untouched *and* makes
+      forge's interface genuinely load-bearing for heraut (what M6's contract ADRs assume),
+      vs. mere structural compatibility. The 4 cmd entrypoints just repoint the
+      `execadapter` import to `forge/exec` (still call `New`). 22 test files moved off
+      `testutil` runner doubles: 18 swapped the import to `exec/exectest`, 4 (pipeline
+      reporter/release/changelog tests) kept `testutil` for its domain constants/mocks and
+      gained a second import. Deleted `internal/adapter/exec/{runner,runner_test}.go` and
+      `internal/testutil/{fakebin,mock_runner}.go`; `constants.go` + `mock_{generator,platform}.go`
+      stayed (domain, below the bar). Suite green at 839 tests; `golangci-lint` clean.
 - [ ] Wire into **bifrost**: replace the `var execCommand = exec.Command` seam in
       `internal/hooks` with the `exec.Runner` interface (the hook runner takes a `Runner`).
       Hook unit tests use `exectest.MockRunner`. Full suite green.
