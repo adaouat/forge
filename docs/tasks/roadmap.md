@@ -149,8 +149,17 @@ one-paragraph note recording actual decisions and deviations.
 
 ## M2 — `exitcode`
 
-- [ ] `exitcode.ExitError{Code, Message}` + `Resolve(err) int` + `Wrap(code, err)` +
+- [x] `exitcode.ExitError{Code, Message}` + `Resolve(err) int` + `Wrap(code, err)` +
       a `main.go` glue helper, reconciling bifrost `cmderr` and heraut `internal/exitcode`.
+      **Done:** `ExitError` is `{Code, Message, Err}` (user-chosen over `{Code, Err}`+`New`) —
+      `Error()` prefers `Err` then `Message`, `Unwrap()` returns `Err`. This serves bifrost's
+      `{Code, Message}` struct literals *and* heraut's wrapped-error chains from one type.
+      `Wrap` (nil→nil, first-code-wins via `errors.As`) and `Resolve` (nil→0, coded→code,
+      else→1) ported from heraut. **No value constants** in forge: heraut's
+      `Config`/`Runtime`/`Promotion` are domain (its Spec 01), bifrost uses raw ints — each app
+      keeps its own. The "main.go glue helper" is `Resolve` itself: both mains collapse to
+      `os.Exit(exitcode.Resolve(err))` (forge must never call `os.Exit`, so it returns the code
+      only). 8 tests ported + bifrost-shape coverage; suite at 27.
 - [ ] Migrate heraut `cmd/heraut/main.go` + `internal/exitcode` + `internal/cmd/exit.go`.
 - [ ] Migrate bifrost `cmd/bifrost/main.go` + `internal/cmderr`.
 
