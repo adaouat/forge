@@ -84,8 +84,19 @@ one-paragraph note recording actual decisions and deviations.
 
 ## M1 — `exec` runner + `exectest` (first extraction, lowest risk)
 
-- [ ] `exec.Runner` interface (`Run`, `RunEnv`) + concrete `Runner{DryRun, Verbose, Out}`,
-      ported from heraut `internal/adapter/exec`.
+- [x] `exec.Runner` interface (`Run`, `RunEnv`) + concrete `Runner{DryRun, Verbose, Out}`,
+      ported from heraut `internal/adapter/exec`. **Done:** collapsed heraut's `port.Runner`
+      interface and `exec.Runner` struct into one package. The interface is `exec.Runner`
+      (per `testing.md`'s "`MockRunner` implements `exec.Runner`"); the concrete struct was
+      renamed `CmdRunner` (interface and struct can't share the name — user picked `CmdRunner`
+      over `OSRunner`/`Cmd`), keeping the `New(dryRun, verbose)`, `Run`, `RunEnv`, `DryRun`,
+      `Verbose`, `Out` surface unchanged. All nine of heraut's edge-case rows ported (success,
+      dry-run, failure, env propagation, env dry-run, verbose log, verbose output-echo,
+      stderr-in-error, no-dangling-colon) plus a `var _ exec.Runner` compliance assertion.
+      Tests drive the runner with real `sh -c` commands instead of `exectest.FakeBin` so this
+      commit stays green and self-contained — `FakeBin` lands in M1.2 (it can't import this
+      package's test the other way around). `testify v1.11.1` pinned (the apps' version) as the
+      first real dependency.
 - [ ] `exec/exectest`: `MockRunner` (FIFO queued responses, recorded `Calls`) + `FakeBin`,
       ported from heraut `internal/testutil`.
 - [ ] Wire into **heraut** behind a `replace` directive: delete `internal/adapter/exec` and
