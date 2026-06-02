@@ -26,11 +26,18 @@ one-paragraph note recording actual decisions and deviations.
   `forge` immediately. Still pending (manual, not yet done): the GitHub repo slug and the local
   dir rename — both land with the M0 `go.mod` init task. The `0001-shared-core-module.md`
   filename is kept as-is (ADR slugs stay stable).
-- [ ] **Dependency baseline** — adopt the newer pin of each skewed dep (lipgloss v2.0.2,
-  bubbles v2.1.0, cobra 1.10.2) unless a changelog flags a regression. Record the chosen
-  matrix here.
-- [ ] **Package naming** — confirm `exec` / `exec/exectest` / `ui` / `exitcode` / `config` /
-  `selfupdate`, or adjust. Names are cheap now, expensive after the apps import them.
+- [x] **Dependency baseline** — resolved: adopt the **newer** pin of each skewed dep, verified
+  against both apps' `go.mod`. Chosen matrix: `charm.land/lipgloss/v2` **v2.0.2** (bifrost 2.0.2
+  > heraut 2.0.1); `charm.land/bubbles/v2` **v2.1.0** (bifrost 2.1.0 > heraut 2.0.0);
+  `github.com/spf13/cobra` **v1.10.2** (heraut 1.10.2 > bifrost 1.9.1). Already aligned:
+  `charm.land/huh/v2` v2.0.3, `gopkg.in/yaml.v3` v3.0.1. No changelog flagged a regression.
+  The `require` lines land in M1+ as packages import them — at M0 with zero imports `gomod_tidy`
+  strips unused pins, so they cannot be pre-pinned. **M3 flag:** heraut depends on
+  `github.com/charmbracelet/colorprofile` (not `charm.land`), which `ui` needs — confirm a
+  `charm.land` path exists before porting, or document the exception to the registry rule.
+- [x] **Package naming** — confirmed as proposed: `exec` / `exec/exectest` / `ui` / `exitcode`
+  / `config` / `selfupdate`. No package exists until M1+, so a name stays cheap to change until
+  its first import; revisit via ADR if one proves wrong once consumers depend on it.
 
 ---
 
@@ -67,7 +74,10 @@ one-paragraph note recording actual decisions and deviations.
       gate, build = `go build ./...`), adapted from heraut minus the goreleaser/`cmd` steps.
       Actions pinned to commit SHAs reused from heraut. Triggers on push to `main` and PRs; no
       remote exists yet, so it first runs once one is added (code lands in M1).
-- [ ] Resolve the **dependency baseline** decision above and pin it in `go.mod`.
+- [x] Resolve the **dependency baseline** decision above and pin it in `go.mod`. **Done:**
+      decision recorded in Open decisions #2 (adopt the newer pins). No `require` added to
+      `go.mod` yet — with zero imports, `gomod_tidy` strips unused pins; the baseline applies as
+      each dependency is first imported in M1+.
 
 ## M1 — `exec` runner + `exectest` (first extraction, lowest risk)
 
