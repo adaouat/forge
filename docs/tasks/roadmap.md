@@ -140,10 +140,11 @@ one-paragraph note recording actual decisions and deviations.
       `errors.As(runErr, *exec.ExitError)` since forge wraps with `%w`. The 17 hook tests
       dropped the `os/exec` `TestHelperProcess`/`captureExec` subprocess dance for
       `exectest.MockRunner`; `TestRun_CmdDirOverridesWorkingDir` now asserts `Calls[0].Dir`.
-      Behaviour preserved; 152 tests green, `golangci-lint` clean (incl. `-tags integration`).
-      One documented nuance: forge's error embeds captured stderr, so an `allow_fail` warning
-      now repeats the stderr it already streamed — a richer-text deviation, not a contract
-      change. **M1 complete:** `exec` + `exec/exectest` now have two real consumers, clearing
+      Behaviour preserved; 153 tests green, `golangci-lint` clean (incl. `-tags integration`).
+      forge's error embeds captured stderr (which `runOne` already streams to `out`), so the
+      `allow_fail` warning initially echoed stderr twice; fixed in bifrost `29f8dfd` by
+      reporting `exit status N` instead, restoring single-stream output and the prior wording.
+      **M1 complete:** `exec` + `exec/exectest` now have two real consumers, clearing
       ADR-0001's bar.
 
 ## M2 — `exitcode`
