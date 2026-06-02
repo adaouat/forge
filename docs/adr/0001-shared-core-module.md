@@ -1,6 +1,6 @@
 # ADR-0001 — Extract the shared `forge` module
 
-**Status:** Proposed
+**Status:** Accepted
 **Date:** 2026-06-01
 
 ## Context

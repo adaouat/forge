@@ -4,4 +4,4 @@ ADRs document significant architectural choices: what was decided, why, and what
 
 | ADR | Title | Status |
 |---|---|---|
-| [0001](0001-shared-core-module.md) | Extract the shared `forge` module | Proposed |
+| [0001](0001-shared-core-module.md) | Extract the shared `forge` module | Accepted |
