@@ -10,11 +10,12 @@ import (
 
 var _ exec.Runner = (*MockRunner)(nil)
 
-// Call records a single invocation of MockRunner.Run or MockRunner.RunEnv.
+// Call records a single invocation of MockRunner.Run, RunEnv, or RunDir.
 type Call struct {
 	Name string
 	Args []string
-	Env  []string // nil for Run calls; set for RunEnv calls
+	Env  []string // nil for Run calls; set for RunEnv/RunDir calls
+	Dir  string   // empty for Run/RunEnv calls; set for RunDir calls
 }
 
 type queuedResponse struct {
@@ -41,12 +42,17 @@ func (m *MockRunner) QueueResponse(stdout, stderr string, err error) {
 
 // Run records the call and returns the next queued response.
 func (m *MockRunner) Run(name string, args ...string) (string, string, error) {
-	return m.RunEnv(nil, name, args...)
+	return m.RunDir("", nil, name, args...)
 }
 
 // RunEnv records the call (including env) and returns the next queued response.
 func (m *MockRunner) RunEnv(env []string, name string, args ...string) (string, string, error) {
-	m.Calls = append(m.Calls, Call{Name: name, Args: args, Env: env})
+	return m.RunDir("", env, name, args...)
+}
+
+// RunDir records the call (including dir and env) and returns the next queued response.
+func (m *MockRunner) RunDir(dir string, env []string, name string, args ...string) (string, string, error) {
+	m.Calls = append(m.Calls, Call{Name: name, Args: args, Env: env, Dir: dir})
 	if len(m.responses) == 0 {
 		return "", "", fmt.Errorf("MockRunner: no response queued for %q", name)
 	}

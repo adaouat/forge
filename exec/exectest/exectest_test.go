@@ -41,6 +41,34 @@ func TestMockRunner_recordsCallsAndReturnsResponsesFIFO(t *testing.T) {
 	assert.Equal(t, []string{"K=V"}, mr.Calls[1].Env, "RunEnv records the env")
 }
 
+func TestMockRunner_RunDir_recordsDir(t *testing.T) {
+	mr := exectest.NewMockRunner()
+	mr.QueueResponse("ok", "", nil)
+
+	stdout, _, err := mr.RunDir("/srv/app", []string{"K=V"}, "sh", "-c", "echo hi")
+	require.NoError(t, err)
+	assert.Equal(t, "ok", stdout)
+
+	require.Len(t, mr.Calls, 1)
+	assert.Equal(t, "/srv/app", mr.Calls[0].Dir)
+	assert.Equal(t, []string{"K=V"}, mr.Calls[0].Env)
+	assert.Equal(t, "sh", mr.Calls[0].Name)
+	assert.Equal(t, []string{"-c", "echo hi"}, mr.Calls[0].Args)
+}
+
+func TestMockRunner_RunAndRunEnv_recordEmptyDir(t *testing.T) {
+	mr := exectest.NewMockRunner()
+	mr.QueueResponse("", "", nil)
+	mr.QueueResponse("", "", nil)
+
+	_, _, _ = mr.Run("git", "status")
+	_, _, _ = mr.RunEnv([]string{"K=V"}, "gh", "auth")
+
+	require.Len(t, mr.Calls, 2)
+	assert.Empty(t, mr.Calls[0].Dir, "Run records empty dir")
+	assert.Empty(t, mr.Calls[1].Dir, "RunEnv records empty dir")
+}
+
 func TestMockRunner_noResponseQueued_returnsError(t *testing.T) {
 	mr := exectest.NewMockRunner()
 	_, _, err := mr.Run("git", "status")

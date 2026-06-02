@@ -121,6 +121,15 @@ one-paragraph note recording actual decisions and deviations.
       gained a second import. Deleted `internal/adapter/exec/{runner,runner_test}.go` and
       `internal/testutil/{fakebin,mock_runner}.go`; `constants.go` + `mock_{generator,platform}.go`
       stayed (domain, below the bar). Suite green at 839 tests; `golangci-lint` clean.
+- [x] **Extend `exec.Runner` with `RunDir` ([ADR-0002](../adr/0002-exec-runner-working-directory.md)).**
+      *(Surfaced mid-M1.4, not in the original plan.)* **Done:** bifrost's hook runner sets
+      `cmd.Dir` per hook (tested behaviour), which the M1.1 `Run`/`RunEnv` contract couldn't
+      express — so bifrost couldn't consume `exec.Runner` and the package would have fallen
+      short of ADR-0001's ≥2-consumers bar. Added `RunDir(dir, env, name, args…)` as the
+      general method; `Run`/`RunEnv` now delegate with an empty dir, so heraut is untouched.
+      `CmdRunner` sets `cmd.Dir` only when non-empty; `exectest.Call` gained a `Dir` field and
+      `MockRunner.RunDir` records it. 5 new tests; suite at 19. ADR-0002 committed first
+      (`e9a7fd4`).
 - [ ] Wire into **bifrost**: replace the `var execCommand = exec.Command` seam in
       `internal/hooks` with the `exec.Runner` interface (the hook runner takes a `Runner`).
       Hook unit tests use `exectest.MockRunner`. Full suite green.

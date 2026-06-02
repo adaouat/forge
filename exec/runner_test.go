@@ -2,6 +2,8 @@ package exec_test
 
 import (
 	"bytes"
+	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 
@@ -92,6 +94,31 @@ func TestCmdRunner_Run_failure_noStderr_cleanMessage(t *testing.T) {
 	// No stderr → no trailing ": " artifact appended after the exit status.
 	assert.False(t, strings.HasSuffix(err.Error(), ": "), "error message should not end with a dangling colon")
 	assert.Contains(t, err.Error(), "sh")
+}
+
+func TestCmdRunner_RunDir_runsInGivenDir(t *testing.T) {
+	dir := t.TempDir()
+	require.NoError(t, os.WriteFile(filepath.Join(dir, "marker.txt"), []byte("in-dir"), 0o600))
+	r := exec.New(false, false)
+	// Reading a relative path only succeeds if the command runs inside dir.
+	stdout, _, err := r.RunDir(dir, nil, "sh", "-c", "cat marker.txt")
+	require.NoError(t, err)
+	assert.Equal(t, "in-dir", stdout)
+}
+
+func TestCmdRunner_RunDir_propagatesEnv(t *testing.T) {
+	r := exec.New(false, false)
+	stdout, _, err := r.RunDir(t.TempDir(), []string{"MARKER_VAR=val"}, "sh", "-c", "echo $MARKER_VAR")
+	require.NoError(t, err)
+	assert.Equal(t, "val\n", stdout)
+}
+
+func TestCmdRunner_RunDir_dryRun(t *testing.T) {
+	r := exec.New(true, false)
+	stdout, stderr, err := r.RunDir(t.TempDir(), nil, "nonexistent_xyzzy_forge_abc")
+	require.NoError(t, err)
+	assert.Empty(t, stdout)
+	assert.Empty(t, stderr)
 }
 
 func TestCmdRunner_implementsRunner(t *testing.T) {

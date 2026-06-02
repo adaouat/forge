@@ -17,6 +17,8 @@ type Runner interface {
 	Run(name string, args ...string) (string, string, error)
 	// RunEnv executes name with args, appending env to the current process environment.
 	RunEnv(env []string, name string, args ...string) (string, string, error)
+	// RunDir executes name with args in dir (empty = current dir), appending env.
+	RunDir(dir string, env []string, name string, args ...string) (string, string, error)
 }
 
 var _ Runner = (*CmdRunner)(nil)
@@ -36,11 +38,16 @@ func New(dryRun, verbose bool) *CmdRunner {
 
 // Run executes name with args, returning captured stdout and stderr.
 func (r *CmdRunner) Run(name string, args ...string) (string, string, error) {
-	return r.RunEnv(nil, name, args...)
+	return r.RunDir("", nil, name, args...)
 }
 
 // RunEnv executes name with args, appending env to the current process environment.
 func (r *CmdRunner) RunEnv(env []string, name string, args ...string) (string, string, error) {
+	return r.RunDir("", env, name, args...)
+}
+
+// RunDir executes name with args in dir (empty = current dir), appending env.
+func (r *CmdRunner) RunDir(dir string, env []string, name string, args ...string) (string, string, error) {
 	if r.DryRun {
 		_, _ = fmt.Fprintf(r.writer(), "[dry-run] %s %s\n", name, strings.Join(args, " "))
 		return "", "", nil
@@ -51,6 +58,9 @@ func (r *CmdRunner) RunEnv(env []string, name string, args ...string) (string, s
 	}
 
 	cmd := os_exec.Command(name, args...)
+	if dir != "" {
+		cmd.Dir = dir
+	}
 	if len(env) > 0 {
 		cmd.Env = append(os.Environ(), env...)
 	}
