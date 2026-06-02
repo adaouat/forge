@@ -61,8 +61,12 @@ one-paragraph note recording actual decisions and deviations.
       convention, which forge now canonicalizes). ADR-0001 is listed as *Proposed* — its actual
       status; flipping it to Accepted is a separate call. The stray empty `docs/plans/` is left
       untracked (plans live in `.claude/plans/` per `workflow.md`).
-- [ ] CI workflow (`.github/workflows/ci.yml`): build + `go test ./...` + golangci-lint on
-      PR. No release workflow yet — forge is tagged by hand until v0.1.0.
+- [x] CI workflow (`.github/workflows/ci.yml`): build + `go test ./...` + golangci-lint on
+      PR. No release workflow yet — forge is tagged by hand until v0.1.0. **Done:** three jobs
+      (lint = golangci-lint + govulncheck, test = `go test ./...` with the apps' 85% coverage
+      gate, build = `go build ./...`), adapted from heraut minus the goreleaser/`cmd` steps.
+      Actions pinned to commit SHAs reused from heraut. Triggers on push to `main` and PRs; no
+      remote exists yet, so it first runs once one is added (code lands in M1).
 - [ ] Resolve the **dependency baseline** decision above and pin it in `go.mod`.
 
 ## M1 — `exec` runner + `exectest` (first extraction, lowest risk)
