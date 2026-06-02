@@ -61,13 +61,16 @@ one-paragraph note recording actual decisions and deviations.
       layer tables, `--output` modes), and followed heraut's testing model (allows
       `t.TempDir`) over bifrost's container-only one since forge needs FS tests for config.
       Added a forge-specific "extraction bar / what belongs in forge" rule and a "public API
-      is a contract" section. Wired into `CLAUDE.md` via `@import`.
+      is a contract" section. Wired into `CLAUDE.md` via `@import`. **Relocated** afterward out
+      of `.claude/rules/` to `docs/rules/` (renaming `claude.md` → `agent.md`) so `.claude/`
+      holds only Claude settings while the conventions live tool-agnostically under `docs/`;
+      `CLAUDE.md` imports them from the new path.
 - [x] Create `docs/{specs,adr,tasks}` skeleton; copy ADR-0001 and this roadmap in. **Done:**
       `adr/` and `tasks/` already held ADR-0001 and this roadmap; added `docs/specs/` and an
       index `README.md` in each of `docs/`, `adr/`, `specs/`, `tasks/` (mirroring the apps'
       convention, which forge now canonicalizes). The `adr/` index lists ADR-0001 with its
-      current status (Accepted). The stray empty `docs/plans/` is left
-      untracked (plans live in `.claude/plans/` per `workflow.md`).
+      current status (Accepted). `docs/plans/` is the canonical plans location
+      (`plansDirectory` in `.claude/settings.json`, per `workflow.md`); empty for now, so untracked.
 - [x] CI workflow (`.github/workflows/ci.yml`): build + `go test ./...` + golangci-lint on
       PR. No release workflow yet — forge is tagged by hand until v0.1.0. **Done:** three jobs
       (lint = golangci-lint + govulncheck, test = `go test ./...` with the apps' 85% coverage
@@ -134,7 +137,7 @@ one-paragraph note recording actual decisions and deviations.
 - [ ] Per-package contract ADRs in `docs/adr/` (one per Tier-1 package whose interface is
       now load-bearing across two repos).
 - [ ] Document the Tier-2 sync workflow (how an app refreshes its `.claude/rules` /
-      `.config` from forge) in `docs/guides/`.
+      `.config` from forge's canonical `docs/rules` / `.config`) in `docs/guides/`.
 
 ---
 

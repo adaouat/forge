@@ -24,7 +24,7 @@ hold the shared foundation before the drift gets worse.
 ## Decision
 
 Create `forge` as **both** a runtime Go module (imported by the apps) **and** the
-canonical home for shared scaffolding (`.claude/rules`, `.config` tooling, docs/CI
+canonical home for shared scaffolding (`docs/rules`, `.config` tooling, docs/CI
 templates).
 
 ### Extraction bar
@@ -55,7 +55,7 @@ a premature abstraction"* and YAGNI. Forge carries **zero domain logic**.
 ### In scope — scaffolding (Tier 2)
 
 Canonical, copied into apps with a documented sync source (not a runtime dependency):
-`.claude/rules/*`, `.config/{mise,hk,cocogitto,typos,yamlfmt}`, the docs methodology, and
+`docs/rules/*`, `.config/{mise,hk,cocogitto,typos,yamlfmt}`, the docs methodology, and
 the CI/goreleaser/Dockerfile patterns.
 
 ### Explicitly out of scope (Tier 3 — false friends)

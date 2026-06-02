@@ -89,7 +89,7 @@ replace both the SHA and the comment. Never use `@v4`, `@main`, or `@latest`.
 
 ## Plans
 
-Plans live in `.claude/plans/`. Each captures one discrete unit of work — a phase, a
+Plans live in `docs/plans/`. Each captures one discrete unit of work — a phase, a
 milestone, a non-trivial task, or a research/design spike. Name them descriptively in
 lowercase kebab-case (`m1-exec-extraction.md`); never keep the auto-generated random name.
 

@@ -1,7 +1,7 @@
-@.claude/rules/workflow.md
-@.claude/rules/testing.md
-@.claude/rules/coding.md
-@.claude/rules/claude.md
+@docs/rules/workflow.md
+@docs/rules/testing.md
+@docs/rules/coding.md
+@docs/rules/agent.md
 
 # CLAUDE.md
 
@@ -11,7 +11,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Shared foundation for the `github.com/adaouat/*` CLIs — currently `bifrost` (atomic
 deployment, `../bifrost`) and `heraut` (release management, `../heraut`). Forge provides the
-common CLI runtime packages **and** the canonical scaffolding (`.claude/rules`, `.config`
+common CLI runtime packages **and** the canonical scaffolding (`docs/rules`, `.config`
 tooling, docs/CI templates) those apps share.
 
 ## Status
@@ -43,5 +43,6 @@ the bar, it belongs in the consuming app, not here.
 Inherited from the sibling apps (and canonicalized here once M0 lands):
 `charm.land` registry for all charmbracelet deps (never `github.com/charmbracelet/<module>`
 direct), conventional commits enforced by hk + cocogitto, TDD (failing test first), mise +
-hk tooling. See the apps' `.claude/rules/` until this repo's own copy is ported in M0.
+hk tooling. These rules now live canonically in `docs/rules/` (ported in M0); the apps still
+keep their copies in `.claude/rules/`.
 </content>
