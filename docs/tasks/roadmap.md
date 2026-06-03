@@ -286,9 +286,13 @@ fn-to-run.)*
       completed step, sharing `Run`'s counter via a `nextLabel` helper. **Done:** success-only
       (failures surface before the line); 4 tests, ui at 41. ADR-0004 amended with the
       Run-vs-Step distinction.
-- [ ] bifrost: pre-compute the deploy step total (7 base + non-empty hook groups), thread one
+- [x] bifrost: pre-compute the deploy step total (7 base + non-empty hook groups), thread one
       `Spinner.Total` through `Deploy`, render each step via `Step` (purge still via `Run` on the
-      same spinner). Remove the now-unused `tui.PrintStep`.
+      same spinner). Remove the now-unused `tui.PrintStep`. **Done** (bifrost `3d12e7b`):
+      `deployStepTotal` counts the always-present 7 + configured hook groups; human-mode lines
+      now read `✓ [N/M] …`, JSON mode untouched. `tui.PrintStep` + its tests removed; 150 tests
+      green incl. `-tags integration`. **M3.7 complete:** both apps now share the `[N/total]`
+      stepper (`Spinner.Total` + `Run`/`Step`).
 
 ## M4 — `config` primitives
 
