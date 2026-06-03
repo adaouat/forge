@@ -259,10 +259,22 @@ shared across both apps + tool-3.)*
       `✓ name — detail`, multi-line `✗`, `!`, indented subs, `[N/M]`). Tests use a buffer
       (non-TTY → no animation, deterministic). `charm.land/bubbles/v2` v2.1.0 pinned (baseline).
       9 tests; forge suite at 66. ADR-0004 committed first (`d5493c2`).
-- [ ] Migrate heraut: delete the hand-rolled animator + `Step`/`Progress`; reshape `check.go`
-      (×2) and the pipeline reporter onto `Spinner.Run`; dry-run → `Mode.Plain`.
-- [ ] Migrate bifrost: `purge` → `Spinner.Run`; unify deploy step lines (`✔` → `✓`). The
+- [x] Migrate heraut: delete the hand-rolled animator + `Step`/`Progress`; reshape `check.go`
+      (×2) and the pipeline reporter onto `Spinner.Run`. **Done** (heraut `d46b7fd`): `step.go`
+      + its tests deleted; `check.go`'s start/stop sites became `Spinner.Run` closures
+      (`Result`/`err`/`Skip`); `app.spinnerReporter` adapts `ui.StepFn` (kept) to `Spinner` with
+      a `Total` counter. Correction to the plan: `Mode.Plain` for dry-run was **not** needed —
+      `StartPlainStep` was dead code, so heraut always spun-on-TTY; preserved by passing
+      `Mode.Human`. The unreachable nil-fn guard was dropped (pipeline always passes a real fn).
+      822 tests green.
+- [x] Migrate bifrost: `purge` → `Spinner.Run`; unify deploy step lines (`✔` → `✓`). The
       byte progress bar stays in bifrost (single-consumer, determinate — out of scope).
+      **Done** (bifrost `4a3b68f`): `purge` spins + resolves via `Spinner.Run` in the non-JSON
+      branch (JSON still emits events); `tui.RunWithSpinner` removed; `PrintStep` renders via
+      forge's `Success` (`✔`→`✓`, flush-left), dropping its `Mode` param. `DeployHeader`/
+      `PrintSummary`/`PrintDetail`/progress bar stay. 152 tests green incl. `-tags integration`.
+      **M3.6 complete:** one spinner vocabulary across both apps + tool-3; `Mode` gained a
+      second consumer (heraut passes `Human`).
 
 ## M4 — `config` primitives
 
