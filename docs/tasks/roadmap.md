@@ -296,15 +296,28 @@ fn-to-run.)*
 
 ## M4 — `config` primitives
 
-- [ ] Strict YAML loader (`KnownFields(true)`, typed-error formatting) parameterized over a
-      target struct.
+**Scope (revised after exploration — user picked "loader + path + ValidationError").** The
+loader and path resolver are genuinely shared (both apps, identical patterns). `ValidationError`
+is heraut-led but extracted as canonical structured errors (bifrost adopts it over its
+`[]string`). **Merge helpers (`firstNonEmpty`/`firstNonZeroInt`/`concat`/`mergeMaps`) are
+dropped** — they're bifrost-only; heraut's merge is domain (`MergeContentDriver`) and its
+`mergeMaps` is a different deep-merge, so extracting them would be a 1-consumer abstraction.
+They stay in bifrost. Schemas, defaults/normalize, and merge trees stay in the apps (Tier 3).
+
+- [x] Strict YAML loader (`KnownFields(true)`, typed-error formatting) parameterized over a
+      target struct. **Done:** `Decode(r, target any)` (strict decode; `yaml.TypeError`
+      flattened to a joined message; no app prefix) + `Load(path, target any)` (open + Decode).
+      Idiomatic non-generic form (`target any`) — apps keep their `*Config` wrappers + defaults.
+      6 tests; `yaml.v3` v3.0.1 pinned direct.
 - [ ] **Path resolution** parameterized over app name: `--config` flag → `<APP>_FILE` env →
-      `.config/<app>.yml` → `.<app>.yml`, with the `PathSource` enum and `InitDest`. This is
-      the "various file locations" piece — heraut has the reference impl, bifrost gains it.
-- [ ] `ValidationError{Path, Message, Hint}` + `ValidationErrors` aggregate.
-- [ ] Merge helpers: `firstNonEmpty`, `firstNonZeroInt`, `concat`, `mergeMaps`.
-- [ ] Migrate both apps' loaders to the primitives. **Schemas and merge trees stay in the
-      apps** (Tier 3) — only the plumbing moves.
+      `.config/<app>.yml` → `.<app>.yml`, with a `Source` enum, `Label`, and `InitDest`.
+      `Resolver{App}`; heraut has the reference impl, bifrost already matches it.
+- [ ] `ValidationError{Path, Message, Hint}` + `ValidationErrors` aggregate (ported from
+      heraut; bifrost adopts over `[]string`).
+- [ ] Migrate heraut `internal/config` loader/path/error to forge facades; keep schema,
+      validator, normalize, `MergeContentDriver`.
+- [ ] Migrate bifrost `internal/config` loader + `cmdutil` path resolution to forge; adopt
+      `ValidationError`. Keep schema, 3-level merge, defaults, merge helpers.
 
 ## M5 — `selfupdate`
 
