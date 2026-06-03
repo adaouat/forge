@@ -200,10 +200,12 @@ one-paragraph note recording actual decisions and deviations.
 ## M3 — `ui`
 
 **Scope (revised after exploration — user picked "detection + header + status + mode").** The
-truly-identical shared surface is narrower than first planned, so two adjustments: **spinner +
-progress-bar wrappers are dropped** — heraut (bubbles spinner + `[N/total]` step-runner) and
-bifrost (huh spinner + byte progress bar) share no identical code, so a shared abstraction would
-be a false friend; they stay in the apps. **Output mode** is bifrost-only today but is extracted
+truly-identical shared surface is narrower than first planned, so two adjustments: **the
+progress bar is dropped** (heraut has none; bifrost's byte bar is a determinate, single-consumer
+primitive — revisit when a second consumer appears). The **spinner was initially dropped too**,
+but on review all spinner uses share one shape (run a named task → `✓`/`✗`/`!`) and were
+extracted as `ui.Spinner` — see **M3.6** / [ADR-0004](../adr/0004-ui-spinner-task-runner.md).
+**Output mode** is bifrost-only today but is extracted
 as a de-globalized value type (canonical for the family + the incoming tool-3); **status
 helpers** are heraut-led, bifrost adopts them only where its deploy formats fit. **Dependency
 note:** `colorprofile`/`x/term` have *no* usable `charm.land` module path (their `go.mod`
@@ -242,6 +244,20 @@ rule (`docs/rules/coding.md`). `lipgloss/v2` uses `charm.land` as normal.
       wraps forge; `IsTTY` delegates to forge. Spinner/progress/styles/JSON-emitter stay. 152
       tests green incl. `-tags integration`. **M3 complete:** `ui` has two real consumers;
       detection + header are genuinely shared, status/mode are canonical for tool-3.
+
+### M3.6 — `ui.Spinner` (spinner extraction, [ADR-0004](../adr/0004-ui-spinner-task-runner.md))
+
+*(Re-opens the spinner the scope note initially dropped. On review all spinner uses are one
+shape — run a named task, animate, resolve to `✓`/`✗`/`!` — so it's extracted, enhanced, and
+shared across both apps + tool-3.)*
+
+- [ ] forge `ui.Spinner`: action-based `Run(name, fn) (✓/✗/!)`, `Result{Detail,Subs}`, `Skip`
+      sentinel, opt-in `Total(n)` `[N/M]` counter; inline `bubbles`-frames animator gated on
+      `Mode.IsHuman() && IsTTY(out)`, status lines via the existing helpers. ADR-0004 first.
+- [ ] Migrate heraut: delete the hand-rolled animator + `Step`/`Progress`; reshape `check.go`
+      (×2) and the pipeline reporter onto `Spinner.Run`; dry-run → `Mode.Plain`.
+- [ ] Migrate bifrost: `purge` → `Spinner.Run`; unify deploy step lines (`✔` → `✓`). The
+      byte progress bar stays in bifrost (single-consumer, determinate — out of scope).
 
 ## M4 — `config` primitives
 
