@@ -309,9 +309,13 @@ They stay in bifrost. Schemas, defaults/normalize, and merge trees stay in the a
       flattened to a joined message; no app prefix) + `Load(path, target any)` (open + Decode).
       Idiomatic non-generic form (`target any`) — apps keep their `*Config` wrappers + defaults.
       6 tests; `yaml.v3` v3.0.1 pinned direct.
-- [ ] **Path resolution** parameterized over app name: `--config` flag → `<APP>_FILE` env →
+- [x] **Path resolution** parameterized over app name: `--config` flag → `<APP>_FILE` env →
       `.config/<app>.yml` → `.<app>.yml`, with a `Source` enum, `Label`, and `InitDest`.
-      `Resolver{App}`; heraut has the reference impl, bifrost already matches it.
+      `Resolver{App}`; heraut has the reference impl, bifrost already matches it. **Done:**
+      `Resolver{App}.Resolve(explicit) (path, Source)` with `FromFlag/FromEnv/FromXDG/FromDefault`;
+      `Label(src)` rebuilds heraut's "(from HERAUT_FILE)" display; `InitDest()` is the
+      `.config/`-check. No global `statFile` seam (bifrost had one) — tests use
+      `t.Chdir(t.TempDir())` + `t.Setenv`. 9 tests; config at 15.
 - [ ] `ValidationError{Path, Message, Hint}` + `ValidationErrors` aggregate (ported from
       heraut; bifrost adopts over `[]string`).
 - [ ] Migrate heraut `internal/config` loader/path/error to forge facades; keep schema,
