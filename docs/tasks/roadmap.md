@@ -183,10 +183,19 @@ one-paragraph note recording actual decisions and deviations.
       `OK/Usage/Config/Runtime/Internal`, and `Resolve` returns `OK`/`Usage` by name. Domain codes
       stay in the apps (heraut's `Promotion=4`); forge owns `0–3` + `70`, apps extend in `4–69`.
       2 tests added (suite at 29). ADR-0003 committed first (`ffc3704`).
-- [ ] Adopt in **heraut**: `internal/exitcode` re-exports forge's generic codes, keeps
-      `Promotion=4` as its domain code. Suite green.
-- [ ] Adopt in **bifrost**: `internal/cmderr` re-exports forge's generic codes; replace the
+- [x] Adopt in **heraut**: `internal/exitcode` re-exports forge's generic codes, keeps
+      `Promotion=4` as its domain code. Suite green. **Done** (heraut commit `d70b4b3`): the
+      const block now reads `OK = forgeexit.OK` … `Internal = forgeexit.Internal`, with
+      `Promotion = 4` kept as heraut's domain code; call sites and `exitcode_test.go`
+      (incl. `TestCodes_MatchSpec`, which now also guards that forge's values match Spec 01)
+      unchanged. 839 tests green.
+- [x] Adopt in **bifrost**: `internal/cmderr` re-exports forge's generic codes; replace the
       raw `1/2/3` literals at the construction sites with named constants. Suite green.
+      **Done** (bifrost commit `b04ab9c`): `cmderr` re-exports `Usage/Config/Runtime` from forge
+      (and `cmd/errors.go` re-exports them again for package-`cmd`-local use by `deploy.go`,
+      which uses the bare `ExitError` alias). All ~16 construction sites now use named codes.
+      153 tests green incl. `-tags integration`. **Shared exit-code vocabulary complete:**
+      three real consumers of the generic set once tool-3 lands; two today.
 
 ## M3 — `ui`
 
