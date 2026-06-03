@@ -59,3 +59,17 @@ func TestExitError_ErrTakesPrecedenceOverMessage(t *testing.T) {
 	err := &exitcode.ExitError{Code: 1, Message: "ignored", Err: errors.New("real")}
 	assert.Equal(t, "real", err.Error())
 }
+
+func TestCodes_GenericVocabulary(t *testing.T) {
+	// ADR-0003 — shared exit-code vocabulary. Apps extend in 4-69.
+	assert.Equal(t, 0, exitcode.OK)
+	assert.Equal(t, 1, exitcode.Usage)
+	assert.Equal(t, 2, exitcode.Config)
+	assert.Equal(t, 3, exitcode.Runtime)
+	assert.Equal(t, 70, exitcode.Internal)
+}
+
+func TestResolve_UsesNamedDefaults(t *testing.T) {
+	assert.Equal(t, exitcode.OK, exitcode.Resolve(nil))
+	assert.Equal(t, exitcode.Usage, exitcode.Resolve(errors.New("boom")))
+}

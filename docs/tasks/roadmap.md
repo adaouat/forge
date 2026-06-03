@@ -155,9 +155,9 @@ one-paragraph note recording actual decisions and deviations.
       `Error()` prefers `Err` then `Message`, `Unwrap()` returns `Err`. This serves bifrost's
       `{Code, Message}` struct literals *and* heraut's wrapped-error chains from one type.
       `Wrap` (nil→nil, first-code-wins via `errors.As`) and `Resolve` (nil→0, coded→code,
-      else→1) ported from heraut. **No value constants** in forge: heraut's
-      `Config`/`Runtime`/`Promotion` are domain (its Spec 01), bifrost uses raw ints — each app
-      keeps its own. The "main.go glue helper" is `Resolve` itself: both mains collapse to
+      else→1) ported from heraut. **No value constants** in forge *(superseded by M2.4 /
+      ADR-0003 — the generic core `OK/Usage/Config/Runtime/Internal` was later shared; only
+      heraut's `Promotion` stays domain)*. The "main.go glue helper" is `Resolve` itself: both mains collapse to
       `os.Exit(exitcode.Resolve(err))` (forge must never call `os.Exit`, so it returns the code
       only). 8 tests ported + bifrost-shape coverage; suite at 27.
 - [x] Migrate heraut `cmd/heraut/main.go` + `internal/exitcode` + `internal/cmd/exit.go`.
@@ -176,6 +176,17 @@ one-paragraph note recording actual decisions and deviations.
       `errors.As`/`os.Exit(1)` fallback for `os.Exit(exitcode.Resolve(err))`. No `go.mod`
       change (forge wired in M1.4). 153 tests green incl. `-tags integration`. **M2 complete:**
       `exitcode` has two real consumers; both apps' mains share one `Resolve`.
+- [x] **Shared exit-code vocabulary ([ADR-0003](../adr/0003-shared-exit-code-vocabulary.md)).**
+      *(Added after M2 close; supersedes the "no value constants" decision in M2.1.)* **Done:**
+      `0/1/2/3` were already used identically across both apps (bifrost just hadn't named them),
+      and a third family CLI is imminent — so forge `exitcode` now defines the generic vocabulary
+      `OK/Usage/Config/Runtime/Internal`, and `Resolve` returns `OK`/`Usage` by name. Domain codes
+      stay in the apps (heraut's `Promotion=4`); forge owns `0–3` + `70`, apps extend in `4–69`.
+      2 tests added (suite at 29). ADR-0003 committed first (`ffc3704`).
+- [ ] Adopt in **heraut**: `internal/exitcode` re-exports forge's generic codes, keeps
+      `Promotion=4` as its domain code. Suite green.
+- [ ] Adopt in **bifrost**: `internal/cmderr` re-exports forge's generic codes; replace the
+      raw `1/2/3` literals at the construction sites with named constants. Suite green.
 
 ## M3 — `ui`
 
