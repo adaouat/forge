@@ -1,5 +1,24 @@
 # Changelog
 
+## [0.3.0](//compare/v0.2.0..v0.3.0) - 2026-06-03
+
+### 🚀 Features
+
+- *(exitcode)* Add ExitError, Wrap, and Resolve - ([f6e4316](//commit/f6e43166754b41b88a2f00b12768502d9e800fc1))
+
+- *(exitcode)* Add shared exit-code constants - ([88cb144](//commit/88cb1448f660878665e308a088b2ad5a4ac4fa63))
+
+
+### 📚 Documentation
+
+- *(adr)* Add 0003 shared exit-code vocabulary - ([ffc3704](//commit/ffc370435dbb55b26a6e1473e336dd766b154d8c))
+
+- *(roadmap)* Mark M2 heraut migration done - ([a90ace0](//commit/a90ace076d4bd10b808d083fe3b95b1d285f86b7))
+
+- *(roadmap)* Mark M2 bifrost migration done, close M2 - ([60dfe21](//commit/60dfe21155ba8fb6383443a1fbcac673bb7b9e23))
+
+- *(roadmap)* Mark heraut/bifrost exit-code adoption done - ([526e6a2](//commit/526e6a2f6216604c164bada6f115da0fad2983a2))
+
 ## [0.2.0](//compare/v0.1.0..v0.2.0) - 2026-06-02
 
 ### 🚀 Features
