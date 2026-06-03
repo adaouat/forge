@@ -229,10 +229,19 @@ rule (`docs/rules/coding.md`). `lipgloss/v2` uses `charm.land` as normal.
       byte-identical `HelpLong`/`VersionTemplate` differing only in the `asciiArt`/`CatchPhrase`
       constants, so the renderers move to forge parameterized over those two strings; apps keep
       the constants and pass them. 2 tests (incl. rendering `{{.Name}} {{.Version}}`); ui at 28.
-- [ ] Migrate heraut `internal/ui`: route status/header/detection through forge; keep the
-      step-runner, progress, and `asciiArt`/`CatchPhrase` data in heraut.
-- [ ] Migrate bifrost `internal/tui`: route header + detection + de-globalized `Mode` through
-      forge; keep spinner, progress bar, deploy UI, and styles in bifrost.
+- [x] Migrate heraut `internal/ui`: route status/header/detection through forge; keep the
+      step-runner, progress, and `asciiArt`/`CatchPhrase` data in heraut. **Done** (heraut
+      `20db1c2`): `status.go` is thin wrappers over forge; `header.go` keeps the art/phrase and
+      calls forge's renderers; `step.go` drops its local `isTerminal` for `forge.IsTTY`. The
+      ~20 external `ui.*` call sites in `cmd` are untouched. 839 tests green.
+- [x] Migrate bifrost `internal/tui`: route header + detection + de-globalized `Mode` through
+      forge; keep spinner, progress bar, deploy UI, and styles in bifrost. **Done** (bifrost
+      `961035e`): the `atomic.Int32` output-mode global is gone — the deploy/progress renderers
+      take a `forgeui.Mode`, the `Deployer` holds one (replacing `jsonMode`, now a method),
+      and `cmd` builds it via `forgeui.ParseMode(--output)` so `root` sets no global. `header.go`
+      wraps forge; `IsTTY` delegates to forge. Spinner/progress/styles/JSON-emitter stay. 152
+      tests green incl. `-tags integration`. **M3 complete:** `ui` has two real consumers;
+      detection + header are genuinely shared, status/mode are canonical for tool-3.
 
 ## M4 — `config` primitives
 
