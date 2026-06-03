@@ -316,8 +316,10 @@ They stay in bifrost. Schemas, defaults/normalize, and merge trees stay in the a
       `Label(src)` rebuilds heraut's "(from HERAUT_FILE)" display; `InitDest()` is the
       `.config/`-check. No global `statFile` seam (bifrost had one) — tests use
       `t.Chdir(t.TempDir())` + `t.Setenv`. 9 tests; config at 15.
-- [ ] `ValidationError{Path, Message, Hint}` + `ValidationErrors` aggregate (ported from
-      heraut; bifrost adopts over `[]string`).
+- [x] `ValidationError{Path, Message, Hint}` + `ValidationErrors` aggregate (ported from
+      heraut; bifrost adopts over `[]string`). **Done:** ported verbatim from heraut's
+      `error.go` (`Path: Message` + optional `\n  hint:`; aggregate joins with `\n`). 4 tests;
+      config at 19.
 - [ ] Migrate heraut `internal/config` loader/path/error to forge facades; keep schema,
       validator, normalize, `MergeContentDriver`.
 - [ ] Migrate bifrost `internal/config` loader + `cmdutil` path resolution to forge; adopt
