@@ -223,9 +223,12 @@ rule (`docs/rules/coding.md`). `lipgloss/v2` uses `charm.land` as normal.
       with `Human`/`Plain`/`JSON` (zero value `Human`, matching bifrost's default), `ParseMode`
       (unknown → `Human`), `IsHuman`, and `String` (round-trips `ParseMode`). A plain value, so
       bifrost holds/injects one instead of the `atomic.Int32` package-global. 10 tests; ui at 26.
-- [ ] Version banner / header renderers (`HelpLong(art, phrase)`, `VersionTemplate(art,
+- [x] Version banner / header renderers (`HelpLong(art, phrase)`, `VersionTemplate(art,
       phrase)`) — app-specific ASCII art + catch-phrase passed in as data. *(Spinner +
-      progress-bar wrappers dropped — see scope note.)*
+      progress-bar wrappers dropped — see scope note.)* **Done:** both apps' `header.go` had
+      byte-identical `HelpLong`/`VersionTemplate` differing only in the `asciiArt`/`CatchPhrase`
+      constants, so the renderers move to forge parameterized over those two strings; apps keep
+      the constants and pass them. 2 tests (incl. rendering `{{.Name}} {{.Version}}`); ui at 28.
 - [ ] Migrate heraut `internal/ui`: route status/header/detection through forge; keep the
       step-runner, progress, and `asciiArt`/`CatchPhrase` data in heraut.
 - [ ] Migrate bifrost `internal/tui`: route header + detection + de-globalized `Mode` through
