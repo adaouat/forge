@@ -1,5 +1,30 @@
 # Changelog
 
+## [0.4.0](//compare/v0.3.0..v0.4.0) - 2026-06-03
+
+### 🚀 Features
+
+- *(ui)* Add color/TTY detection and status helpers - ([339fad6](//commit/339fad61a14409d178f0abd25fd17adef7c4feca))
+
+- *(ui)* Add output Mode value type - ([7523fbc](//commit/7523fbcb403038d2ac361a844459d7ca06bfc78d))
+
+- *(ui)* Add header renderers - ([fe1c919](//commit/fe1c9195b372e035331f85db435a331c3588e914))
+
+- *(ui)* Add Spinner task runner - ([faa497a](//commit/faa497a937accecb5c7175f6cbc2b1539d0d5ad6))
+
+- *(ui)* Add Spinner.Step for completed numbered steps - ([18152ef](//commit/18152efd5665e448d261349e240a16443a03cd72))
+
+
+### 📚 Documentation
+
+- *(adr)* Add 0004 ui spinner task runner - ([d5493c2](//commit/d5493c2c19ec48720e49ba1bfcaec4bbff3818b0))
+
+- *(roadmap)* Mark heraut/bifrost ui migration done, close M3 - ([3cf25e2](//commit/3cf25e2ca47c2c964a982f14079f94f46e549923))
+
+- *(roadmap)* Mark M3.6 spinner migration done - ([36b965e](//commit/36b965e3a4300200118c174994ee57f3bee42f06))
+
+- *(roadmap)* Mark bifrost numbered deploy steps done - ([8372162](//commit/8372162186be92ae525b6fa492537f00c87489c9))
+
 ## [0.3.0](//compare/v0.2.0..v0.3.0) - 2026-06-03
 
 ### 🚀 Features
