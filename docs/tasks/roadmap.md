@@ -199,13 +199,34 @@ one-paragraph note recording actual decisions and deviations.
 
 ## M3 — `ui`
 
-- [ ] Status helpers (`Success`/`Warn`/`Err`/`Info`/`Header`) + `hasColor`/TTY detection via
-      `colorprofile`, ported from heraut `internal/ui/status.go`.
-- [ ] Output mode (human/plain/json) as an explicit type (generalize bifrost's `tui/mode.go`
-      package-global into an injectable value — no shared mutable global in a library).
-- [ ] Version banner / header + spinner + progress-bar wrappers.
-- [ ] Migrate heraut `internal/ui` and bifrost `internal/tui`; keep app-specific banners
-      (ASCII art, colors) as data passed into the shared renderers.
+**Scope (revised after exploration — user picked "detection + header + status + mode").** The
+truly-identical shared surface is narrower than first planned, so two adjustments: **spinner +
+progress-bar wrappers are dropped** — heraut (bubbles spinner + `[N/total]` step-runner) and
+bifrost (huh spinner + byte progress bar) share no identical code, so a shared abstraction would
+be a false friend; they stay in the apps. **Output mode** is bifrost-only today but is extracted
+as a de-globalized value type (canonical for the family + the incoming tool-3); **status
+helpers** are heraut-led, bifrost adopts them only where its deploy formats fit. **Dependency
+note:** `colorprofile`/`x/term` have *no* usable `charm.land` module path (their `go.mod`
+declares `github.com/charmbracelet/*`; the vanity path resolves a version but can't be
+`require`d), so forge imports the `github.com` paths — a documented exception to the registry
+rule (`docs/rules/coding.md`). `lipgloss/v2` uses `charm.land` as normal.
+
+- [x] Color/TTY detection (`HasColor`, `IsTTY`) + status helpers (`Success`/`Warn`/`Err`/
+      `Info`/`Header`), ported from heraut `internal/ui/status.go`. **Done:** ported the five
+      status helpers verbatim (`hasColor` → exported `HasColor`); `IsTTY` generalizes heraut's
+      `isTerminal` (the `*os.File` check from `step.go`) to any `io.Writer`. Deps pinned:
+      `charm.land/lipgloss/v2` v2.0.2 (baseline), `github.com/charmbracelet/colorprofile` v0.4.2
+      + `github.com/charmbracelet/x/term` v0.2.2 (the registry exception). 16 tests (heraut's
+      status rows + `HasColor`/`IsTTY` coverage); forge suite at 45.
+- [ ] Output mode (human/plain/json) as an injectable `Mode` value type (de-globalize bifrost's
+      `tui/mode.go` package-global — no shared mutable global in a library).
+- [ ] Version banner / header renderers (`HelpLong(art, phrase)`, `VersionTemplate(art,
+      phrase)`) — app-specific ASCII art + catch-phrase passed in as data. *(Spinner +
+      progress-bar wrappers dropped — see scope note.)*
+- [ ] Migrate heraut `internal/ui`: route status/header/detection through forge; keep the
+      step-runner, progress, and `asciiArt`/`CatchPhrase` data in heraut.
+- [ ] Migrate bifrost `internal/tui`: route header + detection + de-globalized `Mode` through
+      forge; keep spinner, progress bar, deploy UI, and styles in bifrost.
 
 ## M4 — `config` primitives
 

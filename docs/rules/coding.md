@@ -58,4 +58,15 @@ go get charm.land/<module>/v2   # e.g. charm.land/huh/v2, charm.land/bubbles/v2
 ```
 
 Never add `github.com/charmbracelet/<module>` as a direct dependency.
+
+**Documented exceptions.** A few lower-level charm packages were never republished under
+`charm.land` — their `go.mod` still declares `github.com/charmbracelet/<module>`, so the
+vanity path cannot be `require`d (you get a "module declares its path as …" error). For these,
+the `github.com/charmbracelet/<module>` import is the only option and is allowed:
+
+- `github.com/charmbracelet/colorprofile` — color/TTY capability detection (`ui.HasColor`).
+- `github.com/charmbracelet/x/term` — terminal detection (`ui.IsTTY`).
+
+Re-confirm before adding any other `github.com/charmbracelet` dependency: if a `charm.land`
+path resolves *and* the module's `go.mod` declares it, use that; otherwise document it here.
 </content>
