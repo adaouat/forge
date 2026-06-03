@@ -218,8 +218,11 @@ rule (`docs/rules/coding.md`). `lipgloss/v2` uses `charm.land` as normal.
       `charm.land/lipgloss/v2` v2.0.2 (baseline), `github.com/charmbracelet/colorprofile` v0.4.2
       + `github.com/charmbracelet/x/term` v0.2.2 (the registry exception). 16 tests (heraut's
       status rows + `HasColor`/`IsTTY` coverage); forge suite at 45.
-- [ ] Output mode (human/plain/json) as an injectable `Mode` value type (de-globalize bifrost's
-      `tui/mode.go` package-global — no shared mutable global in a library).
+- [x] Output mode (human/plain/json) as an injectable `Mode` value type (de-globalize bifrost's
+      `tui/mode.go` package-global — no shared mutable global in a library). **Done:** `Mode int`
+      with `Human`/`Plain`/`JSON` (zero value `Human`, matching bifrost's default), `ParseMode`
+      (unknown → `Human`), `IsHuman`, and `String` (round-trips `ParseMode`). A plain value, so
+      bifrost holds/injects one instead of the `atomic.Int32` package-global. 10 tests; ui at 26.
 - [ ] Version banner / header renderers (`HelpLong(art, phrase)`, `VersionTemplate(art,
       phrase)`) — app-specific ASCII art + catch-phrase passed in as data. *(Spinner +
       progress-bar wrappers dropped — see scope note.)*
