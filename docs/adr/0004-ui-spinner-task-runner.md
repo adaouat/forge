@@ -34,6 +34,7 @@ type Spinner struct { /* out, mode, counter */ }
 func NewSpinner(out io.Writer, mode Mode) *Spinner
 func (s *Spinner) Total(n int) *Spinner                 // opt-in [N/total] counter
 func (s *Spinner) Run(name string, fn func() (Result, error)) error
+func (s *Spinner) Step(name, detail string)             // render-only completed step
 ```
 
 `Run` animates a spinner titled `name` while `fn` runs, then renders:
@@ -41,6 +42,12 @@ func (s *Spinner) Run(name string, fn func() (Result, error)) error
 - `(Result, nil)` → `✓ [n/N] name — Detail` + indented `Subs`
 - `(_, Skip(d))` → `! [n/N] name — d` (returns `nil`; advisory, not a failure)
 - `(_, err)` → `✗ [n/N] name — err` (first line; extra lines indented) and returns `err`
+
+`Step` is the render-only counterpart: it emits a numbered `✓ [n/N] name — detail`
+for a step whose (successful) work already ran *outside* the spinner, sharing `Run`'s
+counter. heraut runs work inside `Run`; bifrost's deploy renders completed steps via
+`Step` (its work runs in its own JSON-emitting wrapper), and both share one `[N/total]`
+sequence. Failures are surfaced before a `Step` line is reached, so `Step` is success-only.
 
 **Engine:** forge owns an internal inline animator (the `bubbles` spinner frames + a ticker
 goroutine, lifted from heraut and written once), **not** `huh`'s per-task program — the inline

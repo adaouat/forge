@@ -91,6 +91,38 @@ func TestSpinner_NoCounterWhenTotalZero(t *testing.T) {
 	assert.Equal(t, "✓ solo\n", w.String(), "no [N/M] prefix without Total")
 }
 
+func TestSpinner_Step_RendersNumberedLine(t *testing.T) {
+	var w bytes.Buffer
+	sp := ui.NewSpinner(&w, ui.Human).Total(3)
+	sp.Step("Config loaded", "ok")
+	assert.Equal(t, "✓ [1/3] Config loaded — ok\n", w.String())
+}
+
+func TestSpinner_Step_NoDetail(t *testing.T) {
+	var w bytes.Buffer
+	sp := ui.NewSpinner(&w, ui.Human).Total(2)
+	sp.Step("Release directory created", "")
+	assert.Equal(t, "✓ [1/2] Release directory created\n", w.String())
+}
+
+func TestSpinner_Step_SharesCounterWithRun(t *testing.T) {
+	var w bytes.Buffer
+	sp := ui.NewSpinner(&w, ui.Human).Total(3)
+	sp.Step("first", "")
+	require.NoError(t, sp.Run("second", okFn))
+	sp.Step("third", "")
+	got := w.String()
+	assert.Contains(t, got, "✓ [1/3] first\n")
+	assert.Contains(t, got, "✓ [2/3] second\n")
+	assert.Contains(t, got, "✓ [3/3] third\n")
+}
+
+func TestSpinner_Step_NoCounterWithoutTotal(t *testing.T) {
+	var w bytes.Buffer
+	ui.NewSpinner(&w, ui.Human).Step("solo", "done")
+	assert.Equal(t, "✓ solo — done\n", w.String())
+}
+
 func TestSpinner_PlainMode_RendersStatusLine(t *testing.T) {
 	var w bytes.Buffer
 	err := ui.NewSpinner(&w, ui.Plain).Run("step", func() (ui.Result, error) {

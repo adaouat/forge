@@ -276,6 +276,20 @@ shared across both apps + tool-3.)*
       **M3.6 complete:** one spinner vocabulary across both apps + tool-3; `Mode` gained a
       second consumer (heraut passes `Human`).
 
+### M3.7 — numbered deploy steps (bifrost adopts the `[N/total]` stepper)
+
+*(The `[N/total]` step-runner already shipped as `Spinner.Total` in M3.6; this wires bifrost's
+deploy onto it. Adding `Spinner.Step` because bifrost's steps are already-completed work, not
+fn-to-run.)*
+
+- [x] forge `Spinner.Step(name, detail)`: render-only numbered `✓ [N/M] name — detail` for a
+      completed step, sharing `Run`'s counter via a `nextLabel` helper. **Done:** success-only
+      (failures surface before the line); 4 tests, ui at 41. ADR-0004 amended with the
+      Run-vs-Step distinction.
+- [ ] bifrost: pre-compute the deploy step total (7 base + non-empty hook groups), thread one
+      `Spinner.Total` through `Deploy`, render each step via `Step` (purge still via `Run` on the
+      same spinner). Remove the now-unused `tui.PrintStep`.
+
 ## M4 — `config` primitives
 
 - [ ] Strict YAML loader (`KnownFields(true)`, typed-error formatting) parameterized over a
