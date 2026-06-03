@@ -251,9 +251,14 @@ rule (`docs/rules/coding.md`). `lipgloss/v2` uses `charm.land` as normal.
 shape — run a named task, animate, resolve to `✓`/`✗`/`!` — so it's extracted, enhanced, and
 shared across both apps + tool-3.)*
 
-- [ ] forge `ui.Spinner`: action-based `Run(name, fn) (✓/✗/!)`, `Result{Detail,Subs}`, `Skip`
+- [x] forge `ui.Spinner`: action-based `Run(name, fn) (✓/✗/!)`, `Result{Detail,Subs}`, `Skip`
       sentinel, opt-in `Total(n)` `[N/M]` counter; inline `bubbles`-frames animator gated on
       `Mode.IsHuman() && IsTTY(out)`, status lines via the existing helpers. ADR-0004 first.
+      **Done:** the animator (ticker goroutine + mutex/`\r`-clear) is lifted from heraut's
+      `step.go` and written once; `render` reproduces heraut's exact status lines (`✓ name`,
+      `✓ name — detail`, multi-line `✗`, `!`, indented subs, `[N/M]`). Tests use a buffer
+      (non-TTY → no animation, deterministic). `charm.land/bubbles/v2` v2.1.0 pinned (baseline).
+      9 tests; forge suite at 66. ADR-0004 committed first (`d5493c2`).
 - [ ] Migrate heraut: delete the hand-rolled animator + `Step`/`Progress`; reshape `check.go`
       (×2) and the pipeline reporter onto `Spinner.Run`; dry-run → `Mode.Plain`.
 - [ ] Migrate bifrost: `purge` → `Spinner.Run`; unify deploy step lines (`✔` → `✓`). The
