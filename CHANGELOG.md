@@ -1,12 +1,31 @@
 # Changelog
 
+## [0.7.0](//compare/v0.6.2..v0.7.0) - 2026-06-04
+
+### 🚀 Features
+
+- *(ui)* Add Palette for the shared family theme - ([4b19ee8](//commit/4b19ee889014aa0f81690a356135b88ba468970e))
+
+
+### 📚 Documentation
+
+- *(adr)* Add 0007 public API surface and stability contract - ([edaa2f2](//commit/edaa2f2da825c4bf0239a656e8c99a350dbeb449))
+
+- *(adr)* Add 0008 family UI theme palette - ([271e450](//commit/271e4505b497b7acbd9e7111e8662dd2b0649985))
+
+- *(guides)* Add Tier-2 sync guide and complete the M0-M6 roadmap - ([8af0d8f](//commit/8af0d8fcb7f4f339d4e910e598f11745d33978ca))
+
+- *(roadmap)* Mark apps-depend-on-published-forge done - ([6981a90](//commit/6981a902c72889aa2e6e4f6cee64b4ce19302143))
+
+- Update status from pre-implementation to shipped - ([93cc898](//commit/93cc898609594daa361319be498900964fb8763e))
+
 ## [0.6.2](//compare/v0.6.1..v0.6.2) - 2026-06-04
 
 ### 📚 Documentation
 
-- *(guides)* Update distribution guide for Homebrew casks - ([7bc8d2b](//commit/7bc8d2b0cd73f2452e68eed842f7b591d64cd87e))
+- *(guides)* Update distribution guide for Homebrew casks - ([7bc8d2b](//commit/7bc8d2b0cd73f2452e68eed842f7b591d64cd87e)) by @bchatard
 
-- *(roadmap)* Mark Homebrew tap + casks done - ([9ac0ad5](//commit/9ac0ad5d401e79adb369f30f0ffaa3006bc180df))
+- *(roadmap)* Mark Homebrew tap + casks done - ([9ac0ad5](//commit/9ac0ad5d401e79adb369f30f0ffaa3006bc180df)) by @bchatard
 
 ## [0.6.1](//compare/v0.6.0..v0.6.1) - 2026-06-04
 
