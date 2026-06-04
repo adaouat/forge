@@ -1,0 +1,48 @@
+# Reusable lint + test CI for the adaouat CLI family (forge, bifrost, heraut).
+# Callers add one job: `uses: adaouat/forge/.github/workflows/go-ci.yml@<sha>`.
+# Build and release stay per-app. See docs/adr/0006-shared-ci-reusable-workflow.md.
+name: Go CI
+
+on:
+  workflow_call:
+    inputs:
+      coverage-threshold:
+        description: Minimum total test coverage percentage (fail below).
+        type: number
+        default: 85
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - name: Setup Mise
+        uses: jdx/mise-action@1648a7812b9aeae629881980618f079932869151 # v4
+      - name: Lint
+        run: golangci-lint run ./...
+      - name: Vulnerability scan
+        run: govulncheck ./...
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - name: Setup Mise
+        uses: jdx/mise-action@1648a7812b9aeae629881980618f079932869151 # v4
+      - name: Test
+        run: go test ./... -coverprofile=coverage.out
+      - name: Check coverage threshold
+        env:
+          THRESHOLD: ${{ inputs.coverage-threshold }}
+        run: |-
+          go tool cover -func=coverage.out | awk -v threshold="$THRESHOLD" '
+            /^total:/ {
+              pct = substr($3, 1, length($3)-1)
+              printf "Total coverage: %s%%\n", pct
+              if (pct+0 < threshold+0) {
+                printf "Error: coverage %s%% is below the %s%% threshold\n", pct, threshold
+                exit 1
+              }
+            }'

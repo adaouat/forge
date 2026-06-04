@@ -411,12 +411,19 @@ formula) — no archive needed.
 - [ ] **Homebrew tap + `brews:` blocks** (deferred — tap repo + per-app formula; validate the
       generated formula with `goreleaser release --snapshot` since raw-binary formulae are fussier).
 - [ ] **Shared lint/CI reusable workflow** *(separate track, not release-related — surfaced
-      during M5.4)*. A `workflow_call` workflow **hosted in forge** (decision made), called by
-      bifrost + heraut **and forge itself** (3 consumers). Scope: **lint + test only**
+      during M5.4)*. A `workflow_call` workflow **hosted in forge** ([ADR-0006](../adr/0006-shared-ci-reusable-workflow.md)),
+      called by bifrost + heraut **and forge itself** (3 consumers). Scope: **lint + test only**
       (golangci-lint, govulncheck, `go test`, coverage gate) — *not* build/release/Docker, which
-      stay per-app; the bifrost `-tags integration` difference is a workflow `input`. Caller
-      refs pin a forge tag/SHA (per the SHA-pinning rule). Needs a short ADR first (this makes
-      the apps' CI a live dependency on forge's repo+ref — a new coupling vs synced scaffolding).
+      stay per-app. Caller refs pin a forge SHA (per the SHA-pinning rule; forge is untagged
+      until M6). **Partial (forge-side done):** ADR-0006 + `forge/.github/workflows/go-ci.yml`
+      (reusable lint + test, single `coverage-threshold` input defaulting to 85) landed, and
+      forge's `ci.yml` now dogfoods it via `uses: ./.github/workflows/go-ci.yml` (build stays
+      inline). Scope narrowed in implementation: the **only** cross-repo difference is the
+      coverage threshold (bifrost 20) — CI runs no integration-tagged tests anywhere (they sit
+      behind a build tag, excluded by plain `go test ./...`), so no `integration` input is
+      needed. **Blocked on publish:** the bifrost/heraut callers
+      (`uses: adaouat/forge/.github/workflows/go-ci.yml@<sha>`) can't resolve until
+      `adaouat/forge` is a public GitHub repo — wired in the change that publishes forge (M6-adjacent).
 
 ## M6 — Finalize & cut v0.1.0
 
