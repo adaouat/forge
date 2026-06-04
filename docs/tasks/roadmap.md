@@ -430,7 +430,8 @@ formula) — no archive needed.
       called by bifrost + heraut **and forge itself** (3 consumers). Scope: **lint + test only**
       (golangci-lint, govulncheck, `go test`, coverage gate) — *not* build/release/Docker, which
       stay per-app. **Done:** ADR-0006 + `forge/.github/workflows/go-ci.yml` (reusable lint +
-      test, single `coverage-threshold` input defaulting to 85); forge's own `ci.yml` dogfoods
+      test, single **required** `coverage-threshold` input — no default, so forge never silently
+      governs a caller's gate; per-project policy, bifrost 20 / heraut & forge 85); forge's own `ci.yml` dogfoods
       it via `uses: ./.github/workflows/go-ci.yml`, and bifrost + heraut now call
       `adaouat/forge/.github/workflows/go-ci.yml@79edf69` (**v0.6.0**, SHA-pinned per the rule) —
       bifrost passes `coverage-threshold: 20`, heraut uses the default 85; both keep their build

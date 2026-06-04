@@ -7,9 +7,12 @@ on:
   workflow_call:
     inputs:
       coverage-threshold:
+        # Required, no default: the threshold is per-project policy (bifrost 20,
+        # heraut/forge 85 — not a shared convention), so forge holds no default that
+        # could silently govern a caller. Every caller declares its own.
         description: Minimum total test coverage percentage (fail below).
         type: number
-        default: 85
+        required: true
 
 jobs:
   lint:

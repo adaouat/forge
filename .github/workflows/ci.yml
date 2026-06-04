@@ -7,9 +7,10 @@ on:
 
 jobs:
   # Lint + test come from the shared reusable workflow (forge dogfoods its own).
-  # forge uses the default 85% coverage threshold.
   ci:
     uses: ./.github/workflows/go-ci.yml
+    with:
+      coverage-threshold: 85
 
   build:
     runs-on: ubuntu-latest

@@ -33,8 +33,11 @@ Host a reusable **lint + test** workflow at `forge/.github/workflows/go-ci.yml`
 
 - **Scope: lint + test only.** Lint = `golangci-lint run ./...` + `govulncheck ./...`. Test =
   `go test ./... -coverprofile` + a coverage-threshold gate. Build and release stay per-app.
-- **One input:** `coverage-threshold` (number, default 85), passed to the gate via an `env:`
-  var (never interpolated into the shell); bifrost overrides it to 20.
+- **One input:** `coverage-threshold` (number), passed to the gate via an `env:` var (never
+  interpolated into the shell). It is **required with no default** — the threshold is
+  per-project policy (bifrost 20, heraut/forge 85; not a shared convention), so forge holds no
+  default that could silently govern a caller or move its gate when forge changes. A caller that
+  omits it fails immediately with a clear "missing required input" error.
 - **No "which repo" input.** A called reusable workflow's `actions/checkout` resolves the
   *caller's* repository and SHA, so the workflow lints/tests whichever repo invokes it, with
   that repo's mise-provisioned tools.
