@@ -488,14 +488,22 @@ consumed by bifrost + heraut off the tag (no `replace`); its public contract is 
 *Surfaced after M6: a cohesive `fang` theme for the family (in the spirit of glab's), shared via
 forge `ui`. Accents chosen: bifrost **Aurora** (teal/violet), heraut **Heraldic** (gold/azure).*
 
-- [ ] forge **`ui.Palette`** — the shared structural colors (text, muted, dim, argument,
+- [x] forge **`ui.Palette`** — the shared structural colors (text, muted, dim, argument,
       success/warn/error), light/dark adaptive, semantic colors matching the existing status
       helpers. forge stays **framework-agnostic** (no `fang`/`cobra` dep): apps assemble their
       `fang.ColorScheme` from the palette + a per-tool accent. [ADR-0008](../adr/0008-ui-theme-palette.md).
-- [ ] Wire **bifrost** (Aurora: teal accent / violet secondary) + **heraut** (Heraldic: gold /
-      azure): a `fang.WithColorSchemeFunc` built from `ui.Palette` + the app's accent.
+      **Done** (forge `feat(ui): add Palette …`, released **v0.7.0**): `ui.Palette` +
+      `NewPalette(lipgloss.LightDarkFunc)`, TDD (light/dark table), lint clean.
+- [x] Wire **bifrost** (Aurora: teal accent / violet secondary) + **heraut** (Heraldic: gold /
+      azure): a `fang.WithColorSchemeFunc` built from `ui.Palette` + the app's accent. **Done:**
+      both apps bumped to forge v0.7.0; each has a `cmd/<app>/theme.go` `colorScheme(c)` mapping
+      `ui.NewPalette(c)` + accent → `fang.ColorScheme`, wired via `fang.WithColorSchemeFunc` in
+      `main`. Snapshot-verified: themed `--help` (teal titles for bifrost, gold for heraut);
+      builds + suites + lint green.
 - [ ] *(refinement)* align `ui` status/spinner colors to the palette so status output matches the
-      theme end-to-end.
+      theme end-to-end. *(Status colors already match the palette's semantic values; this would
+      route them through `Palette` for a single source. Also noted: the apps' ASCII-art banner
+      renders in `Base`, not the accent — optional polish, an app-side render change.)*
 
 Also queued (not started): the **reusable `release.yml`** extraction (forge-hosted `workflow_call`,
 now that bifrost + heraut have identical release flows) — its own task + ADR when picked up.
