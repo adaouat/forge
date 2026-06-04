@@ -347,12 +347,15 @@ inconshreveable/go-update is zero-dep but 2016-frozen). The project already stan
 So forge owns only the safe half (check + install-detection + hint); the upgrade itself is
 delegated to the package manager. Renamed `selfupdate` → `updatecheck` (it performs no update).
 
-- [ ] forge `updatecheck`: `CheckLatest(ctx, repo, current) (latest, newer, err)` (GET
-      `…/releases/latest` + semver compare; `net/http`+`encoding/json` only, no binary touch);
-      `DetectInstall()` + `InstallMethod.UpgradeCommand(bin)` from the running executable's real
-      path (Homebrew `/Cellar/`, mise `/mise/installs/`, Scoop `\scoop\`, `go install`
-      `$GOBIN`/`$GOPATH/bin`; generic fallback); a 24h-cached `Hint` printing
-      `"<app> X available — run: <cmd>"`, errors swallowed.
+- [x] forge `updatecheck`: GitHub `releases/latest` check + install-method detection + 24h hint.
+      **Done:** `Checker{Repo,BaseURL,Client}.CheckNewer(ctx, current)` (GET releases/latest,
+      httptest-tested, never real GitHub); `isNewer`/`compareVersions` ported from heraut
+      (component-wise numeric — SemVer *and* CalVer, the `v1.10.0 > v1.9.0` edge case);
+      `DetectInstall` + `InstallMethod.UpgradeCommand(bin, module)` (Homebrew `/Cellar/`, mise
+      `/mise/installs/`, Scoop `\scoop\`, go-install `$GOBIN`/`$GOPATH/bin`; `""` → caller's
+      generic fallback), with a path-only `detect(path, goBin)` core that's fully testable;
+      `Hinter.Print` (24h cache + `Now func()` clock seam, all errors swallowed). **Stdlib-only**
+      (`net/http`+`encoding/json`+`os`/`filepath`) — no new dependency. 29 tests; forge at 118.
 - [ ] Migrate heraut: delete `internal/selfupdate` (the binary replacer); the daily hint comes
       from forge's `updatecheck`; the `self-update` command becomes informational (prints the
       detected upgrade command) or is dropped.
