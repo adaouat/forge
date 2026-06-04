@@ -1,5 +1,35 @@
 # Changelog
 
+## [0.6.0](//compare/v0.5.0..v0.6.0) - 2026-06-04
+
+### 🚀 Features
+
+- *(updatecheck)* Add update check, install detection, and hint - ([da5cc1e](//commit/da5cc1e8e68a5a3826475722d800b8298756d8cb))
+
+
+### 📚 Documentation
+
+- *(adr)* Add 0005 updates via package managers - ([534d525](//commit/534d525d353ac5a6dff19f75ffc6addfa5b47fbf))
+
+- *(adr)* Add 0006 shared CI reusable workflow - ([040cac3](//commit/040cac34d5070c29d8224c6db79b5c0ce04e0292))
+
+- *(guides)* Add distribution guide and goreleaser sample - ([ca55570](//commit/ca55570a1822a8de021c100117d43aa0771dd849))
+
+- *(roadmap)* Mark M5 heraut migration done - ([ce52ee6](//commit/ce52ee6df398ff296a25f54a0080f869fa4a0f4d))
+
+- *(roadmap)* Mark M5.3 bifrost updatecheck wiring done - ([fd53477](//commit/fd534778185ee7db3dc299554884009538c5623b))
+
+- *(roadmap)* Record forge as host for the shared lint/CI workflow - ([c891c05](//commit/c891c05c34197fa2cdce0f6d0dd95335a324dd44))
+
+- *(roadmap)* Mark bifrost goreleaser convergence done - ([ecfa62f](//commit/ecfa62fe8357342695a0a3f10524ff08972bfcfa))
+
+- *(roadmap)* Correct goreleaser name_template finding - ([352624d](//commit/352624d993aaf255b94e11863747ef825b35d0cb))
+
+
+### ⚙️ Miscellaneous Tasks
+
+- Add reusable lint/test workflow for the CLI family - ([759f467](//commit/759f467c1e3ba7cae33a1646b84558907d498088))
+
 ## [0.5.0](//compare/v0.4.0..v0.5.0) - 2026-06-04
 
 ### 🚀 Features
