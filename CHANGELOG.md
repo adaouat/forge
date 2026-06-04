@@ -1,5 +1,25 @@
 # Changelog
 
+## [0.5.0](//compare/v0.4.0..v0.5.0) - 2026-06-04
+
+### 🚀 Features
+
+- *(config)* Add strict YAML loader - ([72d3aa3](//commit/72d3aa3161892e47bf2790325a5b69e1341af4db))
+
+- *(config)* Add app-parameterized path resolver - ([efed909](//commit/efed9099daa051a904b6e49b4cba3c10fc9d56c7))
+
+- *(config)* Add ValidationError and ValidationErrors - ([12c7fd8](//commit/12c7fd81dcfbf9c15dc59d9ea07cd36c2f8947c5))
+
+
+### 🚜 Refactor
+
+- *(config)* Own the loader error wording - ([a029ca2](//commit/a029ca2f8ef3bb8771101349d25cbb495a3c04ed))
+
+
+### 📚 Documentation
+
+- *(roadmap)* Mark M4 config migrations done, close M4 - ([07749ca](//commit/07749cac4f6bec085be927937f28f795612e2ca8))
+
 ## [0.4.0](//compare/v0.3.0..v0.4.0) - 2026-06-03
 
 ### 🚀 Features
