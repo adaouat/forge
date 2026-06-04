@@ -356,9 +356,15 @@ delegated to the package manager. Renamed `selfupdate` → `updatecheck` (it per
       generic fallback), with a path-only `detect(path, goBin)` core that's fully testable;
       `Hinter.Print` (24h cache + `Now func()` clock seam, all errors swallowed). **Stdlib-only**
       (`net/http`+`encoding/json`+`os`/`filepath`) — no new dependency. 29 tests; forge at 118.
-- [ ] Migrate heraut: delete `internal/selfupdate` (the binary replacer); the daily hint comes
-      from forge's `updatecheck`; the `self-update` command becomes informational (prints the
-      detected upgrade command) or is dropped.
+- [x] Migrate heraut: delete `internal/selfupdate` (the binary replacer); the daily hint comes
+      from forge's `updatecheck`; the `self-update` command is **dropped** (user's call — the
+      check is enough). **Done** (heraut `b92ff7a`): removed the whole `internal/selfupdate`
+      package + the `self-update` command (net −1050 lines); `PersistentPostRunE` now runs
+      `updatecheck.Hinter{Repo,Bin,Module,Current,CacheFile}` (cached 24h under `UserCacheDir`,
+      500ms timeout, errors swallowed), still gated on dev builds / `HERAUT_CHECK_UPDATE=false`.
+      `NewRootCmd` lost its `selfupdate.Option` param. 785 tests green. *(`--version` can't carry
+      the check — fang/cobra short-circuit the flag before any hook, and heraut overloads
+      `--version` on subcommands; the cached daily hint on normal commands is the mechanism.)*
 - [ ] Wire bifrost: gains the update-check hint + install-method-aware upgrade message for free.
 - [ ] **Distribution (app-side, not forge runtime):** the apps' goreleaser config publishes a
       Homebrew tap + Scoop manifests; install docs cover the mise `github` backend
