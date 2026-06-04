@@ -365,7 +365,19 @@ delegated to the package manager. Renamed `selfupdate` → `updatecheck` (it per
       `NewRootCmd` lost its `selfupdate.Option` param. 785 tests green. *(`--version` can't carry
       the check — fang/cobra short-circuit the flag before any hook, and heraut overloads
       `--version` on subcommands; the cached daily hint on normal commands is the mechanism.)*
-- [ ] Wire bifrost: gains the update-check hint + install-method-aware upgrade message for free.
+- [x] Wire bifrost: gains the update-check hint + install-method-aware upgrade message for free.
+      **Done** (bifrost `refactor(cmd): wire forge updatecheck hint and version injection`):
+      bifrost had **no version injection** at all (`fang.Execute` was called without a version,
+      and `.goreleaser.yml` ldflags lacked `-X main.Version`), so this added `var Version = "dev"`
+      in `cmd/bifrost/main.go`, threaded it through `cmd.NewRootCmd(version)` + `fang.WithVersion`,
+      and runs `updatecheck.Hinter{Repo:"adaouat/bifrost", Bin:"bifrost", Module, Current, CacheFile}`
+      in a new `PersistentPostRunE`. Gated on `version=="dev" || output != "human" ||
+      BIFROST_CHECK_UPDATE=="false"` (the extra `output` gate is bifrost-specific — heraut has no
+      output modes), 500ms timeout, cache under `UserCacheDir/bifrost/update-check.json`, errors
+      swallowed. ~25 `NewRootCmd()` test callers updated to `NewRootCmd("dev")`. 146 tests green
+      incl. `-tags integration`. **Open (app-side, flagged for user):** released binaries stay
+      silent until `.goreleaser.yml` ldflags gain `-X main.Version={{.Tag}}` (a CI/CD touch) — see
+      the M5.4 distribution task.
 - [ ] **Distribution (app-side, not forge runtime):** the apps' goreleaser config publishes a
       Homebrew tap + Scoop manifests; install docs cover the mise `github` backend
       (`mise use github:adaouat/<app>`) and a curl install script. forge stays a pure library.
