@@ -16,7 +16,12 @@ tooling, docs/CI templates) those apps share.
 
 ## Status
 
-Pre-implementation. The plan is written; no code yet.
+Shipped. The M0–M6 build plan is complete: forge is a published library (tagged, e.g. `v0.6.x`)
+that bifrost and heraut consume off the tag (no `replace`). Packages: `exec` (+ `exectest`),
+`exitcode`, `ui`, `config`, `updatecheck`. The public contract is pinned in
+[ADR-0007](docs/adr/0007-public-api-surface-and-stability.md); evolution continues per the
+extraction bar (ADR-0001) and the change-control rule (breaking change → new ADR + coordinated
+bump).
 
 - [ADR-0001](docs/adr/0001-shared-core-module.md) — why forge exists, the extraction bar,
   and what is in/out of scope.
