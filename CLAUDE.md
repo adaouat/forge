@@ -29,8 +29,9 @@ Forge carries **zero domain logic**. A thing is extracted only if it clears the 
 **identical** across both apps + **stable contract** + **≥2 real consumers**. This is YAGNI
 applied to the shared layer — *three similar lines beat a premature abstraction*.
 
-- **In:** `exec` (runner + mocks), `ui` (status/modes/spinners), `exitcode`, `config`
-  primitives (loader, path resolution, validation errors, merge helpers), `selfupdate`.
+- **In:** `exec` (runner + mocks), `ui` (status/modes/spinner/stepper), `exitcode`, `config`
+  primitives (loader, path resolution, validation errors), `updatecheck` (version check +
+  install-method-aware upgrade hint; no binary self-replacement — see ADR-0005).
 - **Out (false friends):** config *schemas* and *merge semantics* (bifrost is 3-level with
   servers; heraut is 2-level with content overrides), bifrost's hook runner, heraut's
   pipeline/generators/platforms/versioning. These stay in their apps.

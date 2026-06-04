@@ -8,3 +8,4 @@ ADRs document significant architectural choices: what was decided, why, and what
 | [0002](0002-exec-runner-working-directory.md) | `exec.Runner` gains a working-directory method | Accepted |
 | [0003](0003-shared-exit-code-vocabulary.md) | Shared exit-code vocabulary | Accepted |
 | [0004](0004-ui-spinner-task-runner.md) | `ui.Spinner` task runner | Accepted |
+| [0005](0005-updates-via-package-managers.md) | Updates via package managers, not binary self-replacement | Accepted |

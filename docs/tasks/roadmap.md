@@ -336,12 +336,30 @@ They stay in bifrost. Schemas, defaults/normalize, and merge trees stay in the a
       `-tags integration`. **M4 complete:** loader + resolver + `ValidationError` shared; both
       apps' schemas/merge/defaults stay domain.
 
-## M5 — `selfupdate`
+## M5 — `updatecheck` (package-manager-delegated upgrades, [ADR-0005](../adr/0005-updates-via-package-managers.md))
 
-- [ ] Generalize heraut `internal/selfupdate` over repo URL + asset naming pattern (today
-      they are compiled-in constants for a single repo).
-- [ ] Migrate heraut to the shared package.
-- [ ] Wire bifrost's `self-update` command onto it (bifrost gains the feature for free).
+**Scope (revised after exploration — user picked the package-manager route).** No binary
+self-replacement: heraut's hand-rolled updater (GitHub fetch + SHA-256 + atomic `os.Rename`)
+is bug-prone and the Go self-update lib landscape is thin (creativeprojects/go-selfupdate = 51
+modules incl. go-github + GitLab + Gitea SDKs; minio/selfupdate carries maintainer-trust risk;
+inconshreveable/go-update is zero-dep but 2016-frozen). The project already standardises on
+**mise** + **goreleaser**, which install/upgrade GitHub-release binaries with no custom code.
+So forge owns only the safe half (check + install-detection + hint); the upgrade itself is
+delegated to the package manager. Renamed `selfupdate` → `updatecheck` (it performs no update).
+
+- [ ] forge `updatecheck`: `CheckLatest(ctx, repo, current) (latest, newer, err)` (GET
+      `…/releases/latest` + semver compare; `net/http`+`encoding/json` only, no binary touch);
+      `DetectInstall()` + `InstallMethod.UpgradeCommand(bin)` from the running executable's real
+      path (Homebrew `/Cellar/`, mise `/mise/installs/`, Scoop `\scoop\`, `go install`
+      `$GOBIN`/`$GOPATH/bin`; generic fallback); a 24h-cached `Hint` printing
+      `"<app> X available — run: <cmd>"`, errors swallowed.
+- [ ] Migrate heraut: delete `internal/selfupdate` (the binary replacer); the daily hint comes
+      from forge's `updatecheck`; the `self-update` command becomes informational (prints the
+      detected upgrade command) or is dropped.
+- [ ] Wire bifrost: gains the update-check hint + install-method-aware upgrade message for free.
+- [ ] **Distribution (app-side, not forge runtime):** the apps' goreleaser config publishes a
+      Homebrew tap + Scoop manifests; install docs cover the mise `github` backend
+      (`mise use github:adaouat/<app>`) and a curl install script. forge stays a pure library.
 
 ## M6 — Finalize & cut v0.1.0
 
