@@ -11,3 +11,4 @@ ADRs document significant architectural choices: what was decided, why, and what
 | [0005](0005-updates-via-package-managers.md) | Updates via package managers, not binary self-replacement | Accepted |
 | [0006](0006-shared-ci-reusable-workflow.md) | Shared lint/test CI via a reusable workflow in forge | Accepted |
 | [0007](0007-public-api-surface-and-stability.md) | Public API surface and stability contract | Accepted |
+| [0008](0008-ui-theme-palette.md) | Family UI theme: shared palette, per-tool accent | Accepted |

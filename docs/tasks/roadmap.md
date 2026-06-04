@@ -483,6 +483,23 @@ original "cut v0.1.0" plan — "tag forge" is done. The remaining finalize work:
 consumed by bifrost + heraut off the tag (no `replace`); its public contract is pinned
 (ADR-0007) and the Tier-2 sync is documented.
 
+## M7 — Family UI theme *(post-roadmap)*
+
+*Surfaced after M6: a cohesive `fang` theme for the family (in the spirit of glab's), shared via
+forge `ui`. Accents chosen: bifrost **Aurora** (teal/violet), heraut **Heraldic** (gold/azure).*
+
+- [ ] forge **`ui.Palette`** — the shared structural colors (text, muted, dim, argument,
+      success/warn/error), light/dark adaptive, semantic colors matching the existing status
+      helpers. forge stays **framework-agnostic** (no `fang`/`cobra` dep): apps assemble their
+      `fang.ColorScheme` from the palette + a per-tool accent. [ADR-0008](../adr/0008-ui-theme-palette.md).
+- [ ] Wire **bifrost** (Aurora: teal accent / violet secondary) + **heraut** (Heraldic: gold /
+      azure): a `fang.WithColorSchemeFunc` built from `ui.Palette` + the app's accent.
+- [ ] *(refinement)* align `ui` status/spinner colors to the palette so status output matches the
+      theme end-to-end.
+
+Also queued (not started): the **reusable `release.yml`** extraction (forge-hosted `workflow_call`,
+now that bifrost + heraut have identical release flows) — its own task + ADR when picked up.
+
 ---
 
 ## Explicitly NOT on this roadmap
