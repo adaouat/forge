@@ -425,20 +425,21 @@ formula) — no archive needed.
       goreleaser was fragile — incorrect; heraut already had the explicit name_template.)*
 - [ ] **Homebrew tap + `brews:` blocks** (deferred — tap repo + per-app formula; validate the
       generated formula with `goreleaser release --snapshot` since raw-binary formulae are fussier).
-- [ ] **Shared lint/CI reusable workflow** *(separate track, not release-related — surfaced
+- [x] **Shared lint/CI reusable workflow** *(separate track, not release-related — surfaced
       during M5.4)*. A `workflow_call` workflow **hosted in forge** ([ADR-0006](../adr/0006-shared-ci-reusable-workflow.md)),
       called by bifrost + heraut **and forge itself** (3 consumers). Scope: **lint + test only**
       (golangci-lint, govulncheck, `go test`, coverage gate) — *not* build/release/Docker, which
-      stay per-app. Caller refs pin a forge SHA (per the SHA-pinning rule; forge is untagged
-      until M6). **Partial (forge-side done):** ADR-0006 + `forge/.github/workflows/go-ci.yml`
-      (reusable lint + test, single `coverage-threshold` input defaulting to 85) landed, and
-      forge's `ci.yml` now dogfoods it via `uses: ./.github/workflows/go-ci.yml` (build stays
-      inline). Scope narrowed in implementation: the **only** cross-repo difference is the
-      coverage threshold (bifrost 20) — CI runs no integration-tagged tests anywhere (they sit
-      behind a build tag, excluded by plain `go test ./...`), so no `integration` input is
-      needed. **Blocked on publish:** the bifrost/heraut callers
-      (`uses: adaouat/forge/.github/workflows/go-ci.yml@<sha>`) can't resolve until
-      `adaouat/forge` is a public GitHub repo — wired in the change that publishes forge (M6-adjacent).
+      stay per-app. **Done:** ADR-0006 + `forge/.github/workflows/go-ci.yml` (reusable lint +
+      test, single `coverage-threshold` input defaulting to 85); forge's own `ci.yml` dogfoods
+      it via `uses: ./.github/workflows/go-ci.yml`, and bifrost + heraut now call
+      `adaouat/forge/.github/workflows/go-ci.yml@79edf69` (**v0.6.0**, SHA-pinned per the rule) —
+      bifrost passes `coverage-threshold: 20`, heraut uses the default 85; both keep their build
+      jobs inline. Scope narrowed in implementation: the **only** cross-repo difference is the
+      coverage threshold — CI runs no integration-tagged tests anywhere (they sit behind a build
+      tag, excluded by plain `go test ./...`), so no `integration` input was needed. The three
+      caller workflows pass `actionlint`. *(Note: forge is already public **and released at
+      v0.6.0** via cocogitto — overtaking the M6 "untagged until v0.1.0" assumption; M6 below
+      needs reconciling.)*
 
 ## M6 — Finalize & cut v0.1.0
 
