@@ -411,8 +411,12 @@ formula) — no archive needed.
 - [ ] **Homebrew tap + `brews:` blocks** (deferred — tap repo + per-app formula; validate the
       generated formula with `goreleaser release --snapshot` since raw-binary formulae are fussier).
 - [ ] **Shared lint/CI reusable workflow** *(separate track, not release-related — surfaced
-      during M5.4)*. A `workflow_call` workflow (likely hosted in forge, called by all three
-      repos) to DRY the lint/test CI. Design deferred; tracked here so it is not forgotten.
+      during M5.4)*. A `workflow_call` workflow **hosted in forge** (decision made), called by
+      bifrost + heraut **and forge itself** (3 consumers). Scope: **lint + test only**
+      (golangci-lint, govulncheck, `go test`, coverage gate) — *not* build/release/Docker, which
+      stay per-app; the bifrost `-tags integration` difference is a workflow `input`. Caller
+      refs pin a forge tag/SHA (per the SHA-pinning rule). Needs a short ADR first (this makes
+      the apps' CI a live dependency on forge's repo+ref — a new coupling vs synced scaffolding).
 
 ## M6 — Finalize & cut v0.1.0
 
