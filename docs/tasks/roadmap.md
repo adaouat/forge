@@ -423,8 +423,18 @@ formula) — no archive needed.
       (b) bifrost now gitignores `dist/` (`chore`); (c) heraut README cleared of the five stale
       `self-update` references left by M5.2 (`docs`). *(An earlier note here claimed heraut's
       goreleaser was fragile — incorrect; heraut already had the explicit name_template.)*
-- [ ] **Homebrew tap + `brews:` blocks** (deferred — tap repo + per-app formula; validate the
-      generated formula with `goreleaser release --snapshot` since raw-binary formulae are fussier).
+- [x] **Homebrew tap + cask blocks.** **Done:** a shared `adaouat/homebrew-tap` repo (README +
+      MIT license + `Casks/`); both apps wired with `homebrew_casks` (not the deprecated `brews` —
+      Homebrew prefers casks for pre-built binaries) and `builds.binary` made plain `<app>` so the
+      cask installs under that name (asset name kept versioned via `name_template`). bifrost is the
+      clean case (goreleaser-owned release → default URL, goreleaser pushes the cask); **heraut**
+      (build-only, `release: disable`) needed an explicit `url.template` + a post-release push step
+      (skips gracefully without the token) + an `artifacts.json`-based collect rewrite (since plain
+      `builds.binary` leaves build outputs unversioned on disk). All snapshot-validated; forge's
+      distribution guide + sample updated to the cask recipe. **Pending (user, GitHub-side):**
+      create the tap repo on GitHub (public) + push, the fine-grained `HOMEBREW_TAP_TOKEN` PAT/org
+      secret, then the first release publishes each cask. ⚠️ bifrost's release *fails* without the
+      token (goreleaser-owned push); heraut's skips gracefully.
 - [x] **Shared lint/CI reusable workflow** *(separate track, not release-related — surfaced
       during M5.4)*. A `workflow_call` workflow **hosted in forge** ([ADR-0006](../adr/0006-shared-ci-reusable-workflow.md)),
       called by bifrost + heraut **and forge itself** (3 consumers). Scope: **lint + test only**
