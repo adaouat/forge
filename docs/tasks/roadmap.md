@@ -405,9 +405,23 @@ formula) — no archive needed.
       `checksum:`); the sample shows `release: disable: false` (self-release) as the active
       choice with the heraut-owned variant in a leading comment. Created `docs/guides/` + its
       index, registered in `docs/README.md`.
-- [ ] **Converge bifrost's `.goreleaser.yml`** to the canonical model (versioned binary name,
+- [x] **Converge bifrost's `.goreleaser.yml`** to the canonical model (versioned binary name,
       `formats: [binary]` dropping tar/zip). Keep `release` enabled for now — `release: disable`
       waits until heraut-driven release of bifrost is wired. Add bifrost install docs (mise + curl).
+      **Done** (bifrost `ci(release): converge to raw-binary asset model` + `docs(readme): add
+      install instructions`): dropped the tar.gz/zip archives for `formats: [binary]` + versioned
+      `builds.binary`; release stays goreleaser-owned. Created bifrost's README (was empty) with
+      go install / mise / curl sections mirroring heraut. Verified via `goreleaser release
+      --snapshot`. **Finding — explicit `name_template` required:** `format: binary`'s default
+      name_template keys off `.Binary`, so a versioned `builds.binary` doubled the
+      version/os/arch (`bifrost_<v>_<os>_<arch>_<v>_<os>_<arch>`) on goreleaser **2.15.4**;
+      heraut (goreleaser **2.16.0**) doesn't double. bifrost's config now sets an explicit
+      `name_template` using `.ProjectName` → single names on **both** versions (and matches the
+      forge sample, which already had it). **Surfaced for follow-up (not fixed here):** (a) the
+      family's goreleaser pins are skewed (bifrost 2.15.4 vs heraut 2.16.0; both CIs float
+      `~> v2` so released assets are fine); (b) heraut's `.goreleaser.yml` omits the explicit
+      name_template, so it is fragile on goreleaser < 2.16 — should adopt the same template;
+      (c) bifrost does not gitignore `dist/` (heraut does).
 - [ ] **Homebrew tap + `brews:` blocks** (deferred — tap repo + per-app formula; validate the
       generated formula with `goreleaser release --snapshot` since raw-binary formulae are fussier).
 - [ ] **Shared lint/CI reusable workflow** *(separate track, not release-related — surfaced
