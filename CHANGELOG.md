@@ -1,20 +1,28 @@
 # Changelog
 
+## [0.6.2](//compare/v0.6.1..v0.6.2) - 2026-06-04
+
+### 📚 Documentation
+
+- *(guides)* Update distribution guide for Homebrew casks - ([7bc8d2b](//commit/7bc8d2b0cd73f2452e68eed842f7b591d64cd87e))
+
+- *(roadmap)* Mark Homebrew tap + casks done - ([9ac0ad5](//commit/9ac0ad5d401e79adb369f30f0ffaa3006bc180df))
+
 ## [0.6.1](//compare/v0.6.0..v0.6.1) - 2026-06-04
 
 ### 💼 Other
 
-- Bump Go to 1.26.4 for stdlib security fixes - ([6230dc8](//commit/6230dc820cc6acd0cb74b03cdb31a333d85f9bb3))
+- Bump Go to 1.26.4 for stdlib security fixes - ([6230dc8](//commit/6230dc820cc6acd0cb74b03cdb31a333d85f9bb3)) by @bchatard
 
 
 ### 📚 Documentation
 
-- *(roadmap)* Mark shared lint/CI workflow done - ([539959e](//commit/539959e20dc393b02192069959b809b8e93a9405))
+- *(roadmap)* Mark shared lint/CI workflow done - ([539959e](//commit/539959e20dc393b02192069959b809b8e93a9405)) by @bchatard
 
 
 ### ⚙️ Miscellaneous Tasks
 
-- Make go-ci coverage-threshold a required input - ([1bde7d9](//commit/1bde7d93158afe08bf587118220c5912d9e69d87))
+- Make go-ci coverage-threshold a required input - ([1bde7d9](//commit/1bde7d93158afe08bf587118220c5912d9e69d87)) by @bchatard
 
 ## [0.6.0](//compare/v0.5.0..v0.6.0) - 2026-06-04
 
