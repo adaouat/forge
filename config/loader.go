@@ -14,18 +14,17 @@ import (
 )
 
 // Decode strictly parses YAML from r into target (a pointer to a struct),
-// rejecting unknown fields. A yaml.TypeError is flattened into a single error
-// joining each field-level message; other errors are returned as-is. Callers
-// add their own context prefix.
+// rejecting unknown fields. Errors are prefixed "config:"; a yaml.TypeError is
+// flattened into a single message joining each field-level error.
 func Decode(r io.Reader, target any) error {
 	dec := yaml.NewDecoder(r)
 	dec.KnownFields(true)
 	if err := dec.Decode(target); err != nil {
 		var typeErr *yaml.TypeError
 		if errors.As(err, &typeErr) {
-			return errors.New(strings.Join(typeErr.Errors, "; "))
+			return fmt.Errorf("config: %s", strings.Join(typeErr.Errors, "; "))
 		}
-		return err
+		return fmt.Errorf("config: %w", err)
 	}
 	return nil
 }

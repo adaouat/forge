@@ -29,6 +29,7 @@ func TestDecode_UnknownFieldRejected(t *testing.T) {
 	var s sample
 	err := config.Decode(strings.NewReader("name: forge\nbogus: true\n"), &s)
 	require.Error(t, err)
+	assert.True(t, strings.HasPrefix(err.Error(), "config:"), "errors are prefixed: %q", err.Error())
 	assert.Contains(t, err.Error(), "bogus", "the offending field is named")
 }
 

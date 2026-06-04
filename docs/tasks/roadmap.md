@@ -306,9 +306,10 @@ They stay in bifrost. Schemas, defaults/normalize, and merge trees stay in the a
 
 - [x] Strict YAML loader (`KnownFields(true)`, typed-error formatting) parameterized over a
       target struct. **Done:** `Decode(r, target any)` (strict decode; `yaml.TypeError`
-      flattened to a joined message; no app prefix) + `Load(path, target any)` (open + Decode).
+      flattened to a joined message) + `Load(path, target any)` (open + Decode).
       Idiomatic non-generic form (`target any`) — apps keep their `*Config` wrappers + defaults.
-      6 tests; `yaml.v3` v3.0.1 pinned direct.
+      forge owns the error wording so both apps emit identical text: `Decode` prefixes `config:`,
+      `Load` prefixes `open config %q:`. 7 tests; `yaml.v3` v3.0.1 pinned direct.
 - [x] **Path resolution** parameterized over app name: `--config` flag → `<APP>_FILE` env →
       `.config/<app>.yml` → `.<app>.yml`, with a `Source` enum, `Label`, and `InitDest`.
       `Resolver{App}`; heraut has the reference impl, bifrost already matches it. **Done:**
