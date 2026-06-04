@@ -320,10 +320,20 @@ They stay in bifrost. Schemas, defaults/normalize, and merge trees stay in the a
       heraut; bifrost adopts over `[]string`). **Done:** ported verbatim from heraut's
       `error.go` (`Path: Message` + optional `\n  hint:`; aggregate joins with `\n`). 4 tests;
       config at 19.
-- [ ] Migrate heraut `internal/config` loader/path/error to forge facades; keep schema,
-      validator, normalize, `MergeContentDriver`.
-- [ ] Migrate bifrost `internal/config` loader + `cmdutil` path resolution to forge; adopt
-      `ValidationError`. Keep schema, 3-level merge, defaults, merge helpers.
+- [x] Migrate heraut `internal/config` loader/path/error to forge facades; keep schema,
+      validator, normalize, `MergeContentDriver`. **Done** (heraut `c4dfca5`): `LoadFromReader`
+      uses `forge.Decode` (heraut keeps its `config:` prefix + `normalize`); `ResolvePath*`/
+      `InitDest` wrap `Resolver{App:"heraut"}` — `PathSource` + constants stay (values match
+      forge's `Label`, so `check.go`/`path_test` untouched); `ValidationError`/`ValidationErrors`
+      become type aliases. 822 tests green.
+- [x] Migrate bifrost `internal/config` loader + `cmdutil` path resolution to forge; adopt
+      `ValidationError`. Keep schema, 3-level merge, defaults, merge helpers. **Done** (bifrost
+      `38feebb` + `58bc083`): `Parse` uses `forge.Decode`; `ValidateServerRefs`/`Validate` return
+      `forge.ValidationErrors` (7 call sites build the message via `errs.Error()`); `cmdutil`
+      path resolution delegates to `Resolver{App:"bifrost"}` (the `StatFile` seam stays for
+      config-init's existence check; path tests moved to `t.Chdir`). 146 tests green incl.
+      `-tags integration`. **M4 complete:** loader + resolver + `ValidationError` shared; both
+      apps' schemas/merge/defaults stay domain.
 
 ## M5 — `selfupdate`
 
