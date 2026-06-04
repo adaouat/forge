@@ -413,15 +413,16 @@ formula) — no archive needed.
       `builds.binary`; release stays goreleaser-owned. Created bifrost's README (was empty) with
       go install / mise / curl sections mirroring heraut. Verified via `goreleaser release
       --snapshot`. **Finding — explicit `name_template` required:** `format: binary`'s default
-      name_template keys off `.Binary`, so a versioned `builds.binary` doubled the
-      version/os/arch (`bifrost_<v>_<os>_<arch>_<v>_<os>_<arch>`) on goreleaser **2.15.4**;
-      heraut (goreleaser **2.16.0**) doesn't double. bifrost's config now sets an explicit
-      `name_template` using `.ProjectName` → single names on **both** versions (and matches the
-      forge sample, which already had it). **Surfaced for follow-up (not fixed here):** (a) the
-      family's goreleaser pins are skewed (bifrost 2.15.4 vs heraut 2.16.0; both CIs float
-      `~> v2` so released assets are fine); (b) heraut's `.goreleaser.yml` omits the explicit
-      name_template, so it is fragile on goreleaser < 2.16 — should adopt the same template;
-      (c) bifrost does not gitignore `dist/` (heraut does).
+      name_template keys off `.Binary`, so a versioned `builds.binary` doubles the
+      version/os/arch (`bifrost_<v>_<os>_<arch>_<v>_<os>_<arch>`) on goreleaser **< 2.16**. The
+      fix is an explicit `name_template` using `.ProjectName` — which both the forge sample **and
+      heraut** already carry (a first pass mistakenly dropped it for bifrost; the snapshot caught
+      the doubling and it was restored). bifrost now matches heraut + the sample. **Follow-ups
+      (all fixed this session):** (a) goreleaser pin skew — bifrost bumped `2.15`→`2.16` to match
+      heraut (`build(mise)`); both CIs float `~> v2`, so released assets were never affected;
+      (b) bifrost now gitignores `dist/` (`chore`); (c) heraut README cleared of the five stale
+      `self-update` references left by M5.2 (`docs`). *(An earlier note here claimed heraut's
+      goreleaser was fragile — incorrect; heraut already had the explicit name_template.)*
 - [ ] **Homebrew tap + `brews:` blocks** (deferred — tap repo + per-app formula; validate the
       generated formula with `goreleaser release --snapshot` since raw-binary formulae are fussier).
 - [ ] **Shared lint/CI reusable workflow** *(separate track, not release-related — surfaced
