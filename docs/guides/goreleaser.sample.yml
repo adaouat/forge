@@ -1,7 +1,7 @@
 # Annotated GoReleaser template for the adaouat CLI family.
 # Copy into <app>/.goreleaser.yml and replace every <app> with the binary name.
 # Model: raw versioned binaries (no archive), version injected via ldflags.
-# Homebrew `brews:` block + release-ownership notes: docs/guides/distribution.md.
+# Release-ownership + Homebrew (build-only) variants: docs/guides/distribution.md.
 version: 2
 
 project_name: <app>
@@ -13,8 +13,9 @@ before:
 builds:
   - id: <app>
     main: ./cmd/<app>/
-    # Versioned binary name so the checksum covers the executable directly.
-    binary: "<app>_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    # Plain name so the Homebrew cask installs the binary as `<app>`; the version
+    # lives in the asset name via archives.name_template below.
+    binary: <app>
     env:
       - CGO_ENABLED=0
     goos: [linux, darwin, windows]
@@ -27,7 +28,8 @@ builds:
       - -s -w -X main.Version={{ .Tag }}
 
 # Raw binaries, no tar/zip wrapper (heraut ADR-0013). mise and Homebrew consume
-# these directly — no extraction step, no zip-slip surface.
+# these directly — no extraction step, no zip-slip surface. The version lives in the
+# asset name (builds.binary is plain).
 archives:
   - id: default
     formats:
@@ -42,3 +44,16 @@ checksum:
 # is build-only and `heraut release --version` creates the release.
 release:
   disable: false
+
+# Homebrew cask pushed to the shared tap on release (homebrew_casks, not the deprecated
+# `brews`). This is the goreleaser-owned-release form: the default download URL works and
+# goreleaser pushes the cask. A build-only app (release.disable: true) additionally needs
+# an explicit url.template and a post-release push step — see distribution.md "Homebrew".
+homebrew_casks:
+  - repository:
+      owner: adaouat
+      name: homebrew-tap
+      token: "{{ .Env.HOMEBREW_TAP_TOKEN }}"
+    directory: Casks
+    homepage: "https://github.com/adaouat/<app>"
+    description: "<one-line description>"

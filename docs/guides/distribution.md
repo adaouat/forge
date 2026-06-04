@@ -14,8 +14,10 @@ live dependency.
 - **GoReleaser v2**, `builds.main: ./cmd/<app>/`.
 - **Version injection** via `ldflags: -s -w -X main.Version={{ .Tag }}`. Mandatory: the
   `updatecheck` hint is silent on a `dev` version, so released binaries must carry their tag.
-- **Raw versioned binaries** — `archives.formats: [binary]`, no tar/zip wrapper. Binary name
-  `<app>_{{ .Version }}_{{ .Os }}_{{ .Arch }}`; checksums cover the binaries directly.
+- **Raw versioned binaries** — `archives.formats: [binary]`, no tar/zip wrapper. The asset name
+  is `<app>_{{ .Version }}_{{ .Os }}_{{ .Arch }}` (from `archives.name_template`); `builds.binary`
+  is **plain `<app>`** so the Homebrew cask installs the binary under that name. Checksums cover
+  the binaries directly.
 
 ### Why raw binaries
 
@@ -56,25 +58,27 @@ All channels consume the same raw binaries.
   curl -L -o <app> https://github.com/adaouat/<app>/releases/latest/download/<app>_<version>_<os>_<arch>
   chmod +x <app> && sudo mv <app> /usr/local/bin/
   ```
-- **Homebrew** *(tap not yet created)*: a shared `adaouat/homebrew-tap` repo; each app's
-  `brews:` block targets it. goreleaser generates a per-platform formula from the raw binaries
-  (`on_macos` / `on_arm` / `on_intel`, `bin.install … => "<app>"`). Validate the generated
-  formula with `goreleaser release --snapshot --clean` before the first real tag — raw-binary
-  formulae are fussier than tarball ones. Skeleton to add to `.goreleaser.yml` once the tap
-  exists:
-  ```yaml
-  brews:
-    - repository:
-        owner: adaouat
-        name: homebrew-tap
-      directory: Formula
-      homepage: "https://github.com/adaouat/<app>"
-      description: "<one-line description>"
-      # Finalize install/test stanzas against the --snapshot formula output.
-  ```
+- **Homebrew** (`brew install --cask adaouat/tap/<app>`): a shared `adaouat/homebrew-tap` repo;
+  each app publishes a **cask** via `homebrew_casks` (the `brews` *formula* form is deprecated for
+  pre-built binaries). goreleaser generates a per-platform cask (`on_macos` / `on_arm`, `binary
+  …, target: "<app>"`). **Plain `builds.binary` is what makes the cask install as `<app>`** — a
+  versioned `builds.binary` makes the cask install under the long name. Always validate the
+  generated cask with `goreleaser release --snapshot --clean` before the first real tag. Two
+  cases, by release ownership:
+  - **goreleaser-owned release** (bifrost): the default download URL works. The block is just
+    `repository` + `directory: Casks` + `homepage` + `description` + `token` (see the sample),
+    and goreleaser pushes the cask during the release.
+  - **build-only release** (heraut, `release: disable: true`): goreleaser can't derive the URL, so
+    set an explicit `url.template` pointing at the release assets. goreleaser only *generates* the
+    cask (it runs `--skip=publish`), so a **post-release workflow step pushes it** to the tap after
+    the assets are uploaded (skip it gracefully when the token is unset). Plain `builds.binary`
+    also means build outputs aren't versioned on disk — map them to the versioned asset names via
+    goreleaser's `artifacts.json` in the collect step.
 
-## Not shared (yet)
+## Status
 
-- **Homebrew tap repo** — planned (`adaouat/homebrew-tap`), not yet created.
-- **Lint/CI reusable workflow** — wanted, tracked on the roadmap as a separate track; it is
-  CI plumbing, not part of the release model.
+- **Homebrew tap** — `adaouat/homebrew-tap` (one cask per tool, generated on release).
+- **Lint/test CI** — shared via forge's reusable `go-ci.yml`
+  ([ADR-0006](../adr/0006-shared-ci-reusable-workflow.md)).
+- **Release workflows** — stay per-app (too divergent: heraut self-release + Docker/GHCR,
+  bifrost goreleaser-owned).
