@@ -1,0 +1,44 @@
+# Annotated GoReleaser template for the adaouat CLI family.
+# Copy into <app>/.goreleaser.yml and replace every <app> with the binary name.
+# Model: raw versioned binaries (no archive), version injected via ldflags.
+# Homebrew `brews:` block + release-ownership notes: docs/guides/distribution.md.
+version: 2
+
+project_name: <app>
+
+before:
+  hooks:
+    - go mod tidy
+
+builds:
+  - id: <app>
+    main: ./cmd/<app>/
+    # Versioned binary name so the checksum covers the executable directly.
+    binary: "<app>_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    env:
+      - CGO_ENABLED=0
+    goos: [linux, darwin, windows]
+    goarch: [amd64, arm64]
+    ignore:
+      - goos: windows
+        goarch: arm64
+    ldflags:
+      # Mandatory: the updatecheck hint is silent on a "dev" version.
+      - -s -w -X main.Version={{ .Tag }}
+
+# Raw binaries, no tar/zip wrapper (heraut ADR-0013). mise and Homebrew consume
+# these directly — no extraction step, no zip-slip surface.
+archives:
+  - id: default
+    formats:
+      - binary
+    name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+
+checksum:
+  name_template: "checksums.txt"
+
+# Release ownership (see distribution.md). Self-release = this app cuts the GitHub
+# Release; the canonical end state is heraut-owned — set `disable: true` so goreleaser
+# is build-only and `heraut release --version` creates the release.
+release:
+  disable: false

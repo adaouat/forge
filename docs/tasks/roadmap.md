@@ -378,9 +378,41 @@ delegated to the package manager. Renamed `selfupdate` → `updatecheck` (it per
       incl. `-tags integration`. **Open (app-side, flagged for user):** released binaries stay
       silent until `.goreleaser.yml` ldflags gain `-X main.Version={{.Tag}}` (a CI/CD touch) — see
       the M5.4 distribution task.
-- [ ] **Distribution (app-side, not forge runtime):** the apps' goreleaser config publishes a
-      Homebrew tap + Scoop manifests; install docs cover the mise `github` backend
-      (`mise use github:adaouat/<app>`) and a curl install script. forge stays a pure library.
+**Distribution** *(split after exploration — see the decisions below)*. The two apps'
+goreleaser configs had diverged (bifrost: archives + goreleaser-owned release; heraut: raw
+versioned binaries + `release: disable`, heraut owns the release per its ADR-0013/0018). The
+user's call: **heraut is the family's release tool** (it will release bifrost and future
+tools), so **heraut's raw-binary model is canonical** and bifrost converges to it. OSS
+GoReleaser has no remote-include (`includes:` is Pro-only), so the shared config is a
+**copy-and-adapt template documented in forge**, not a live dependency. Release *workflows*
+stay per-app (heraut = self-release + Docker/GHCR, bifrost = self-release only — too divergent
+to unify now). The Homebrew tap goes in a **dedicated `adaouat/homebrew-tap` repo** (details
+deferred — user's call). **Raw binaries are retained:** ADR-0013's original driver (avoiding
+tar/zip extraction + zip-slip in the self-updater) is now historical (self-updater removed in
+M5.2/ADR-0005), but raw binaries keep the curl install a one-liner and are consumed directly
+by both mise (`github` backend) and Homebrew (goreleaser generates a per-platform raw-binary
+formula) — no archive needed.
+
+- [x] **Goreleaser convention (forge docs).** A `docs/guides/` distribution guide + an
+      annotated sample `.goreleaser.yml` pinning the canonical raw-binary model (version
+      ldflags, `formats: [binary]`, checksums, mise/curl/Homebrew channels, release-ownership
+      options). forge stays a pure library — this is a template apps copy, not code. **Done:**
+      `docs/guides/distribution.md` (model, why-raw-binaries with the now-historical ADR-0013
+      self-update rationale, release ownership, mise/curl/Homebrew channels, what-isn't-shared)
+      + `docs/guides/goreleaser.sample.yml` (annotated `<app>` template, validates clean via
+      `goreleaser check`). The Homebrew `brews:` skeleton lives in the guide as a fenced block
+      (yamlfmt re-indents trailing comments in the `.yml`, which misattached them under
+      `checksum:`); the sample shows `release: disable: false` (self-release) as the active
+      choice with the heraut-owned variant in a leading comment. Created `docs/guides/` + its
+      index, registered in `docs/README.md`.
+- [ ] **Converge bifrost's `.goreleaser.yml`** to the canonical model (versioned binary name,
+      `formats: [binary]` dropping tar/zip). Keep `release` enabled for now — `release: disable`
+      waits until heraut-driven release of bifrost is wired. Add bifrost install docs (mise + curl).
+- [ ] **Homebrew tap + `brews:` blocks** (deferred — tap repo + per-app formula; validate the
+      generated formula with `goreleaser release --snapshot` since raw-binary formulae are fussier).
+- [ ] **Shared lint/CI reusable workflow** *(separate track, not release-related — surfaced
+      during M5.4)*. A `workflow_call` workflow (likely hosted in forge, called by all three
+      repos) to DRY the lint/test CI. Design deferred; tracked here so it is not forgotten.
 
 ## M6 — Finalize & cut v0.1.0
 
