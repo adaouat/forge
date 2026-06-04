@@ -452,10 +452,19 @@ formula) — no archive needed.
       v0.6.0** via cocogitto — overtaking the M6 "untagged until v0.1.0" assumption; M6 below
       needs reconciling.)*
 
-## M6 — Finalize & cut v0.1.0
+## M6 — Finalize (depend on the published forge)
 
-- [ ] Drop all `replace` directives; tag `forge` `v0.1.0`.
-- [ ] Bump bifrost and heraut to depend on the tagged version; `go mod tidy` both.
+*Reconciled: forge is already public and released via cocogitto (now **v0.6.2**), overtaking the
+original "cut v0.1.0" plan — "tag forge" is done. The remaining finalize work:*
+
+- [x] **Depend on the published forge.** Drop the apps' `replace github.com/adaouat/forge =>
+      ../forge`, set the `github.com/adaouat/forge` require to the published tag (**v0.6.2**),
+      `go mod tidy` both, and verify build + tests stay green. (forge itself has no replace.)
+      **Done:** both apps now require `forge v0.6.2` with no replace. Note: `go get @v0.6.2` failed
+      because dropping the replace left an unresolvable `v0.0.0` in the graph, so used
+      `go mod edit -dropreplace` + `-require=…@v0.6.2` + `go mod tidy` instead. bifrost build
+      (incl. `-tags integration`) + heraut build + both full test suites green; `go mod tidy -diff`
+      clean. The `replace`-directive era (since M1.3) is over — forge is a normally-versioned dep.
 - [ ] Per-package contract ADRs in `docs/adr/` (one per Tier-1 package whose interface is
       now load-bearing across two repos).
 - [ ] Document the Tier-2 sync workflow (how an app refreshes its `.claude/rules` /
