@@ -6,3 +6,4 @@ follows, copied and adapted rather than imported (forge is a library).
 | Guide | Covers |
 |---|---|
 | [`distribution.md`](distribution.md) | Build / publish / install model — goreleaser raw-binary format, release ownership, mise / curl / Homebrew channels. Template: [`goreleaser.sample.yml`](goreleaser.sample.yml). |
+| [`tier2-sync.md`](tier2-sync.md) | How an app refreshes its `.claude/rules` + `.config` from forge's canonical `docs/rules` + `.config`. |

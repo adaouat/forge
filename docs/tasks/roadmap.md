@@ -465,10 +465,23 @@ original "cut v0.1.0" plan — "tag forge" is done. The remaining finalize work:
       `go mod edit -dropreplace` + `-require=…@v0.6.2` + `go mod tidy` instead. bifrost build
       (incl. `-tags integration`) + heraut build + both full test suites green; `go mod tidy -diff`
       clean. The `replace`-directive era (since M1.3) is over — forge is a normally-versioned dep.
-- [ ] Per-package contract ADRs in `docs/adr/` (one per Tier-1 package whose interface is
-      now load-bearing across two repos).
-- [ ] Document the Tier-2 sync workflow (how an app refreshes its `.claude/rules` /
-      `.config` from forge's canonical `docs/rules` / `.config`) in `docs/guides/`.
+- [x] Per-package contract ADRs in `docs/adr/` (one per Tier-1 package whose interface is
+      now load-bearing across two repos). **Done as a consolidated ADR** —
+      [ADR-0007](../adr/0007-public-api-surface-and-stability.md) enumerates every Tier-1
+      package's load-bearing exported surface + its governing ADR (0002 exec, 0003 exitcode,
+      0004 ui, 0005 updatecheck; `config`'s contract fixed in 0007 itself) + the stability
+      commitment (breaking change → new ADR + coordinated bump). Chose one ADR + references over
+      six near-duplicates of 0002–0005, per forge's YAGNI ethos.
+- [x] Document the Tier-2 sync workflow (how an app refreshes its `.claude/rules` /
+      `.config` from forge's canonical `docs/rules` / `.config`) in `docs/guides/`. **Done:**
+      `docs/guides/tier2-sync.md` — what forge canonicalizes (rules + `.config` baseline) vs
+      app-owned, the deliberate diff-and-apply process (sibling `diff -u`, minding the
+      `agent.md`↔`claude.md` rename), and the direction (forge upstream; promote-then-sync) plus
+      cadence. Registered in the guides index.
+
+**M6 complete — and with it the M0–M6 roadmap.** forge is a published library (`v0.6.2`)
+consumed by bifrost + heraut off the tag (no `replace`); its public contract is pinned
+(ADR-0007) and the Tier-2 sync is documented.
 
 ---
 
