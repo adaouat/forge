@@ -9,3 +9,4 @@ ADRs document significant architectural choices: what was decided, why, and what
 | [0003](0003-shared-exit-code-vocabulary.md) | Shared exit-code vocabulary | Accepted |
 | [0004](0004-ui-spinner-task-runner.md) | `ui.Spinner` task runner | Accepted |
 | [0005](0005-updates-via-package-managers.md) | Updates via package managers, not binary self-replacement | Accepted |
+| [0006](0006-shared-ci-reusable-workflow.md) | Shared lint/test CI via a reusable workflow in forge | Accepted |
