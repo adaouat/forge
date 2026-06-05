@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.7.2](https://github.com/adaouat/forge/compare/v0.7.1..v0.7.2) - 2026-06-05
+
+### 📚 Documentation
+
+- *(adr)* Add 0009 release-setup composite action - ([2a189cc](https://github.com/adaouat/forge/commit/2a189cc6791f45434854009cd5a235bac7629f9f)) by @bchatard
+
+
+### ⚙️ Miscellaneous Tasks
+
+- Extract release-setup composite action; forge uses it - ([c60467d](https://github.com/adaouat/forge/commit/c60467d2881bad22e7c80c623d7e540350231776)) by @bchatard
+
 ## [0.7.1](https://github.com/adaouat/forge/compare/v0.7.0..v0.7.1) - 2026-06-05
 
 ### 📚 Documentation
