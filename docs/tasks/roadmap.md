@@ -531,10 +531,15 @@ owns the CLI framework layer (fang, huh, theme), cutting version drift (cobra is
       the Tier-2 baseline. *(Independent of the rest — fixes the live drift now.)* **Done:** bifrost
       `build(deps): align cobra to 1.10.2` (+ pflag 1.0.9), build + suite green. Both apps now on
       cobra 1.10.2; the Tier-2-baseline note rides along when forge gains the dep via fang.
-- [ ] **forge `cli.Run`** — wrap `fang.Execute` (version + theme); forge gains fang. Apps drop their
-      direct fang import. TDD.
-- [ ] **forge theme** — `ui.ColorScheme` (default accent + per-tool override); the fang mapping
-      moves into forge. *(Default accent to be refined when this task starts.)*
+- [x] **forge `cli.Run`** — wrap `fang.Execute` (version + theme); forge gains fang. Apps drop their
+      direct fang import. TDD. **Done (with the theme, below — they're coupled):**
+      `cli.Run(ctx, cmd, version, accent)` wraps `fang.Execute`; forge now requires fang 2.0.1 +
+      cobra 1.10.2. Apps will drop fang when they adopt it (after the M8 release). Smoke-tested.
+- [x] **forge theme** — `ui.ColorScheme` (default accent + per-tool override); the fang mapping
+      moves into forge. **Done:** `ui.Accent` + `ui.ColorScheme(ld, accent)` — the slot mapping
+      (palette → fang.ColorScheme) lives once in forge, TDD'd. *Default accent still deferred* —
+      `accent` is a required arg for now; the forge-brand default + a zero-value fallback land when
+      you pick the color (you mentioned gold/red).
 - [ ] **forge owns huh** — move the huh dep + any shared huh helpers/theme; apps drop direct huh import.
 - [ ] **Apps adopt** — bifrost + heraut use `cli.Run` + `ui.ColorScheme`; delete `cmd/<app>/theme.go`;
       re-pin to the M8 forge release.
