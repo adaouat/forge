@@ -519,6 +519,25 @@ forge `ui`. Accents chosen: bifrost **Aurora** (teal/violet), heraut **Heraldic*
       bootstrap-vs-`$FRESH_BIN` distinction is preserved (the action resolves the version with the
       bootstrap heraut; heraut's own preflight/release still use the freshly built binary).
 
+## M8 — forge as the CLI framework foundation *([ADR-0010](../adr/0010-cli-framework-foundation.md))*
+
+*Reframe forge from framework-agnostic utilities to **the foundation every tool imports** — it
+owns the CLI framework layer (fang, huh, theme), cutting version drift (cobra is already split
+1.9.1/1.10.2) and the per-app theme duplication. Zero-domain-logic still holds. Supersedes ADR-0008.*
+
+- [x] **ADR-0010** — record the identity shift (forge owns fang/huh/theme; cobra aligned not
+      wrapped; viper dropped; zero domain logic unchanged).
+- [ ] **Align cobra** — bump bifrost `1.9.1` → `1.10.2` (heraut's pin); document the family pin in
+      the Tier-2 baseline. *(Independent of the rest — fixes the live drift now.)*
+- [ ] **forge `cli.Run`** — wrap `fang.Execute` (version + theme); forge gains fang. Apps drop their
+      direct fang import. TDD.
+- [ ] **forge theme** — `ui.ColorScheme` (default accent + per-tool override); the fang mapping
+      moves into forge. *(Default accent to be refined when this task starts.)*
+- [ ] **forge owns huh** — move the huh dep + any shared huh helpers/theme; apps drop direct huh import.
+- [ ] **Apps adopt** — bifrost + heraut use `cli.Run` + `ui.ColorScheme`; delete `cmd/<app>/theme.go`;
+      re-pin to the M8 forge release.
+- [ ] **`docs/guides/new-tool.md`** — "start a tool on forge" (the batteries-included path).
+
 ---
 
 ## Explicitly NOT on this roadmap
