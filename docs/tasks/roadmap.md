@@ -537,9 +537,10 @@ owns the CLI framework layer (fang, huh, theme), cutting version drift (cobra is
       cobra 1.10.2. Apps will drop fang when they adopt it (after the M8 release). Smoke-tested.
 - [x] **forge theme** — `ui.ColorScheme` (default accent + per-tool override); the fang mapping
       moves into forge. **Done:** `ui.Accent` + `ui.ColorScheme(ld, accent)` — the slot mapping
-      (palette → fang.ColorScheme) lives once in forge, TDD'd. *Default accent still deferred* —
-      `accent` is a required arg for now; the forge-brand default + a zero-value fallback land when
-      you pick the color (you mentioned gold/red).
+      (palette → fang.ColorScheme) lives once in forge, TDD'd. **Default accent: Ember** — forge's
+      brand (orange `#EA580C`/`#FB923C` over coal-red `#BE123C`/`#FB7185`), the forge fire;
+      `ui.DefaultAccent()` exposes it and a zero `Accent` falls back to it, so a new tool gets a
+      theme without picking one.
 - [ ] **forge owns huh** — move the huh dep + any shared huh helpers/theme; apps drop direct huh import.
 - [ ] **Apps adopt** — bifrost + heraut use `cli.Run` + `ui.ColorScheme`; delete `cmd/<app>/theme.go`;
       re-pin to the M8 forge release.
