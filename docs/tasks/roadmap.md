@@ -547,8 +547,13 @@ owns the CLI framework layer (fang, huh, theme), cutting version drift (cobra is
       Correction to the original framing: the apps **keep** their direct huh import (they build
       their own forms — huh is aligned-by-convention like cobra, not dropped); they wire
       `form.WithTheme(ui.HuhTheme(accent))` when they adopt.
-- [ ] **Apps adopt** — bifrost + heraut use `cli.Run` + `ui.ColorScheme`; delete `cmd/<app>/theme.go`;
-      re-pin to the M8 forge release.
+- [x] **Apps adopt** — bifrost + heraut use `cli.Run` + `ui.ColorScheme`; delete `cmd/<app>/theme.go`;
+      re-pin to the M8 forge release. **Done (forge v0.8.0):** both apps call
+      `cli.Run(ctx, cmd, version, ui.Accent())` (accent in each app's `tui`/`ui` package — bifrost
+      Aurora, heraut Heraldic), deleted their `cmd/<app>/theme.go`, and **fang is now `// indirect`**
+      (via forge). huh prompts are branded too via `ui.HuhTheme()` — bifrost's 4 standalone fields
+      inline, heraut's 8 wizard forms through a `themedForm` helper. Themed `--help` verified (teal /
+      gold); suites + lint green.
 - [ ] **`docs/guides/new-tool.md`** — "start a tool on forge" (the batteries-included path).
 
 ---
