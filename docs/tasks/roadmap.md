@@ -527,8 +527,10 @@ owns the CLI framework layer (fang, huh, theme), cutting version drift (cobra is
 
 - [x] **ADR-0010** — record the identity shift (forge owns fang/huh/theme; cobra aligned not
       wrapped; viper dropped; zero domain logic unchanged).
-- [ ] **Align cobra** — bump bifrost `1.9.1` → `1.10.2` (heraut's pin); document the family pin in
-      the Tier-2 baseline. *(Independent of the rest — fixes the live drift now.)*
+- [x] **Align cobra** — bump bifrost `1.9.1` → `1.10.2` (heraut's pin); document the family pin in
+      the Tier-2 baseline. *(Independent of the rest — fixes the live drift now.)* **Done:** bifrost
+      `build(deps): align cobra to 1.10.2` (+ pflag 1.0.9), build + suite green. Both apps now on
+      cobra 1.10.2; the Tier-2-baseline note rides along when forge gains the dep via fang.
 - [ ] **forge `cli.Run`** — wrap `fang.Execute` (version + theme); forge gains fang. Apps drop their
       direct fang import. TDD.
 - [ ] **forge theme** — `ui.ColorScheme` (default accent + per-tool override); the fang mapping
