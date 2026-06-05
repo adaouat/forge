@@ -1,5 +1,30 @@
 # Changelog
 
+## [0.8.0](https://github.com/adaouat/forge/compare/v0.7.2..v0.8.0) - 2026-06-05
+
+### 🚀 Features
+
+- *(cli)* Add cli.Run + ui.ColorScheme (forge owns fang + theme) - ([a3740ff](https://github.com/adaouat/forge/commit/a3740ffa486921efe7856388e751c2202702a176)) by @bchatard
+
+- *(ui)* Add Ember default accent - ([825245d](https://github.com/adaouat/forge/commit/825245d22eb718e3ced4ae6cc7e952027c4e7d0e)) by @bchatard
+
+- *(ui)* Add HuhTheme for branded interactive forms - ([7038295](https://github.com/adaouat/forge/commit/70382958cc13540d43a621412483ca53d5ffbd5b)) by @bchatard
+
+
+### 📚 Documentation
+
+- *(adr)* Add 0010 forge as CLI framework foundation - ([88a137e](https://github.com/adaouat/forge/commit/88a137e37bd681156d0842cf18b61b8a63adaa67)) by @bchatard
+
+- *(roadmap)* Mark release-setup composite action done - ([d0c8027](https://github.com/adaouat/forge/commit/d0c8027074043728c20dc97eae86f8e13cdb6ab9)) by @bchatard
+
+- *(roadmap)* Mark cobra alignment done (M8) - ([4dbad5c](https://github.com/adaouat/forge/commit/4dbad5c57ec904d1ebc66e73285b59ac0a0fd899)) by @bchatard
+
+- *(roadmap)* Mark cli.Run + theme builder done (M8) - ([85b313a](https://github.com/adaouat/forge/commit/85b313a9cd0b0b56d7526d7755f043d85c8ee0a5)) by @bchatard
+
+- *(roadmap)* Record Ember as forge's default accent - ([759c487](https://github.com/adaouat/forge/commit/759c4872a0830da42d7d40271ff9f09a374b982c)) by @bchatard
+
+- *(roadmap)* Mark forge huh theme done (M8) - ([01e1059](https://github.com/adaouat/forge/commit/01e1059f0bcc5d44c8a5080ad0fcbd2d1f6c6200)) by @bchatard
+
 ## [0.7.2](https://github.com/adaouat/forge/compare/v0.7.1..v0.7.2) - 2026-06-05
 
 ### 📚 Documentation
