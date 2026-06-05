@@ -505,7 +505,7 @@ forge `ui`. Accents chosen: bifrost **Aurora** (teal/violet), heraut **Heraldic*
       route them through `Palette` for a single source. Also noted: the apps' ASCII-art banner
       renders in `Base`, not the accent — optional polish, an app-side render change.)*
 
-- [ ] **Shared release setup** — composite action ([ADR-0009](../adr/0009-release-setup-composite-action.md)).
+- [x] **Shared release setup** — composite action ([ADR-0009](../adr/0009-release-setup-composite-action.md)).
       The three release.yml share an identical prelude (mise → install heraut → GPG → identity →
       resolve version); extract it as `forge/.github/actions/release-setup` (a **composite action**,
       not a `workflow_call` workflow — the setup is a step-prefix the apps' build/release continue in
@@ -513,8 +513,11 @@ forge `ui`. Accents chosen: bifrost **Aurora** (teal/violet), heraut **Heraldic*
       per-app. **Partial (forge-side done):** ADR-0009 + `release-setup/action.yml` (inputs:
       gpg-private-key/github-token/version; outputs version/tag; also sets `$VERSION` in env) landed,
       and forge's own `release.yml` uses it via `./.github/actions/release-setup` (actionlint-clean).
-      **Blocked on publish:** bifrost + heraut rewire to
-      `adaouat/forge/.github/actions/release-setup@<sha>` once forge is pushed/released with it.
+      **Done:** released in forge **v0.7.2**; bifrost + heraut rewired to
+      `adaouat/forge/.github/actions/release-setup@66461c2` (# v0.7.2) — each dropped its five
+      setup steps for the one action step (checkout stays). All three actionlint-clean. heraut's
+      bootstrap-vs-`$FRESH_BIN` distinction is preserved (the action resolves the version with the
+      bootstrap heraut; heraut's own preflight/release still use the freshly built binary).
 
 ---
 
