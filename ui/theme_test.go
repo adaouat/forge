@@ -33,3 +33,12 @@ func TestColorScheme(t *testing.T) {
 	assert.Equal(t, p.Error, cs.ErrorDetails)
 	assert.Equal(t, p.Error, cs.ErrorHeader[1])
 }
+
+func TestColorScheme_zeroAccentUsesEmberDefault(t *testing.T) {
+	var dark lipgloss.LightDarkFunc = func(_, d color.Color) color.Color { return d }
+
+	cs := ColorScheme(dark, Accent{})
+	def := DefaultAccent()
+	assert.Equal(t, def.Dark, cs.Title, "a zero accent falls back to the Ember default")
+	assert.Equal(t, def.SecondaryDark, cs.Command)
+}
