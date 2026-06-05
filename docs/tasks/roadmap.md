@@ -505,8 +505,16 @@ forge `ui`. Accents chosen: bifrost **Aurora** (teal/violet), heraut **Heraldic*
       route them through `Palette` for a single source. Also noted: the apps' ASCII-art banner
       renders in `Base`, not the accent — optional polish, an app-side render change.)*
 
-Also queued (not started): the **reusable `release.yml`** extraction (forge-hosted `workflow_call`,
-now that bifrost + heraut have identical release flows) — its own task + ADR when picked up.
+- [ ] **Shared release setup** — composite action ([ADR-0009](../adr/0009-release-setup-composite-action.md)).
+      The three release.yml share an identical prelude (mise → install heraut → GPG → identity →
+      resolve version); extract it as `forge/.github/actions/release-setup` (a **composite action**,
+      not a `workflow_call` workflow — the setup is a step-prefix the apps' build/release continue in
+      the *same* job, which a separate-job reusable workflow can't do). build/cask/Docker stay
+      per-app. **Partial (forge-side done):** ADR-0009 + `release-setup/action.yml` (inputs:
+      gpg-private-key/github-token/version; outputs version/tag; also sets `$VERSION` in env) landed,
+      and forge's own `release.yml` uses it via `./.github/actions/release-setup` (actionlint-clean).
+      **Blocked on publish:** bifrost + heraut rewire to
+      `adaouat/forge/.github/actions/release-setup@<sha>` once forge is pushed/released with it.
 
 ---
 
