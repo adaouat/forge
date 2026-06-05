@@ -541,7 +541,12 @@ owns the CLI framework layer (fang, huh, theme), cutting version drift (cobra is
       brand (orange `#EA580C`/`#FB923C` over coal-red `#BE123C`/`#FB7185`), the forge fire;
       `ui.DefaultAccent()` exposes it and a zero `Accent` falls back to it, so a new tool gets a
       theme without picking one.
-- [ ] **forge owns huh** — move the huh dep + any shared huh helpers/theme; apps drop direct huh import.
+- [x] **forge owns huh** — move the huh dep + any shared huh helpers/theme; apps drop direct huh import.
+      **Done (refined):** forge gained huh 2.0.3 + `ui.HuhTheme(accent)` — a `huh.ThemeFunc` (from
+      `ThemeBase`) branding the focused state with the accent + errors from the palette, TDD'd.
+      Correction to the original framing: the apps **keep** their direct huh import (they build
+      their own forms — huh is aligned-by-convention like cobra, not dropped); they wire
+      `form.WithTheme(ui.HuhTheme(accent))` when they adopt.
 - [ ] **Apps adopt** — bifrost + heraut use `cli.Run` + `ui.ColorScheme`; delete `cmd/<app>/theme.go`;
       re-pin to the M8 forge release.
 - [ ] **`docs/guides/new-tool.md`** — "start a tool on forge" (the batteries-included path).
