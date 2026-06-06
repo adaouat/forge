@@ -9,5 +9,6 @@ Invoke the **`new-tool` skill** and follow it exactly — it is the executable f
 `docs/guides/new-tool.md`. The new tool is created as a sibling of forge (`../$ARGUMENTS`).
 
 It is **semi-automated**: run the deterministic steps yourself, but stop and ask at the three
-judgment points (accent hue, coverage threshold, the command tree). If no name was given above,
-ask for one before starting.
+judgment points (accent hue, coverage threshold, the command tree). It ends by making the first
+commit (`chore: bootstrap <name> on forge`) so the tool is workable immediately — but never pushes,
+tags, or releases. If no name was given above, ask for one before starting.

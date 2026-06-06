@@ -244,20 +244,29 @@ func updateHint(c *cobra.Command, version string) {
 
 Users get the daily "newer version — run: `<upgrade command>`" line for free (silent on `dev`).
 
-## 7. Verify, then hand off
+## 7. Verify, then make the first commit
 
-From inside `../<tool>`:
+Run each from inside `../<tool>` (`cd ../<tool> && …` per call — cwd doesn't persist between calls):
 
 ```bash
-go mod tidy
-go build ./...
-go test ./...
-mise run lint:check
+cd ../<tool> && go mod tidy
+cd ../<tool> && go build ./...
+cd ../<tool> && go test ./...
+cd ../<tool> && mise run lint:check
 ```
 
-All green → the scaffold is sound. **Don't** push or cut a release. Offer the first commit
-(`chore: bootstrap <tool> on forge`, conventional-commits + hk hooks apply now), and summarize the
-PAUSE decisions made (accent, coverage %, command tree) and what's left to flesh out.
+All green → **make the first commit** so the tool is immediately workable, not a pile of untracked
+files. The hk hooks installed in step 1 apply now — `pre-commit` lint and `commit-msg`
+conventional-commit + typos — so this also proves they fire:
+
+```bash
+cd ../<tool> && git add -A && git commit -m "chore: bootstrap <tool> on forge"
+```
+
+(A freshly-scaffolded tool is lint-clean and the message is conventional, so this passes; a
+non-conventional message is rejected by the hook.) **Stop there** — don't push, don't tag, don't cut
+a release; those are the user's call. Then summarize the PAUSE decisions (accent, coverage %, command
+tree) and what's left to flesh out.
 
 ## References
 
