@@ -501,9 +501,17 @@ forge `ui`. Accents chosen: bifrost **Aurora** (teal/violet), heraut **Heraldic*
       `main`. Snapshot-verified: themed `--help` (teal titles for bifrost, gold for heraut);
       builds + suites + lint green.
 - [ ] *(refinement)* align `ui` status/spinner colors to the palette so status output matches the
-      theme end-to-end. *(Status colors already match the palette's semantic values; this would
-      route them through `Palette` for a single source. Also noted: the apps' ASCII-art banner
-      renders in `Base`, not the accent — optional polish, an app-side render change.)*
+      theme end-to-end. *(Most status colors match the palette's semantic values, but `Info` uses
+      `#6B7280` — not a palette value — and the spinner uses ANSI `"214"` instead of hex; route them
+      all through `Palette` for a single source. Also noted: the apps' ASCII-art banner renders in
+      `Base`, not the accent — optional polish, an app-side render change.)*
+- [ ] *(refinement)* `config.Load` on an empty file returns the raw `config: EOF` (`config/loader.go`
+      — yaml's `io.EOF` wrapped verbatim). Map `io.EOF` to a clearer "empty config" message, or treat
+      an empty file as a zero-value config. Low priority; the `config` contract is fixed in
+      [ADR-0007](../adr/0007-public-api-surface-and-stability.md). *(From the full code/docs review.)*
+- [ ] *(refinement)* cap the GitHub response body with an `io.LimitReader` before decoding
+      (`updatecheck/check.go`). The API is trusted and bounded, so risk is negligible — but a
+      defensive cap is cheap insurance for a library. *(From the full code/docs review.)*
 
 - [x] **Shared release setup** — composite action ([ADR-0009](../adr/0009-release-setup-composite-action.md)).
       The three release.yml share an identical prelude (mise → install heraut → GPG → identity →
