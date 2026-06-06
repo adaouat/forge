@@ -4,6 +4,7 @@ import (
 	"context"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -32,6 +33,20 @@ func TestCheckNewer_UpToDate(t *testing.T) {
 	_, newer, err := Checker{Repo: "adaouat/heraut", BaseURL: srv.URL}.CheckNewer(context.Background(), "v1.2.0")
 	require.NoError(t, err)
 	assert.False(t, newer)
+}
+
+func TestCheckNewer_OversizedBodyCapped(t *testing.T) {
+	// A body larger than the cap is truncated before decode, so the (now incomplete)
+	// JSON fails to parse — proving the response body is bounded. Without the cap the
+	// whole body would decode and no error would surface.
+	huge := strings.Repeat("v", 1<<20)
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		_, _ = w.Write([]byte(`{"tag_name":"` + huge + `"}`))
+	}))
+	defer srv.Close()
+
+	_, _, err := Checker{Repo: "adaouat/heraut", BaseURL: srv.URL}.CheckNewer(context.Background(), "v1.2.0")
+	require.Error(t, err)
 }
 
 func TestCheckNewer_HTTPError(t *testing.T) {

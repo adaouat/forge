@@ -4,11 +4,16 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"time"
 )
 
 const defaultBaseURL = "https://api.github.com"
+
+// maxResponseBytes caps the GitHub response body before decoding. The latest-release
+// payload is a few KB; 1 MiB is generous headroom and bounds a hostile/buggy response.
+const maxResponseBytes = 1 << 20
 
 // Checker queries a GitHub repo's latest release.
 type Checker struct {
@@ -55,7 +60,7 @@ func (c Checker) latest(ctx context.Context) (string, error) {
 	var rel struct {
 		TagName string `json:"tag_name"`
 	}
-	if err := json.NewDecoder(resp.Body).Decode(&rel); err != nil {
+	if err := json.NewDecoder(io.LimitReader(resp.Body, maxResponseBytes)).Decode(&rel); err != nil {
 		return "", fmt.Errorf("update check decode: %w", err)
 	}
 	if rel.TagName == "" {

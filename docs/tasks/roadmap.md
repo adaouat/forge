@@ -509,9 +509,11 @@ forge `ui`. Accents chosen: bifrost **Aurora** (teal/violet), heraut **Heraldic*
       — yaml's `io.EOF` wrapped verbatim). Map `io.EOF` to a clearer "empty config" message, or treat
       an empty file as a zero-value config. Low priority; the `config` contract is fixed in
       [ADR-0007](../adr/0007-public-api-surface-and-stability.md). *(From the full code/docs review.)*
-- [ ] *(refinement)* cap the GitHub response body with an `io.LimitReader` before decoding
+- [x] *(refinement)* cap the GitHub response body with an `io.LimitReader` before decoding
       (`updatecheck/check.go`). The API is trusted and bounded, so risk is negligible — but a
-      defensive cap is cheap insurance for a library. *(From the full code/docs review.)*
+      defensive cap is cheap insurance for a library. **Done:** `maxResponseBytes = 1<<20` cap via
+      `io.LimitReader` in `Checker.latest`; TDD (an over-cap body now fails to decode rather than
+      being read unbounded). Lint + suite green.
 
 - [x] **Shared release setup** — composite action ([ADR-0009](../adr/0009-release-setup-composite-action.md)).
       The three release.yml share an identical prelude (mise → install heraut → GPG → identity →
