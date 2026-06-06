@@ -12,7 +12,7 @@ func Success(w io.Writer, msg string) string {
 	if !HasColor(w) {
 		return "✓ " + msg
 	}
-	return lipgloss.NewStyle().Foreground(lipgloss.Color("#22C55E")).Bold(true).Render("✓") + " " + msg
+	return lipgloss.NewStyle().Foreground(colorSuccess).Bold(true).Render("✓") + " " + msg
 }
 
 // Err returns "✗ <msg>" styled red when w supports color, plain otherwise.
@@ -20,7 +20,7 @@ func Err(w io.Writer, msg string) string {
 	if !HasColor(w) {
 		return "✗ " + msg
 	}
-	return lipgloss.NewStyle().Foreground(lipgloss.Color("#EF4444")).Bold(true).Render("✗") + " " + msg
+	return lipgloss.NewStyle().Foreground(colorError).Bold(true).Render("✗") + " " + msg
 }
 
 // Warn returns "! <msg>" styled yellow when w supports color, plain otherwise.
@@ -29,7 +29,7 @@ func Warn(w io.Writer, msg string) string {
 	if !HasColor(w) {
 		return "! " + msg
 	}
-	return lipgloss.NewStyle().Foreground(lipgloss.Color("#F59E0B")).Bold(true).Render("!") + " " + msg
+	return lipgloss.NewStyle().Foreground(colorWarn).Bold(true).Render("!") + " " + msg
 }
 
 // Info returns "  <msg>" dimmed when w supports color, plain otherwise.
@@ -38,7 +38,7 @@ func Info(w io.Writer, msg string) string {
 	if !HasColor(w) {
 		return "  " + msg
 	}
-	return lipgloss.NewStyle().Foreground(lipgloss.Color("#6B7280")).Render("  " + msg)
+	return lipgloss.NewStyle().Foreground(colorInfo).Render("  " + msg)
 }
 
 // Header writes a bold section title to w, surrounded by blank lines.

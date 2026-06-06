@@ -500,11 +500,16 @@ forge `ui`. Accents chosen: bifrost **Aurora** (teal/violet), heraut **Heraldic*
       `ui.NewPalette(c)` + accent → `fang.ColorScheme`, wired via `fang.WithColorSchemeFunc` in
       `main`. Snapshot-verified: themed `--help` (teal titles for bifrost, gold for heraut);
       builds + suites + lint green.
-- [ ] *(refinement)* align `ui` status/spinner colors to the palette so status output matches the
-      theme end-to-end. *(Most status colors match the palette's semantic values, but `Info` uses
-      `#6B7280` — not a palette value — and the spinner uses ANSI `"214"` instead of hex; route them
-      all through `Palette` for a single source. Also noted: the apps' ASCII-art banner renders in
-      `Base`, not the accent — optional polish, an app-side render change.)*
+- [x] *(refinement)* align `ui` status/spinner colors to the palette so status output matches the
+      theme end-to-end. *(Most status colors matched the palette's semantic values, but `Info` used
+      `#6B7280` and the spinner used ANSI `"214"`; route them through one source.)* **Done:** all color
+      literals now live once in `palette.go`; the three semantic colors (`colorSuccess`/`colorWarn`/
+      `colorError`) back both `Palette.Success/Warn/Error` and the status helpers, so they can't drift.
+      `Info` and the spinner glyph (`214` → hex `#FFAF00`) are named constants there too. The status
+      helpers stay fixed-color: their `io.Writer` signature (ADR-0007) carries no light/dark context, so
+      the palette's *adaptive* neutrals can't be routed in without a breaking change — out of scope. The
+      apps' ASCII-art banner (renders in `Base`) is an app-side render change, still deferred. Pure
+      refactor; existing `ui` suite (48 tests, semantic hexes pinned) + lint green.
 - [x] *(refinement)* `config.Load` on an empty file returns the raw `config: EOF` (`config/loader.go`
       — yaml's `io.EOF` wrapped verbatim). Map `io.EOF` to a clearer "empty config" message, or treat
       an empty file as a zero-value config. Low priority; the `config` contract is fixed in

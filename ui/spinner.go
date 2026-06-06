@@ -12,7 +12,7 @@ import (
 	"charm.land/lipgloss/v2"
 )
 
-var spinnerStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("214")).Bold(true)
+var spinnerStyle = lipgloss.NewStyle().Foreground(colorSpinner).Bold(true)
 
 // Result is a task's successful outcome: a Detail shown after the task name
 // ("✓ name — Detail") and optional indented sub-result lines.
