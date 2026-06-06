@@ -554,7 +554,16 @@ owns the CLI framework layer (fang, huh, theme), cutting version drift (cobra is
       (via forge). huh prompts are branded too via `ui.HuhTheme()` — bifrost's 4 standalone fields
       inline, heraut's 8 wizard forms through a `themedForm` helper. Themed `--help` verified (teal /
       gold); suites + lint green.
-- [ ] **`docs/guides/new-tool.md`** — "start a tool on forge" (the batteries-included path).
+- [x] **`docs/guides/new-tool.md`** — "start a tool on forge" (the batteries-included path).
+      **Done:** the guide walks a new CLI from `go mod init` → `cli.Run` + an accent → Tier-2
+      scaffolding → the shared `go-ci.yml` → heraut-driven release via `release-setup` → the
+      update hint, linking distribution.md / tier2-sync.md and ADRs 0006/0007/0009/0010 rather
+      than duplicating them. Registered in the guides index.
+
+**M8 complete.** forge is now the CLI framework foundation: it owns fang + cobra + huh + the
+theme; `cli.Run` + `ui.ColorScheme`/`ui.HuhTheme` drive both apps (fang dropped to indirect); the
+Ember default + per-tool accents are in place; cobra drift fixed; and a new tool starts from one
+guide.
 
 ---
 
