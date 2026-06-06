@@ -13,13 +13,22 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
+// ErrEmptyConfig is returned by Decode/Load when the input has no YAML document
+// (an empty file), so callers can classify it with errors.Is instead of guessing
+// from a raw "EOF".
+var ErrEmptyConfig = errors.New("config: empty config file")
+
 // Decode strictly parses YAML from r into target (a pointer to a struct),
 // rejecting unknown fields. Errors are prefixed "config:"; a yaml.TypeError is
-// flattened into a single message joining each field-level error.
+// flattened into a single message joining each field-level error. An empty input
+// returns ErrEmptyConfig.
 func Decode(r io.Reader, target any) error {
 	dec := yaml.NewDecoder(r)
 	dec.KnownFields(true)
 	if err := dec.Decode(target); err != nil {
+		if errors.Is(err, io.EOF) {
+			return ErrEmptyConfig
+		}
 		var typeErr *yaml.TypeError
 		if errors.As(err, &typeErr) {
 			return fmt.Errorf("config: %s", strings.Join(typeErr.Errors, "; "))

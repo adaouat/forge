@@ -31,7 +31,7 @@ changes (a new method, a new exported symbol) are minor and need no ADR.
 | `exitcode` | `OK`/`Usage`/`Config`/`Runtime`/`Internal` codes, `ExitError{Code,Message,Err}`, `Resolve`, `Wrap` | [0003](0003-shared-exit-code-vocabulary.md) |
 | `ui` | detection (`HasColor`/`IsTTY`), status (`Success`/`Warn`/`Err`/`Info`/`Header`), `Mode`, header renderers (`HelpLong`/`VersionTemplate`), `Spinner` (`Run`/`Step`/`Total`, `Result`, `Skip`) | [0004](0004-ui-spinner-task-runner.md) (`Spinner`) |
 | `ui` (theme) | `Palette`/`NewPalette`, `Accent`/`DefaultAccent`, `ColorScheme`, `HuhTheme` | [0008](0008-ui-theme-palette.md), [0010](0010-cli-framework-foundation.md) |
-| `config` | `Decode`/`Load`, `Resolver` (`Resolve`/`Label`/`InitDest`, `Source`), `ValidationError`/`ValidationErrors` | — *(fixed here)* |
+| `config` | `Decode`/`Load` (+ `ErrEmptyConfig`), `Resolver` (`Resolve`/`Label`/`InitDest`, `Source`), `ValidationError`/`ValidationErrors` | — *(fixed here)* |
 | `updatecheck` | `Checker.CheckNewer`, `Hinter.Print`, `InstallMethod` + detection | [0005](0005-updates-via-package-managers.md) |
 | `cli` | `Run(ctx, cmd, version, accent)` — runs a cobra command through fang with the version + family theme | [0010](0010-cli-framework-foundation.md) |
 

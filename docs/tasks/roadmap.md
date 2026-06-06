@@ -505,10 +505,12 @@ forge `ui`. Accents chosen: bifrost **Aurora** (teal/violet), heraut **Heraldic*
       `#6B7280` — not a palette value — and the spinner uses ANSI `"214"` instead of hex; route them
       all through `Palette` for a single source. Also noted: the apps' ASCII-art banner renders in
       `Base`, not the accent — optional polish, an app-side render change.)*
-- [ ] *(refinement)* `config.Load` on an empty file returns the raw `config: EOF` (`config/loader.go`
+- [x] *(refinement)* `config.Load` on an empty file returns the raw `config: EOF` (`config/loader.go`
       — yaml's `io.EOF` wrapped verbatim). Map `io.EOF` to a clearer "empty config" message, or treat
       an empty file as a zero-value config. Low priority; the `config` contract is fixed in
-      [ADR-0007](../adr/0007-public-api-surface-and-stability.md). *(From the full code/docs review.)*
+      [ADR-0007](../adr/0007-public-api-surface-and-stability.md). **Done:** added the sentinel
+      `ErrEmptyConfig` (errors.Is-classifiable, not a string-matched "EOF"), returned when Decode hits
+      `io.EOF`; recorded in the ADR-0007 surface table. TDD (empty reader + empty file). Lint + suite green.
 - [x] *(refinement)* cap the GitHub response body with an `io.LimitReader` before decoding
       (`updatecheck/check.go`). The API is trusted and bounded, so risk is negligible — but a
       defensive cap is cheap insurance for a library. **Done:** `maxResponseBytes = 1<<20` cap via

@@ -25,6 +25,22 @@ func TestDecode_Success(t *testing.T) {
 	assert.Equal(t, 3, s.Count)
 }
 
+func TestDecode_EmptyInputIsClassifiable(t *testing.T) {
+	var s sample
+	err := config.Decode(strings.NewReader(""), &s)
+	require.Error(t, err)
+	assert.ErrorIs(t, err, config.ErrEmptyConfig, "empty input maps to ErrEmptyConfig, not a raw EOF")
+}
+
+func TestLoad_EmptyFileIsClassifiable(t *testing.T) {
+	path := filepath.Join(t.TempDir(), "empty.yml")
+	require.NoError(t, os.WriteFile(path, nil, 0o600))
+
+	var s sample
+	err := config.Load(path, &s)
+	assert.ErrorIs(t, err, config.ErrEmptyConfig)
+}
+
 func TestDecode_UnknownFieldRejected(t *testing.T) {
 	var s sample
 	err := config.Decode(strings.NewReader("name: forge\nbogus: true\n"), &s)
