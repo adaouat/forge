@@ -37,10 +37,30 @@ cp -R .config ../<tool>/.config         # mise, hk, cocogitto, typos, yamlfmt �
 mkdir -p ../<tool>/.claude/rules
 cp docs/rules/workflow.md docs/rules/testing.md docs/rules/coding.md ../<tool>/.claude/rules/
 cp docs/rules/agent.md ../<tool>/.claude/rules/claude.md
+cat > ../<tool>/.gitignore <<'EOF'
+# Build outputs
+/<tool>
+*.test
+/dist
+/coverage.out
+
+# IDE
+/.idea
+
+# Mise
+/.config/mise/config.local.toml
+
+# Claude Code — local-only permissions
+/.claude/settings.local.json
+EOF
 ```
 
+> **The `.gitignore` is required, not cosmetic** — hk's `yamlfmt` step aborts the whole lint run
+> with `gitignore not found` if it's missing. (Remember to expand `<tool>` inside the heredoc.)
+
 Then:
-- **Adapt `.config/heraut.yml`** — change `repository: adaouat/forge` → `adaouat/<tool>`.
+- **Adapt `.config/heraut.yml`** — change `repository: adaouat/forge` → `adaouat/<tool>` (on macOS,
+  `sed -i ''`; GNU `sed -i`).
 - **PAUSE — adapt the rules.** forge's rules are *library*-flavored ("zero domain logic", the
   extraction bar). A tool has domain logic — replace that framing. Keep the shared conventions
   (conventional commits, TDD, `charm.land` registry, SHA-pinned actions, version pins). Use
@@ -62,12 +82,17 @@ tool dir (mise auto-detects `.config/mise/config.toml`), or prefix `mise exec --
 
 ## 2. Bootstrap the module
 
-From inside `../<tool>`:
+Run from inside `../<tool>` — and run each `go`/`mise`/`hk` command as `cd ../<tool> && <cmd>` in a
+**single** invocation: the working directory does **not** persist between separate shell calls here.
 
 ```bash
-go mod init github.com/adaouat/<tool>
-go get github.com/adaouat/forge@latest
+cd ../<tool> && go mod init github.com/adaouat/<tool>
+cd ../<tool> && go get github.com/adaouat/forge@latest
 ```
+
+> `go get` may bump `go.mod`'s Go line past the mise pin (forge needs ≥ the latest patch; the mise
+> config pins the minor, e.g. `go = "1.26"`). Go's toolchain manager fetches the exact patch
+> transparently, so builds work — the `go.mod` patch floating ahead of the mise pin is expected.
 
 `cmd/<tool>/main.go`:
 
