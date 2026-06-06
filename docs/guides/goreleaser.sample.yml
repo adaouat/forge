@@ -24,8 +24,9 @@ builds:
       - goos: windows
         goarch: arm64
     ldflags:
+      - -s -w
       # Mandatory: the updatecheck hint is silent on a "dev" version.
-      - -s -w -X main.Version={{ .Tag }}
+      - -X main.Version={{ .Tag }}
 
 # Raw binaries, no tar/zip wrapper (heraut ADR-0013). mise and Homebrew consume
 # these directly — no extraction step, no zip-slip surface. The version lives in the
