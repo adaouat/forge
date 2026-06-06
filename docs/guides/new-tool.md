@@ -4,6 +4,9 @@ forge is the foundation every `adaouat/*` CLI is built on — it brings the CLI 
 fang), the family theme, and the shared runtime (exec, config, exit codes, update check). A new
 tool imports forge and wires a thin `main`; forge does the heavy lifting.
 
+> **Shortcut:** `/new-tool <name>` runs this guide semi-automatically (the `new-tool` skill in
+> `.claude/`). This page is the reference it follows — read on for the *why*.
+
 ## What forge gives you
 
 | Package | What |
