@@ -14,13 +14,16 @@ points — never guess them:
 
 | # | Judgment point | Why it's yours |
 |---|---|---|
+| Step 2 | **The command tree** | What the root command does. Leave a stub if it isn't decided yet. |
 | Step 3 | **Accent hue** | Brand. Taken: bifrost teal/violet, heraut gold/azure, forge Ember (orange/coal-red). Pick a *distinct* hue, or inherit Ember by passing a zero `Accent`. |
 | Step 4 | **Coverage threshold** | `go-ci.yml` requires it, no default — it's per-tool policy. |
-| Step 2 | **The command tree** | What the root command does. Leave a stub if it isn't decided yet. |
 
 ## 0. Inputs & guards
 
 - `<tool>` — lowercase kebab; the binary name **and** module path (`github.com/adaouat/<tool>`).
+- **Validate the name first.** It must match `^[a-z][a-z0-9-]*$` — reject spaces, `../`, or any
+  shell metacharacter. It is interpolated unquoted into `mkdir`/`git`/`cp` below, so a bad name is a
+  command-injection / path-traversal foot-gun.
 - **Abort** if `../<tool>` already exists — don't overwrite.
 - Resolve the **latest forge tag + its SHA** now (you'll pin CI to it):
   `git tag --sort=-v:refname | head -1` and `git rev-list -n1 <tag>` in this repo. At time of
@@ -116,7 +119,8 @@ func main() {
 }
 ```
 
-`cmd/<tool>/root.go` (**PAUSE for the command tree** — wire real subcommands, or leave the stub):
+`cmd/<tool>/root.go` — the **complete** file (**PAUSE for the command tree** — wire real subcommands,
+or leave the stub). `updateHint` is the daily update check; step 6 explains what it does:
 
 ```go
 package main
@@ -139,11 +143,26 @@ func rootCmd(version string) *cobra.Command {
 		SilenceErrors: true,
 	}
 	cmd.PersistentPostRunE = func(c *cobra.Command, _ []string) error {
-		updateHint(c, version) // step 6
+		updateHint(c, version)
 		return nil
 	}
 	// cmd.AddCommand(...)  ← your subcommands
 	return cmd
+}
+
+func updateHint(c *cobra.Command, version string) {
+	// <TOOL> = the tool name uppercased, e.g. MYTOOL_CHECK_UPDATE.
+	if version == "dev" || os.Getenv("<TOOL>_CHECK_UPDATE") == "false" {
+		return
+	}
+	cache, _ := os.UserCacheDir()
+	updatecheck.Hinter{
+		Repo:      "adaouat/<tool>",
+		Bin:       "<tool>",
+		Module:    "github.com/adaouat/<tool>/cmd/<tool>",
+		Current:   version,
+		CacheFile: filepath.Join(cache, "<tool>", "update-check.json"),
+	}.Print(c.Context(), c.ErrOrStderr())
 }
 ```
 
@@ -224,25 +243,10 @@ Full model + the build-only/Homebrew variants: `docs/guides/distribution.md`.
 
 ## 6. The update hint
 
-`cmd/<tool>/root.go`, referenced by `PersistentPostRunE` above:
-
-```go
-func updateHint(c *cobra.Command, version string) {
-	if version == "dev" || os.Getenv("<TOOL>_CHECK_UPDATE") == "false" {
-		return
-	}
-	cache, _ := os.UserCacheDir()
-	updatecheck.Hinter{
-		Repo:      "adaouat/<tool>",
-		Bin:       "<tool>",
-		Module:    "github.com/adaouat/<tool>/cmd/<tool>",
-		Current:   version,
-		CacheFile: filepath.Join(cache, "<tool>", "update-check.json"),
-	}.Print(c.Context(), c.ErrOrStderr())
-}
-```
-
-Users get the daily "newer version — run: `<upgrade command>`" line for free (silent on `dev`).
+`updateHint` (in `root.go`, wired into `PersistentPostRunE` in step 2) gives users the daily "newer
+version — run: `<upgrade command>`" line for free. It is silent on a `dev` build and when
+`<TOOL>_CHECK_UPDATE=false`, and forge's `updatecheck.Hinter` swallows every error and caches the
+result for 24h via `CacheFile` — so it never blocks or noisily fails a command.
 
 ## 7. Verify, then make the first commit
 
@@ -269,6 +273,9 @@ a release; those are the user's call. Then summarize the PAUSE decisions (accent
 tree) and what's left to flesh out.
 
 ## References
+
+> **Keep in sync:** this skill and `docs/guides/new-tool.md` embed the same templates — update both
+> together. The guide is canonical for the *why*; this skill is canonical for the executable steps.
 
 `docs/guides/new-tool.md` (the prose), `tier2-sync.md`, `distribution.md`,
 [ADR-0007](docs/adr/0007-public-api-surface-and-stability.md) (the contract),
