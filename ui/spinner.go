@@ -49,9 +49,6 @@ func (s *Spinner) Total(total int) *Spinner {
 	return s
 }
 
-// Run animates a spinner titled name while fn runs, then renders the outcome:
-// (Result, nil) → success, Skip(detail) → advisory, any other error → failure
-// (returned to the caller).
 // nextLabel advances the step counter and returns the task label, prefixed
 // with [N/total] when a Total is set.
 func (s *Spinner) nextLabel(name string) string {
@@ -73,6 +70,9 @@ func (s *Spinner) Step(name, detail string) {
 	_, _ = fmt.Fprintln(s.out, Success(s.out, line))
 }
 
+// Run animates a spinner titled name while fn runs, then renders the outcome:
+// (Result, nil) → success, Skip(detail) → advisory, any other error → failure
+// (returned to the caller).
 func (s *Spinner) Run(name string, fn func() (Result, error)) error {
 	label := s.nextLabel(name)
 
