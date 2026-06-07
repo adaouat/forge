@@ -1,5 +1,54 @@
 # Changelog
 
+## [0.9.0](https://github.com/adaouat/forge/compare/v0.8.0..v0.9.0) - 2026-06-07
+
+### 🚀 Features
+
+- *(config)* Classify empty config with ErrEmptyConfig sentinel - ([cff8a44](https://github.com/adaouat/forge/commit/cff8a444dc21332438dee7b00b33bc6bd630ec44)) by @bchatard
+
+- *(updatecheck)* Cap GitHub response body with io.LimitReader - ([a99a85f](https://github.com/adaouat/forge/commit/a99a85f9568e058dda47357b90dac67da7ed01dd)) by @bchatard
+
+
+### 🐛 Bug Fixes
+
+- *(ui)* Give the fang usage codeblock a readable background - ([e2ce295](https://github.com/adaouat/forge/commit/e2ce2953483bf1c42e50d47d46676526c291f1f5)) by @bchatard
+
+
+### 🚜 Refactor
+
+- *(ui)* Single-source color literals in palette.go - ([b3e9f00](https://github.com/adaouat/forge/commit/b3e9f006bd71175a7ef0821df046d8240c4698cc)) by @bchatard
+
+
+### 📚 Documentation
+
+- *(adr)* Bring 0007 surface table up to date with cli + theme - ([de732dc](https://github.com/adaouat/forge/commit/de732dc68dc34e69af676e0787a8c18ec6fa31fb)) by @bchatard
+
+- *(guides)* Add new-tool guide; complete M8 - ([5358a2c](https://github.com/adaouat/forge/commit/5358a2c69e2cf37617be5dc051b4a672de3dbab9)) by @bchatard
+
+- *(guides)* Split goreleaser ldflags, fix comment placement - ([ae336f8](https://github.com/adaouat/forge/commit/ae336f81290582c0a9168fa8e24f90891b53bfbe)) by @bchatard
+
+- *(roadmap)* Mark apps-adopt done (M8) - ([6b48d53](https://github.com/adaouat/forge/commit/6b48d53e17da13f33e3e58491b8c61ebedcc9960)) by @bchatard
+
+- *(roadmap)* Track config/updatecheck refinements from the review - ([c627d40](https://github.com/adaouat/forge/commit/c627d4045a3bc6a0ec840b489d8b50083ed0b85d)) by @bchatard
+
+- *(ui)* Attach Spinner.Run doc comment to Run - ([08ee4f5](https://github.com/adaouat/forge/commit/08ee4f5eae2846167e4b9e8c115c1916feef9a1a)) by @bchatard
+
+
+### 🎨 Styling
+
+- *(ui)* Align Info color to the palette muted neutral - ([b003b7b](https://github.com/adaouat/forge/commit/b003b7b7b7433d755f36f8bfe628e6239b41a627)) by @bchatard
+
+
+### ⚙️ Miscellaneous Tasks
+
+- *(claude)* Add /new-tool command + skill - ([ceae4c4](https://github.com/adaouat/forge/commit/ceae4c4cdd6fc963c1a016493a61b98a117b74b3)) by @bchatard
+
+- *(claude)* Harden new-tool skill from a dry run - ([2732160](https://github.com/adaouat/forge/commit/2732160ba225f10e69c31113d1fc2afdc55e8e28)) by @bchatard
+
+- *(claude)* Make first commit part of new-tool bootstrap - ([a5ee328](https://github.com/adaouat/forge/commit/a5ee3285792db49867e496a28fb76afbeb40035b)) by @bchatard
+
+- *(claude)* Apply review feedback to new-tool skill - ([453852a](https://github.com/adaouat/forge/commit/453852a99cdb71eb3b1c306ab8f8612d5d0bc419)) by @bchatard
+
 ## [0.8.0](https://github.com/adaouat/forge/compare/v0.7.2..v0.8.0) - 2026-06-05
 
 ### 🚀 Features
