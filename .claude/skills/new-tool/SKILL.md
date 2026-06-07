@@ -270,7 +270,8 @@ cd ../<tool> && git add -A && git commit -m "chore: bootstrap <tool> on forge"
 (A freshly-scaffolded tool is lint-clean and the message is conventional, so this passes; a
 non-conventional message is rejected by the hook.) **Stop there** — don't push, don't tag, don't cut
 a release; those are the user's call. Then summarize the PAUSE decisions (accent, coverage %, command
-tree) and what's left to flesh out.
+tree) and what's left to flesh out. Finally, register the new tool in the **bump-forge** skill's
+consumer list (`.claude/skills/bump-forge/SKILL.md`) so future forge releases roll out to it.
 
 ## References
 
