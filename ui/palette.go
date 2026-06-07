@@ -33,6 +33,7 @@ type Palette struct {
 	Muted    color.Color // descriptions, help, comments
 	Dim      color.Color // flag defaults, dimmed arguments
 	Argument color.Color // command arguments
+	Surface  color.Color // subtle elevated background (e.g. the fang usage codeblock)
 	Success  color.Color // ✓ and quoted strings
 	Warn     color.Color // !
 	Error    color.Color // ✗ and error details
@@ -49,6 +50,7 @@ func NewPalette(ld lipgloss.LightDarkFunc) Palette {
 		Muted:    ld(mutedLight, mutedDark),
 		Dim:      adapt("#8C959F", "#6E7681"),
 		Argument: adapt("#0969DA", "#79C0FF"),
+		Surface:  adapt("#EAEEF2", "#22272E"),
 		Success:  colorSuccess,
 		Warn:     colorWarn,
 		Error:    colorError,

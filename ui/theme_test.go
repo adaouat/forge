@@ -30,6 +30,10 @@ func TestColorScheme(t *testing.T) {
 	assert.Equal(t, p.Success, cs.QuotedString)
 	assert.Equal(t, p.Muted, cs.Description)
 	assert.Equal(t, p.Dim, cs.FlagDefault)
+	// Codeblock is the usage-block *background*, so it must be the subtle surface — not p.Muted, or
+	// the DimmedArgument placeholders render gray-on-gray (the [command]/[--flags] visibility bug).
+	assert.Equal(t, p.Surface, cs.Codeblock)
+	assert.NotEqual(t, cs.Codeblock, cs.DimmedArgument, "usage placeholders must contrast with the block")
 	assert.Equal(t, p.Error, cs.ErrorDetails)
 	assert.Equal(t, p.Error, cs.ErrorHeader[1])
 }

@@ -512,6 +512,14 @@ forge `ui`. Accents chosen: bifrost **Aurora** (teal/violet), heraut **Heraldic*
       breaking signature change — out of scope. The apps' ASCII-art banner (renders in `Base`) is an
       app-side render change, still deferred. Behaviour-preserving except Info's gray nudges
       `#6B7280` → `#6E7781` (imperceptible); `ui` suite (48 tests, semantic hexes pinned) + lint green.
+- [x] *(fix)* fang `--help` USAGE block rendered `[command] [--flags]` invisibly (gray-on-gray). fang
+      uses the `Codeblock` slot as the usage block's *background* (`Background(cs.Codeblock)`) and draws
+      the placeholders with `DimmedArgument`; forge mapped `Codeblock: p.Muted` — a mid-gray *foreground*
+      color — so `p.Dim` text sat on a `p.Muted` background (~1.45:1). **Done:** added `Palette.Surface`
+      (a subtle elevated background, `#EAEEF2` light / `#22272E` dark) and remapped `Codeblock: p.Surface`
+      in `ui.ColorScheme`, so placeholders read on the block while the program name stays accent-colored.
+      Additive (new palette field, no API break); bifrost + heraut get the fix on their next forge bump.
+      TDD (palette `Surface` + ColorScheme `Codeblock`); `ui` suite + lint green.
 - [x] *(refinement)* `config.Load` on an empty file returns the raw `config: EOF` (`config/loader.go`
       — yaml's `io.EOF` wrapped verbatim). Map `io.EOF` to a clearer "empty config" message, or treat
       an empty file as a zero-value config. Low priority; the `config` contract is fixed in

@@ -45,7 +45,7 @@ func ColorScheme(ld lipgloss.LightDarkFunc, a Accent) fang.ColorScheme {
 		Base:           p.Text,
 		Title:          accent,
 		Description:    p.Muted,
-		Codeblock:      p.Muted,
+		Codeblock:      p.Surface, // fang uses this as the usage block's background, not a foreground
 		Program:        accent,
 		DimmedArgument: p.Dim,
 		Comment:        p.Muted,
