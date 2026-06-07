@@ -9,14 +9,19 @@ import (
 // Color literals live here once so the palette, the status helpers, and the spinner can't drift
 // (roadmap M7 refinement). The three semantic colors are fixed — they read on both backgrounds —
 // and also surface as Palette.Success/Warn/Error. The status helpers are fixed-color by API (their
-// io.Writer signature carries no light/dark context), so they use these directly rather than the
-// palette's adaptive neutrals.
+// io.Writer signature carries no light/dark context): they can't resolve an adaptive pair, so Info
+// uses the light (darker) variant of the palette's muted neutral, which stays legible on either bg.
 var (
 	colorSuccess = lipgloss.Color("#22C55E") // ✓, quoted strings, Palette.Success
 	colorWarn    = lipgloss.Color("#F59E0B") // !, Palette.Warn
 	colorError   = lipgloss.Color("#EF4444") // ✗, error details, Palette.Error
-	colorInfo    = lipgloss.Color("#6B7280") // dimmed Info lines
 	colorSpinner = lipgloss.Color("#FFAF00") // animated spinner glyph (256-color 214, as hex)
+
+	// Muted neutral pair; Palette.Muted resolves it by background. Info, being fixed-color, takes
+	// the light/darker variant by reference so the two can't drift.
+	mutedLight = lipgloss.Color("#6E7781")
+	mutedDark  = lipgloss.Color("#8B949E")
+	colorInfo  = mutedLight
 )
 
 // Palette is the family's shared structural colors — everything in a tool's theme except its
@@ -41,7 +46,7 @@ func NewPalette(ld lipgloss.LightDarkFunc) Palette {
 	}
 	return Palette{
 		Text:     adapt("#24292F", "#E6EDF3"),
-		Muted:    adapt("#6E7781", "#8B949E"),
+		Muted:    ld(mutedLight, mutedDark),
 		Dim:      adapt("#8C959F", "#6E7681"),
 		Argument: adapt("#0969DA", "#79C0FF"),
 		Success:  colorSuccess,

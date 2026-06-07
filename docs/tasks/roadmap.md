@@ -505,11 +505,13 @@ forge `ui`. Accents chosen: bifrost **Aurora** (teal/violet), heraut **Heraldic*
       `#6B7280` and the spinner used ANSI `"214"`; route them through one source.)* **Done:** all color
       literals now live once in `palette.go`; the three semantic colors (`colorSuccess`/`colorWarn`/
       `colorError`) back both `Palette.Success/Warn/Error` and the status helpers, so they can't drift.
-      `Info` and the spinner glyph (`214` → hex `#FFAF00`) are named constants there too. The status
-      helpers stay fixed-color: their `io.Writer` signature (ADR-0007) carries no light/dark context, so
-      the palette's *adaptive* neutrals can't be routed in without a breaking change — out of scope. The
-      apps' ASCII-art banner (renders in `Base`) is an app-side render change, still deferred. Pure
-      refactor; existing `ui` suite (48 tests, semantic hexes pinned) + lint green.
+      `Info` now references the palette's muted neutral (the light/darker variant — legible on both
+      backgrounds) instead of an orphan `#6B7280`, and the spinner glyph is hex (`214` → `#FFAF00`).
+      The helpers stay fixed-color: their `io.Writer` signature (ADR-0007) carries no light/dark
+      context, so *adaptive* routing (Info tracking the background-resolved muted) would need a
+      breaking signature change — out of scope. The apps' ASCII-art banner (renders in `Base`) is an
+      app-side render change, still deferred. Behaviour-preserving except Info's gray nudges
+      `#6B7280` → `#6E7781` (imperceptible); `ui` suite (48 tests, semantic hexes pinned) + lint green.
 - [x] *(refinement)* `config.Load` on an empty file returns the raw `config: EOF` (`config/loader.go`
       — yaml's `io.EOF` wrapped verbatim). Map `io.EOF` to a clearer "empty config" message, or treat
       an empty file as a zero-value config. Low priority; the `config` contract is fixed in
