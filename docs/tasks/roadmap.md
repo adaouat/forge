@@ -633,16 +633,23 @@ structured error context, routing to external sinks) stays out — domain logic,
       `charm.land/log/v2` to a direct `require`. Lint + suite green (133 tests, 8 packages).
 - [ ] **Apps adopt** — bifrost + heraut migrate any ad hoc logging (`fmt.Println`/`log.Printf`)
       to the shared `*slog.Logger`; re-pin to the M9 forge release.
-  - **bifrost — deferred.** Investigated first: bifrost has **no ad hoc logging to migrate**.
-    Its only logging-related code is one line — `clog.SetLevel(clog.DebugLevel)` in the
-    `--verbose` path (`internal/cmd/root.go`), toggling `charm.land/log/v2`'s *global* logger.
-    There are zero `clog.Info/Debug/Error` call sites and no logger construction anywhere. forge's
-    `log.New` returns a `*slog.Logger` *instance* (deliberately no global setter), so there's
-    nothing for bifrost to wire it into — constructing one would be an unused logger (YAGNI, which
-    forge's coding rules forbid). Deferred until bifrost grows real logging needs; bifrost is left
-    untouched (the dead/global `SetLevel` line is bifrost's own call to revisit, not part of M9).
-    The `log` package still ships in the M9 forge release so it's available when a consumer
-    appears (heraut next).
+  - **bifrost — initially deferred, then done.** Investigated first: bifrost had **no ad hoc
+    logging to migrate**. Its only logging-related code was one line —
+    `clog.SetLevel(clog.DebugLevel)` in the `--verbose` path (`internal/cmd/root.go`), toggling
+    `charm.land/log/v2`'s *global* logger. Zero `clog.Info/Debug/Error` call sites, no logger
+    construction. So like heraut, this was never a *migration* — and the deferral reasoning ("no
+    instance to wire it into") dissolved once heraut proved the real shape is a **new
+    operator-debugging feature**. **Reconsidered and done (bifrost `feat(deploy)` @ d3d4c52, on
+    forge v0.11.0):** same pattern as heraut, applied to the atomic deploy path — `WithLogger` on
+    `atomic.Deployer`, the deploy command builds `log.New(cmd.ErrOrStderr(), log.LevelFor(verbose))`,
+    Debug call sites at the `runStep` boundaries (each step's `extras` map flattened into
+    attributes) plus release-dir-created and artifact-extracted. **Bonus cleanup heraut didn't
+    have:** dropped the dead global `clog.SetLevel` and the direct `charm.land/log/v2` import,
+    which falls to indirect (via forge) — diagnostics are stderr-only and independent of bifrost's
+    `--output json/plain/human` (the JSON event stream stays on stdout). TDD: real local deploy
+    over temp dirs, Debug-surfaces / Warn-silent. build + 173 tests + lint green. **This makes
+    forge/log a genuine ≥2-consumer package** (heraut + bifrost), clearing the extraction-bar
+    concern flagged when `LevelFor` had only one consumer.
   - **heraut — reframed as a new feature (in progress).** Investigated: heraut has no ad hoc
     logging either (no `fmt.Print*`, no `slog`, no `charm.land/log`; `--verbose` drives
     `forge/exec` command-echoing; output goes through `ui`/stdout). So this is **not a
