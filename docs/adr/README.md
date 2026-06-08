@@ -14,3 +14,4 @@ ADRs document significant architectural choices: what was decided, why, and what
 | [0008](0008-ui-theme-palette.md) | Family UI theme: shared palette, per-tool accent | Accepted |
 | [0009](0009-release-setup-composite-action.md) | Shared release setup via a composite action | Accepted |
 | [0010](0010-cli-framework-foundation.md) | forge is the CLI framework foundation | Accepted |
+| [0011](0011-logging-foundation.md) | Logging foundation: `slog` API, `charmbracelet/log` handler | Accepted |

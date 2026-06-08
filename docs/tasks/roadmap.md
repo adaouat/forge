@@ -594,6 +594,26 @@ guide.
 
 ---
 
+## M9 — Logging foundation *([ADR-0011](../adr/0011-logging-foundation.md))*
+
+*Same shape as M8: a mechanical CLI-runtime concern (verbosity → level mapping, output
+handler, TTY-aware rendering) that's identical across the family and otherwise drifts per
+app, the way fang/huh/the theme did before ADR-0010. Logging *content* (what gets logged,
+structured error context, routing to external sinks) stays out — domain logic, per ADR-0001.*
+
+- [ ] **Confirm the `charmbracelet/log` import path** — verify a `charm.land` vanity path
+      resolves (mirrors the M3 `colorprofile` flag); if not, document the
+      `github.com/charmbracelet/log` exception in `docs/rules/coding.md` alongside
+      `colorprofile`/`x/term`.
+- [ ] **forge logging setup** — a thin package wrapping `log/slog` (the API) with
+      `charmbracelet/log` as the rendering `slog.Handler` (the backend), in the same
+      interface/implementation relationship as `cli.Run`/fang. Wires `--verbose`/`--quiet`
+      to levels, routes to stderr, and respects `ui.IsTTY`/`ui.HasColor` for plain-vs-colored
+      output. Exposes a constructor returning a `*slog.Logger` — exact name/signature TBD at
+      implementation time (TDD: failing test first, per `docs/rules/testing.md`).
+- [ ] **Apps adopt** — bifrost + heraut migrate any ad hoc logging (`fmt.Println`/`log.Printf`)
+      to the shared `*slog.Logger`; re-pin to the M9 forge release.
+
 ## Explicitly NOT on this roadmap
 
 Per ADR-0001 Tier 3: config **schemas** and **merge semantics**, bifrost's hook runner and
