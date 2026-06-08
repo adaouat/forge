@@ -1,5 +1,27 @@
 # Changelog
 
+## [0.10.0](https://github.com/adaouat/forge/compare/v0.9.0..v0.10.0) - 2026-06-08
+
+### 🚀 Features
+
+- *(log)* Add the logging foundation package (M9.2) - ([ebbdff6](https://github.com/adaouat/forge/commit/ebbdff6c5bafebb4487878bb3794dda86cb267a9)) by @bchatard
+
+
+### 📚 Documentation
+
+- *(adr)* Add ADR-0011 proposing a logging foundation (slog + charmbracelet/log) - ([4d6dc60](https://github.com/adaouat/forge/commit/4d6dc60b918c8329b4aedfecada2612bc7391661)) by @bchatard
+
+- *(tasks)* Record bifrost M9.3 deferral and its rationale - ([ca5cadf](https://github.com/adaouat/forge/commit/ca5cadf43ca5a427f1c22e343e906f977008a2eb)) by @bchatard
+
+- Confirm charm.land/log/v2 as the M9 logging backend import (M9.1) - ([dc48963](https://github.com/adaouat/forge/commit/dc4896320300255a66fac62cd25781b9e9c5b90d)) by @bchatard
+
+
+### ⚙️ Miscellaneous Tasks
+
+- *(claude)* Add /bump-forge command + skill - ([1273321](https://github.com/adaouat/forge/commit/1273321320c7688a5a6c177bd8490c0010690349)) by @bchatard
+
+- *(claude)* Drop command files shadowed by same-named skills - ([d7e30c3](https://github.com/adaouat/forge/commit/d7e30c348e080da65e3a1c52badab73f48cf08e1)) by @bchatard
+
 ## [0.9.0](https://github.com/adaouat/forge/compare/v0.8.0..v0.9.0) - 2026-06-07
 
 ### 🚀 Features
