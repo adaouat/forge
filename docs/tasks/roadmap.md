@@ -612,12 +612,25 @@ structured error context, routing to external sinks) stays out — domain logic,
       (verified — added as a real `require`, no error). **No exception needed**; the M9
       logging-setup package imports `charm.land/log/v2`, matching the `huh`/`bubbles`
       `/v2` convention already in use.
-- [ ] **forge logging setup** — a thin package wrapping `log/slog` (the API) with
+- [x] **forge logging setup** — a thin package wrapping `log/slog` (the API) with
       `charm.land/log/v2` as the rendering `slog.Handler` (the backend), in the same
       interface/implementation relationship as `cli.Run`/fang. Wires `--verbose`/`--quiet`
       to levels, routes to stderr, and respects `ui.IsTTY`/`ui.HasColor` for plain-vs-colored
       output. Exposes a constructor returning a `*slog.Logger` — exact name/signature TBD at
-      implementation time (TDD: failing test first, per `docs/rules/testing.md`).
+      implementation time (TDD: failing test first, per `docs/rules/testing.md`). **Done:**
+      `log.New(w io.Writer, level slog.Level) *slog.Logger` (`log/log.go`) — genuinely thin:
+      `slog.New(charmlog.NewWithOptions(w, charmlog.Options{Level: charmlog.Level(level)}))`.
+      **Correction to the framing:** no separate `ui.IsTTY`/`ui.HasColor` wiring needed —
+      `charm.land/log/v2` already runs `colorprofile.Detect(w, os.Environ())` internally (the
+      same mechanism `ui.HasColor` wraps), so duplicating it would be redundant. `slog.Level`
+      and `charmlog.Level` share identical numeric values for Debug/Info/Warn/Error
+      (-4/0/4/8), so the conversion is a direct `charmlog.Level(level)` — no lookup table.
+      Verbosity-flag → level mapping and stderr routing are the **app's** call at the
+      `cli.Run`/command-construction site (forge hands back a configurable `*slog.Logger`,
+      it doesn't own the flags). TDD: table-driven `TestNew` (level filtering: info logger
+      reports info+ filters debug; warn logger reports warn+ filters info) +
+      `TestNew_writesToProvidedWriter`, both via a `bytes.Buffer`. `go mod tidy` promoted
+      `charm.land/log/v2` to a direct `require`. Lint + suite green (133 tests, 8 packages).
 - [ ] **Apps adopt** — bifrost + heraut migrate any ad hoc logging (`fmt.Println`/`log.Printf`)
       to the shared `*slog.Logger`; re-pin to the M9 forge release.
 
