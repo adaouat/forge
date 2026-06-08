@@ -643,6 +643,28 @@ structured error context, routing to external sinks) stays out — domain logic,
     untouched (the dead/global `SetLevel` line is bifrost's own call to revisit, not part of M9).
     The `log` package still ships in the M9 forge release so it's available when a consumer
     appears (heraut next).
+  - **heraut — reframed as a new feature (in progress).** Investigated: heraut has no ad hoc
+    logging either (no `fmt.Print*`, no `slog`, no `charm.land/log`; `--verbose` drives
+    `forge/exec` command-echoing; output goes through `ui`/stdout). So this is **not a
+    migration** — it's a deliberate new capability: **operator-debugging diagnostics**, leveled
+    on stderr, gated by `--verbose`. Designed via the brainstorming flow (purpose = operator
+    debugging; `--verbose` raises the level rather than adding a second knob; logger reaches
+    domain code by **constructor injection**, matching how `forge/exec`'s runner is already
+    wired). Decisions recorded in [ADR-0011](../adr/0011-logging-foundation.md).
+- [x] **forge `log.LevelFor`** — the family `--verbose`→level mapping as a shared helper
+      (off→Warn, on→Debug), so every tool's `--verbose` behaves identically and apps don't each
+      re-derive it. **Done:** `log.LevelFor(verbose bool) slog.Level` (`log/log.go`); TDD
+      (table: off→`slog.LevelWarn`, on→`slog.LevelDebug`). Recorded in the ADR-0007 surface
+      table (which also backfills `log.New`, shipped in v0.10.0 without a table entry) and in
+      ADR-0011's consequences. Chosen over an inline per-app 2-liner deliberately: the mapping
+      is a family-wide UX contract (ADR-0011 framing), not coincidental duplication — even
+      though heraut is its only consumer today. Lint + suite green (136 tests). Ships in the
+      next forge release; heraut wiring follows once it's tagged.
+- [ ] **heraut wiring** — once the `LevelFor` release is tagged: bump heraut, build a logger per
+      command (`log.New(os.Stderr, log.LevelFor(verbose))`), inject it into the pipeline +
+      versioning resolver (struct field), and add a focused starter set of Debug call sites at
+      the high-value operator-debug points (version resolution, pipeline step boundaries, config
+      path resolution). Design sections to be finalized with the user before implementation.
 
 ## Explicitly NOT on this roadmap
 

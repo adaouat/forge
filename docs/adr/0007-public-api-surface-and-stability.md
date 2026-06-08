@@ -34,10 +34,12 @@ changes (a new method, a new exported symbol) are minor and need no ADR.
 | `config` | `Decode`/`Load` (+ `ErrEmptyConfig`), `Resolver` (`Resolve`/`Label`/`InitDest`, `Source`), `ValidationError`/`ValidationErrors` | — *(fixed here)* |
 | `updatecheck` | `Checker.CheckNewer`, `Hinter.Print`, `InstallMethod` + detection | [0005](0005-updates-via-package-managers.md) |
 | `cli` | `Run(ctx, cmd, version, accent)` — runs a cobra command through fang with the version + family theme | [0010](0010-cli-framework-foundation.md) |
+| `log` | `New(w, level)` — a slog logger rendered via charm.land/log/v2; `LevelFor(verbose)` — the family `--verbose`→level mapping (off→Warn, on→Debug) | [0011](0011-logging-foundation.md) |
 
 The `ui` theme exports and the `cli` package landed in M7/M8 — after this ADR's original date — via
-ADRs [0008](0008-ui-theme-palette.md) and [0010](0010-cli-framework-foundation.md). They are additive
-and folded into the table above so it stays the *complete* surface of record.
+ADRs [0008](0008-ui-theme-palette.md) and [0010](0010-cli-framework-foundation.md). The `log` package
+landed in M9 via [ADR-0011](0011-logging-foundation.md) (`New` in v0.10.0, `LevelFor` alongside). All
+are additive and folded into the table above so it stays the *complete* surface of record.
 
 Out of scope (per [ADR-0001](0001-shared-core-module.md) Tier 3): app config schemas/merge,
 bifrost's hook runner + atomic strategy, heraut's pipeline/generators/platforms/versioning.

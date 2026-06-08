@@ -17,3 +17,13 @@ func New(w io.Writer, level slog.Level) *slog.Logger {
 		Level: charmlog.Level(level),
 	}))
 }
+
+// LevelFor maps the family --verbose flag to a log level: [slog.LevelWarn] when off (only
+// problems surface; the ui layer owns the happy-path narrative), [slog.LevelDebug] when on
+// (full diagnostic trace). See forge ADR-0011.
+func LevelFor(verbose bool) slog.Level {
+	if verbose {
+		return slog.LevelDebug
+	}
+	return slog.LevelWarn
+}

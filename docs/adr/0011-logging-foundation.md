@@ -42,11 +42,13 @@ interface/implementation roles as `cli.Run`/fang:
   — `charm.land/log/v2` resolves and `go get`s cleanly, no `colorprofile`/`x/term`-style
   exception needed; the unversioned `charm.land/log` is a stale v0/v1 proxy entry that still
   declares `github.com/charmbracelet/log` and fails on `go get`.)*
-- **forge exposes setup, not log statements.** Something in the shape of
-  `log.New(level Level, accent ui.Accent) *slog.Logger` (exact name/signature TBD at
-  implementation time): wires verbosity → level, routes to stderr, and respects
-  `ui.IsTTY`/`ui.HasColor` for plain-vs-colored output. Apps call it once, get a logger, and
-  write their own domain log statements through it.
+- **forge exposes setup, not log statements.** **As built (M9):**
+  `log.New(w io.Writer, level slog.Level) *slog.Logger` (the constructor) and
+  `log.LevelFor(verbose bool) slog.Level` (the family `--verbose`→level mapping). Apps build a
+  logger once per command — `log.New(os.Stderr, log.LevelFor(verbose))` — and inject it into
+  their domain services; forge owns the mapping and the rendering, the app owns the flag and
+  the call sites. No `ui.IsTTY`/`ui.HasColor` wiring is needed — `charm.land/log/v2` runs
+  `colorprofile.Detect` internally.
 - **Out of scope (stays in the apps, or doesn't happen at all):**
   - Routing to external sinks (Loki, Sentry, Datadog, Kafka, …) — a deployed-service concern,
     not a CLI runtime concern. If a tool needs it, it wires `samber/slog-*` sinks itself on top
@@ -65,6 +67,10 @@ interface/implementation roles as `cli.Run`/fang:
   consistent verbosity flags and output across the family.
 - Does not relax forge's zero-domain-logic bar (ADR-0001): only the mechanical setup moves
   here; what gets logged, and where it ultimately lands in production, stays the apps' call.
-- Apps that already log ad hoc (`fmt.Println`/`log.Printf`) migrate to the shared
-  `*slog.Logger` when they adopt — tracked as the implementation task in the roadmap.
+- **Finding (M9.3):** neither bifrost nor heraut had *any* ad hoc logging to migrate — their
+  `--verbose` drives `forge/exec` command-echoing, and their user output goes through `ui` /
+  stdout, not a logger. So the first real use is **new operator-debugging logging** (leveled
+  diagnostics on stderr, gated by `--verbose`), not a migration. heraut is the first adopter;
+  bifrost is deferred until it grows a need. The mapping (`LevelFor`) is a deliberate
+  family-wide contract, so it lives in forge even though heraut is its first consumer.
 </content>

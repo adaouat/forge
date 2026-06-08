@@ -61,3 +61,19 @@ func TestNew_writesToProvidedWriter(t *testing.T) {
 
 	assert.Contains(t, buf.String(), "routed message")
 }
+
+func TestLevelFor(t *testing.T) {
+	tests := []struct {
+		name    string
+		verbose bool
+		want    slog.Level
+	}{
+		{"off maps to warn — only problems surface", false, slog.LevelWarn},
+		{"on maps to debug — full diagnostic trace", true, slog.LevelDebug},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			assert.Equal(t, tc.want, log.LevelFor(tc.verbose))
+		})
+	}
+}
