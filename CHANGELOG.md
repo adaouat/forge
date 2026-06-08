@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.11.0](https://github.com/adaouat/forge/compare/v0.10.0..v0.11.0) - 2026-06-08
+
+### 🚀 Features
+
+- *(log)* Add LevelFor — the family --verbose to level mapping - ([4671893](https://github.com/adaouat/forge/commit/4671893c190469061b10268066ad4a9d0948aefe)) by @bchatard
+
 ## [0.10.0](https://github.com/adaouat/forge/compare/v0.9.0..v0.10.0) - 2026-06-08
 
 ### 🚀 Features
