@@ -34,12 +34,14 @@ interface/implementation roles as `cli.Run`/fang:
   zero dependency cost, and it is the common interface every backend (including
   `charmbracelet/log`, `zerolog`, the `samber/slog-*` sinks) already targets. Forge does not
   invent its own logging facade.
-- **`charmbracelet/log` is the rendering handler.** It implements `slog.Handler` and renders
+- **`charm.land/log/v2` is the rendering handler.** It implements `slog.Handler` and renders
   CLI-appropriate output (leveled, colored, prefixed) — the natural backend choice given forge
   already standardizes on the `charm.land` family for `ui` (lipgloss, bubbles, huh) and the
-  same terminal aesthetic. *(Confirm the `charm.land` vanity path resolves before adding the
-  `require`; if it doesn't — same situation as `colorprofile`/`x/term` in the M3 flag — document
-  the `github.com/charmbracelet/log` exception in `docs/rules/coding.md`.)*
+  same terminal aesthetic. *(Verified: the v2 line is properly republished under `charm.land`
+  per the project's [UPGRADE_GUIDE_V2](https://github.com/charmbracelet/log/blob/main/UPGRADE_GUIDE_V2.md)
+  — `charm.land/log/v2` resolves and `go get`s cleanly, no `colorprofile`/`x/term`-style
+  exception needed; the unversioned `charm.land/log` is a stale v0/v1 proxy entry that still
+  declares `github.com/charmbracelet/log` and fails on `go get`.)*
 - **forge exposes setup, not log statements.** Something in the shape of
   `log.New(level Level, accent ui.Accent) *slog.Logger` (exact name/signature TBD at
   implementation time): wires verbosity → level, routes to stderr, and respects

@@ -601,12 +601,19 @@ handler, TTY-aware rendering) that's identical across the family and otherwise d
 app, the way fang/huh/the theme did before ADR-0010. Logging *content* (what gets logged,
 structured error context, routing to external sinks) stays out — domain logic, per ADR-0001.*
 
-- [ ] **Confirm the `charmbracelet/log` import path** — verify a `charm.land` vanity path
+- [x] **Confirm the `charmbracelet/log` import path** — verify a `charm.land` vanity path
       resolves (mirrors the M3 `colorprofile` flag); if not, document the
       `github.com/charmbracelet/log` exception in `docs/rules/coding.md` alongside
-      `colorprofile`/`x/term`.
+      `colorprofile`/`x/term`. **Done:** the unversioned `charm.land/log` *looks* like it
+      resolves in the proxy listing but fails on `go get` ("module declares its path as
+      `github.com/charmbracelet/log`") — a v1/v0 artifact. Per the project's own
+      [UPGRADE_GUIDE_V2](https://github.com/charmbracelet/log/blob/main/UPGRADE_GUIDE_V2.md),
+      the v2 line is properly republished: `charm.land/log/v2` resolves and `go get`s cleanly
+      (verified — added as a real `require`, no error). **No exception needed**; the M9
+      logging-setup package imports `charm.land/log/v2`, matching the `huh`/`bubbles`
+      `/v2` convention already in use.
 - [ ] **forge logging setup** — a thin package wrapping `log/slog` (the API) with
-      `charmbracelet/log` as the rendering `slog.Handler` (the backend), in the same
+      `charm.land/log/v2` as the rendering `slog.Handler` (the backend), in the same
       interface/implementation relationship as `cli.Run`/fang. Wires `--verbose`/`--quiet`
       to levels, routes to stderr, and respects `ui.IsTTY`/`ui.HasColor` for plain-vs-colored
       output. Exposes a constructor returning a `*slog.Logger` — exact name/signature TBD at
