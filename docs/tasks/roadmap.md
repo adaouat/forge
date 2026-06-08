@@ -660,11 +660,24 @@ structured error context, routing to external sinks) stays out — domain logic,
       is a family-wide UX contract (ADR-0011 framing), not coincidental duplication — even
       though heraut is its only consumer today. Lint + suite green (136 tests). Ships in the
       next forge release; heraut wiring follows once it's tagged.
-- [ ] **heraut wiring** — once the `LevelFor` release is tagged: bump heraut, build a logger per
+- [x] **heraut wiring** — once the `LevelFor` release is tagged: bump heraut, build a logger per
       command (`log.New(os.Stderr, log.LevelFor(verbose))`), inject it into the pipeline +
       versioning resolver (struct field), and add a focused starter set of Debug call sites at
       the high-value operator-debug points (version resolution, pipeline step boundaries, config
       path resolution). Design sections to be finalized with the user before implementation.
+      **Done (heraut `feat(release)` @ 9332bc6, on forge v0.11.0):** scope = the **release**
+      path. `Pipeline` gained a `WithLogger` builder mirroring `WithReporter`, fed via a new
+      `PipelineOpts.Logger`; the release command builds `log.New(cmd.ErrOrStderr(),
+      log.LevelFor(verbose))` and passes it through. Debug call sites: `runStep` boundaries
+      (step started/completed — one choke point covers every step), the resolved version (tag /
+      version / current_tag), and the resolved config path. **Refinement from the Section-2
+      design (flagged to the user, accepted):** the versioning `Resolver` is an interface with
+      4 implementations, so rather than a `WithLogger` on all of them, the resolved-version log
+      lives at the **pipeline call site** where `Resolve()` runs — same operator-debug value on
+      the release path, far less churn. Trade-off: the `version` command (resolves outside the
+      pipeline) doesn't get that log yet; it adopts the same pattern when `version`/`check`/
+      `changelog` are wired later. TDD: table test proving diagnostics surface at Debug and stay
+      silent at Warn. heraut: build + 788 tests + lint green. bifrost still deferred.
 
 ## Explicitly NOT on this roadmap
 
