@@ -633,6 +633,16 @@ structured error context, routing to external sinks) stays out — domain logic,
       `charm.land/log/v2` to a direct `require`. Lint + suite green (133 tests, 8 packages).
 - [ ] **Apps adopt** — bifrost + heraut migrate any ad hoc logging (`fmt.Println`/`log.Printf`)
       to the shared `*slog.Logger`; re-pin to the M9 forge release.
+  - **bifrost — deferred.** Investigated first: bifrost has **no ad hoc logging to migrate**.
+    Its only logging-related code is one line — `clog.SetLevel(clog.DebugLevel)` in the
+    `--verbose` path (`internal/cmd/root.go`), toggling `charm.land/log/v2`'s *global* logger.
+    There are zero `clog.Info/Debug/Error` call sites and no logger construction anywhere. forge's
+    `log.New` returns a `*slog.Logger` *instance* (deliberately no global setter), so there's
+    nothing for bifrost to wire it into — constructing one would be an unused logger (YAGNI, which
+    forge's coding rules forbid). Deferred until bifrost grows real logging needs; bifrost is left
+    untouched (the dead/global `SetLevel` line is bifrost's own call to revisit, not part of M9).
+    The `log` package still ships in the M9 forge release so it's available when a consumer
+    appears (heraut next).
 
 ## Explicitly NOT on this roadmap
 
