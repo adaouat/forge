@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.11.1](https://github.com/adaouat/forge/compare/v0.11.0..v0.11.1) - 2026-06-09
+
+### 🐛 Bug Fixes
+
+- *(deps)* Bump golang.org/x/sys to v0.45.0 (CVE-2026-39824) - ([2ec545e](https://github.com/adaouat/forge/commit/2ec545e3abfbb53157c00513964d538c4fee178b)) by @bchatard
+
+
+### 📚 Documentation
+
+- *(tasks)* Mark M9.3 heraut wiring done (release-path diagnostics) - ([82b3c3b](https://github.com/adaouat/forge/commit/82b3c3b7e08adab92a261541e3028acdea52b07d)) by @bchatard
+
+- *(tasks)* Record bifrost forge/log adoption (deploy-path diagnostics) - ([9b991ff](https://github.com/adaouat/forge/commit/9b991ff4b4fa9071f9df12633cd6b5920e018932)) by @bchatard
+
 ## [0.11.0](https://github.com/adaouat/forge/compare/v0.10.0..v0.11.0) - 2026-06-08
 
 ### 🚀 Features
