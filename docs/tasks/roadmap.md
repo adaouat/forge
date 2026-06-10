@@ -744,14 +744,20 @@ heavier machinery is gated on appetite (a low-audience "nerd" feature).*
       glamour from C, so this adds only the third source. Apps supply the embedded FS.
       *Deferred unless wanted:* a pager, and a persisted "last seen" filter (D uses
       newer-than-current).
-- [ ] **Apps register `whatsnew` (bifrost + heraut, after the C release is tagged)** — bump both
-      apps to the C forge release and register the command in their tree
-      (`root.AddCommand(updatecheck.WhatsNewCommand(...))`) with their repo / bin / cache-path config.
-      Tier A's hint pointer rides along automatically on the same bump (no code — `Hinter.Print`
-      already runs in both apps per ADR-0005). This is the ≥2-consumer proof for the new command
-      surface (ADR-0001 bar) — neither app ships `whatsnew` until it's wired here. TDD per app:
-      command-registration smoke test (the subcommand exists and runs against an `httptest` releases
-      endpoint). Both apps: build + suite + lint green before re-pinning.
+- [x] **Apps register `whatsnew` (bifrost + heraut)** — register the command in their tree
+      (`root.AddCommand(updatecheck.WhatsNewCommand(...))`) with their repo / current / cache-path
+      config. This is the ≥2-consumer proof for the new command surface (ADR-0001 bar). **Done off
+      forge v0.14.0** (which folded in M11, so the apps adopted the shared hint wiring in the *same*
+      pass): **heraut** bump `b36f93a` + wire `9457530`, **bifrost** bump `8e10aa1` + wire `3ddd3bf`.
+      Each registers `whatsnew` via `CacheFile(<app>)` and collapses its update-hint `PostRunE` to a
+      single `updatecheck.Hinter{…}.PostRun()` — deleting the hand-rolled timeout/cache-path block.
+      Only bifrost's `output != "human"` gate stays app-side, via `Skip` (a run-time closure, since
+      `output` isn't known when the tree is built). Tier A's hint pointer rode along on the bump (no
+      code). TDD: a registration smoke test per app (`TestNewRootCmd_RegistersWhatsNew` /
+      `TestRootRegistersWhatsNew`) — the app level asserts the subcommand exists; forge already owns
+      the end-to-end `whatsnew` behaviour (the app wiring doesn't expose `BaseURL` to inject an
+      `httptest` endpoint, so that stays a forge-level test). Both apps: build + full suite + lint
+      green. **M11's app adoption is folded here** — no separate task.
 - [ ] **Apps supply the embedded changelog (bifrost + heraut, after the D release is tagged)** — each
       app adds its `go:embed`-ed `CHANGELOG.md` to the `WhatsNewCommand` config and re-pins to the D
       forge release, enabling the offline fallback (cached → live → **embedded**). Verify the offline
