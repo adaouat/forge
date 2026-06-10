@@ -25,22 +25,48 @@ type Checker struct {
 // CheckNewer returns the latest release tag for the repo and whether it is newer
 // than current.
 func (c Checker) CheckNewer(ctx context.Context, current string) (latest string, newer bool, err error) {
-	latest, err = c.latest(ctx)
+	rel, err := c.latestRelease(ctx)
 	if err != nil {
 		return "", false, err
 	}
-	return latest, isNewer(latest, current), nil
+	return rel.Tag, isNewer(rel.Tag, current), nil
 }
 
-func (c Checker) latest(ctx context.Context) (string, error) {
+// release is a GitHub release: its tag, the release-note markdown, and the page URL.
+type release struct {
+	Tag  string `json:"tag_name"`
+	Body string `json:"body"`
+	URL  string `json:"html_url"`
+}
+
+func (c Checker) latestRelease(ctx context.Context) (release, error) {
+	var rel release
+	if err := c.fetchJSON(ctx, "releases/latest", &rel); err != nil {
+		return release{}, err
+	}
+	if rel.Tag == "" {
+		return release{}, fmt.Errorf("update check: empty tag_name")
+	}
+	return rel, nil
+}
+
+func (c Checker) listReleases(ctx context.Context) ([]release, error) {
+	var rels []release
+	if err := c.fetchJSON(ctx, "releases", &rels); err != nil {
+		return nil, err
+	}
+	return rels, nil
+}
+
+func (c Checker) fetchJSON(ctx context.Context, path string, into any) error {
 	base := c.BaseURL
 	if base == "" {
 		base = defaultBaseURL
 	}
-	url := fmt.Sprintf("%s/repos/%s/releases/latest", base, c.Repo)
+	url := fmt.Sprintf("%s/repos/%s/%s", base, c.Repo, path)
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
-		return "", fmt.Errorf("update check request: %w", err)
+		return fmt.Errorf("update check request: %w", err)
 	}
 	req.Header.Set("Accept", "application/vnd.github+json")
 
@@ -50,21 +76,14 @@ func (c Checker) latest(ctx context.Context) (string, error) {
 	}
 	resp, err := client.Do(req)
 	if err != nil {
-		return "", fmt.Errorf("update check: %w", err)
+		return fmt.Errorf("update check: %w", err)
 	}
 	defer func() { _ = resp.Body.Close() }()
 	if resp.StatusCode != http.StatusOK {
-		return "", fmt.Errorf("update check: github returned %s", resp.Status)
+		return fmt.Errorf("update check: github returned %s", resp.Status)
 	}
-
-	var rel struct {
-		TagName string `json:"tag_name"`
+	if err := json.NewDecoder(io.LimitReader(resp.Body, maxResponseBytes)).Decode(into); err != nil {
+		return fmt.Errorf("update check decode: %w", err)
 	}
-	if err := json.NewDecoder(io.LimitReader(resp.Body, maxResponseBytes)).Decode(&rel); err != nil {
-		return "", fmt.Errorf("update check decode: %w", err)
-	}
-	if rel.TagName == "" {
-		return "", fmt.Errorf("update check: empty tag_name")
-	}
-	return rel.TagName, nil
+	return nil
 }

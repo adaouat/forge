@@ -58,3 +58,35 @@ func TestCheckNewer_HTTPError(t *testing.T) {
 	_, _, err := Checker{Repo: "adaouat/heraut", BaseURL: srv.URL}.CheckNewer(context.Background(), "v1.2.0")
 	require.Error(t, err)
 }
+
+func TestChecker_latestRelease(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, "/repos/adaouat/heraut/releases/latest", r.URL.Path)
+		_, _ = w.Write([]byte(`{"tag_name":"v1.3.0","body":"## What changed\n- thing","html_url":"https://github.com/adaouat/heraut/releases/tag/v1.3.0"}`))
+	}))
+	defer srv.Close()
+
+	rel, err := Checker{Repo: "adaouat/heraut", BaseURL: srv.URL}.latestRelease(context.Background())
+	require.NoError(t, err)
+	assert.Equal(t, "v1.3.0", rel.Tag)
+	assert.Equal(t, "## What changed\n- thing", rel.Body)
+	assert.Equal(t, "https://github.com/adaouat/heraut/releases/tag/v1.3.0", rel.URL)
+}
+
+func TestChecker_listReleases(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, "/repos/adaouat/heraut/releases", r.URL.Path)
+		_, _ = w.Write([]byte(`[
+			{"tag_name":"v1.3.0","body":"third","html_url":"u3"},
+			{"tag_name":"v1.2.0","body":"second","html_url":"u2"}
+		]`))
+	}))
+	defer srv.Close()
+
+	rels, err := Checker{Repo: "adaouat/heraut", BaseURL: srv.URL}.listReleases(context.Background())
+	require.NoError(t, err)
+	require.Len(t, rels, 2)
+	assert.Equal(t, "v1.3.0", rels[0].Tag)
+	assert.Equal(t, "third", rels[0].Body)
+	assert.Equal(t, "v1.2.0", rels[1].Tag)
+}

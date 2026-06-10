@@ -35,14 +35,15 @@ func (h Hinter) Print(ctx context.Context, w io.Writer) {
 		now = h.Now
 	}
 
-	latest, ok := h.readCache(now())
+	entry, ok := readCache(h.CacheFile, now())
+	latest := entry.Latest
 	if !ok {
-		l, err := Checker{Repo: h.Repo, BaseURL: h.BaseURL, Client: h.Client}.latest(ctx)
+		rel, err := Checker{Repo: h.Repo, BaseURL: h.BaseURL, Client: h.Client}.latestRelease(ctx)
 		if err != nil {
 			return
 		}
-		latest = l
-		h.writeCache(now(), latest)
+		latest = rel.Tag
+		writeCache(h.CacheFile, cacheEntry{CheckedAt: now(), Latest: rel.Tag, Body: rel.Body, URL: rel.URL})
 	}
 
 	if !isNewer(latest, h.Current) {
@@ -66,35 +67,37 @@ func upgradeLine(bin, latest, cmd, releases string) string {
 type cacheEntry struct {
 	CheckedAt time.Time `json:"checked_at"`
 	Latest    string    `json:"latest"`
+	Body      string    `json:"body,omitempty"`
+	URL       string    `json:"url,omitempty"`
 }
 
-// readCache returns the cached latest tag if the cache is present and fresh.
-func (h Hinter) readCache(now time.Time) (string, bool) {
-	if h.CacheFile == "" {
-		return "", false
+// readCache returns the cached entry if the cache file is present and fresh.
+func readCache(path string, now time.Time) (cacheEntry, bool) {
+	if path == "" {
+		return cacheEntry{}, false
 	}
-	data, err := os.ReadFile(h.CacheFile)
+	data, err := os.ReadFile(path)
 	if err != nil {
-		return "", false
+		return cacheEntry{}, false
 	}
 	var e cacheEntry
 	if err := json.Unmarshal(data, &e); err != nil {
-		return "", false
+		return cacheEntry{}, false
 	}
 	if now.Sub(e.CheckedAt) >= cacheWindow {
-		return "", false
+		return cacheEntry{}, false
 	}
-	return e.Latest, true
+	return e, true
 }
 
-func (h Hinter) writeCache(now time.Time, latest string) {
-	if h.CacheFile == "" {
+func writeCache(path string, e cacheEntry) {
+	if path == "" {
 		return
 	}
-	data, err := json.Marshal(cacheEntry{CheckedAt: now, Latest: latest})
+	data, err := json.Marshal(e)
 	if err != nil {
 		return
 	}
-	_ = os.MkdirAll(filepath.Dir(h.CacheFile), 0o755)
-	_ = os.WriteFile(h.CacheFile, data, 0o600)
+	_ = os.MkdirAll(filepath.Dir(path), 0o755)
+	_ = os.WriteFile(path, data, 0o600)
 }

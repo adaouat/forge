@@ -99,6 +99,23 @@ func TestHinter_FreshCacheSkipsFetch(t *testing.T) {
 	assert.Contains(t, buf.String(), "heraut v1.3.0 available")
 }
 
+func TestHinter_CachesReleaseBody(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		_, _ = w.Write([]byte(`{"tag_name":"v1.3.0","body":"## What changed","html_url":"https://x/v1.3.0"}`))
+	}))
+	defer srv.Close()
+
+	cacheFile := filepath.Join(t.TempDir(), "check.json")
+	var buf bytes.Buffer
+	Hinter{Repo: "adaouat/heraut", Bin: "heraut", Current: "v1.2.0", BaseURL: srv.URL, CacheFile: cacheFile, Now: fixedNow}.
+		Print(context.Background(), &buf)
+
+	data, err := os.ReadFile(cacheFile)
+	require.NoError(t, err)
+	assert.Contains(t, string(data), "What changed", "release body is cached for whatsnew's offline fallback")
+	assert.Contains(t, string(data), "https://x/v1.3.0", "release url is cached")
+}
+
 func TestHinter_StaleCacheRefetches(t *testing.T) {
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		_, _ = w.Write([]byte(`{"tag_name":"v2.0.0"}`))
