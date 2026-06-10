@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.14.0](https://github.com/adaouat/forge/compare/v0.13.0..v0.14.0) - 2026-06-10
+
+### 🚀 Features
+
+- *(updatecheck)* Share update-hint wiring via CacheFile + PostRun - ([03b85c1](https://github.com/adaouat/forge/commit/03b85c1166ffa2b25b8b4e5236a0617720b5eebe)) by @bchatard
+
 ## [0.13.0](https://github.com/adaouat/forge/compare/v0.12.0..v0.13.0) - 2026-06-10
 
 ### 🚀 Features
