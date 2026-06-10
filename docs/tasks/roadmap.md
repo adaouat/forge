@@ -766,10 +766,17 @@ heavier machinery is gated on appetite (a low-audience "nerd" feature).*
       the end-to-end `whatsnew` behaviour (the app wiring doesn't expose `BaseURL` to inject an
       `httptest` endpoint, so that stays a forge-level test). Both apps: build + full suite + lint
       green. **M11's app adoption is folded here** — no separate task.
-- [ ] **Apps supply the embedded changelog (bifrost + heraut, after the D release is tagged)** — each
-      app adds its `go:embed`-ed `CHANGELOG.md` to the `WhatsNewCommand` config and re-pins to the D
-      forge release, enabling the offline fallback (cached → live → **embedded**). Verify the offline
-      path renders the embedded notes when the cache is cold and the network is unreachable.
+- [x] **Apps supply the embedded changelog (bifrost + heraut)** — each app adds its `go:embed`-ed
+      `CHANGELOG.md` to the `WhatsNewCommand` config and re-pins to the D forge release, enabling the
+      offline fallback (live → cached → **embedded**). **Done off forge v0.15.0:** **heraut** bump
+      `93cee93` + wire `09fe57c`, **bifrost** bump `8eeded6` + wire `8893019`. **Embed-path
+      constraint:** `//go:embed` cannot reference a parent dir, but `CHANGELOG.md` is at the repo root
+      while the wiring is in `internal/cmd` — so each app got a tiny **root package** (`changelog.go`,
+      `package <app>`) embedding the file into a `string`, which `internal/cmd/root.go` imports and
+      passes as `WhatsNewConfig.Changelog`. Chosen over threading a new `NewRootCmd` parameter
+      (`NewRootCmd("dev")` has 30+ test call sites — the root-package import avoids all that churn; no
+      signature change, no import cycle since the root package imports only `embed`). Both apps: build
+      + full suite + lint green. Completes M10 (tier D end-to-end).
 
 ## M11 — Update-hint wiring extraction *([ADR-0005](../adr/0005-updates-via-package-managers.md))*
 
