@@ -2,7 +2,14 @@ package updatecheck
 
 import (
 	"bytes"
+	"context"
+	"encoding/json"
+	"net/http"
+	"net/http/httptest"
+	"os"
+	"path/filepath"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -39,4 +46,70 @@ func TestRender(t *testing.T) {
 	assert.NotEmpty(t, out)
 	assert.Contains(t, out, "Hello")
 	assert.Contains(t, out, "world")
+}
+
+func TestWhatsNewCommand_RendersSpanNewerThanCurrent(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, "/repos/adaouat/heraut/releases", r.URL.Path)
+		_, _ = w.Write([]byte(`[
+			{"tag_name":"v1.4.0","body":"four notes"},
+			{"tag_name":"v1.3.0","body":"three notes"},
+			{"tag_name":"v1.2.0","body":"two notes"}
+		]`))
+	}))
+	defer srv.Close()
+
+	cmd := WhatsNewCommand(WhatsNewConfig{Repo: "adaouat/heraut", Current: "v1.2.0", BaseURL: srv.URL})
+	var buf bytes.Buffer
+	cmd.SetOut(&buf)
+	cmd.SetArgs([]string{})
+	require.NoError(t, cmd.Execute())
+
+	out := buf.String()
+	assert.Contains(t, out, "v1.4.0")
+	assert.Contains(t, out, "four notes")
+	assert.Contains(t, out, "three notes")
+	assert.NotContains(t, out, "two notes", "v1.2.0 == current is excluded")
+}
+
+func TestWhatsNewCommand_UpToDate(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		_, _ = w.Write([]byte(`[{"tag_name":"v1.2.0","body":"two"}]`))
+	}))
+	defer srv.Close()
+
+	cmd := WhatsNewCommand(WhatsNewConfig{Repo: "adaouat/heraut", Current: "v1.2.0", BaseURL: srv.URL})
+	var buf bytes.Buffer
+	cmd.SetOut(&buf)
+	require.NoError(t, cmd.Execute())
+	assert.Contains(t, buf.String(), "latest release (v1.2.0)")
+}
+
+func TestWhatsNewConfig_OfflineFallsBackToCache(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		w.WriteHeader(http.StatusInternalServerError)
+	}))
+	defer srv.Close()
+
+	cacheFile := filepath.Join(t.TempDir(), "check.json")
+	data, _ := json.Marshal(cacheEntry{CheckedAt: fixedNow().Add(-time.Hour), Latest: "v1.3.0", Body: "cached notes", URL: "u"})
+	require.NoError(t, os.WriteFile(cacheFile, data, 0o600))
+
+	var buf bytes.Buffer
+	cfg := WhatsNewConfig{Repo: "adaouat/heraut", Current: "v1.2.0", BaseURL: srv.URL, CacheFile: cacheFile, Now: fixedNow}
+	require.NoError(t, cfg.run(context.Background(), &buf))
+	assert.Contains(t, buf.String(), "cached notes")
+}
+
+func TestWhatsNewConfig_OfflineNoCacheErrors(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		w.WriteHeader(http.StatusInternalServerError)
+	}))
+	defer srv.Close()
+
+	var buf bytes.Buffer
+	cfg := WhatsNewConfig{Repo: "adaouat/heraut", Current: "v1.2.0", BaseURL: srv.URL, Now: fixedNow}
+	err := cfg.run(context.Background(), &buf)
+	require.Error(t, err)
+	assert.Empty(t, buf.String())
 }

@@ -710,7 +710,7 @@ heavier machinery is gated on appetite (a low-audience "nerd" feature).*
       what's-new assertion. No exported-surface change (`Print`'s signature is untouched), no new
       dep — ADR-0007 needs no update. New `TestUpgradeLine` table (cmd set vs empty). Suite green
       (139 tests, 8 packages).
-- [ ] **C — `updatecheck.WhatsNewCommand` (live API span, glamour-rendered)** — a forge-owned
+- [x] **C — `updatecheck.WhatsNewCommand` (live API span, glamour-rendered)** — a forge-owned
       `*cobra.Command` constructor (on-precedent: ADR-0010 already exposes `cobra`/`fang` via
       `cli.Run`); per-app input is config (repo, bin, cache path), mirroring `Hinter`. Source = a live
       `GET …/releases` list filtered `> current` (the full span of releases newer than the running
@@ -725,7 +725,20 @@ heavier machinery is gated on appetite (a low-audience "nerd" feature).*
       `colorprofile`/`x/term`. Update the ADR-0007 surface table when it lands. Apps register the
       command. TDD via `httptest` + deterministic `assemble` assertions (treat glamour as a thin
       trusted boundary: no error, non-empty). See ADR-0012's *Refinement* note for the live-first
-      decision.
+      decision. **Done (three commits):** `c5fb64b` (fetch + cache the body), `7430d49` (assemble/
+      render seam), and the command itself. **glamour onboarded cleanly** — `charm.land/glamour/v2
+      v2.0.0` `go get`s and declares its own path, so **no `charmbracelet` exception** was needed
+      (exactly like `log/v2`; the unversioned `charm.land/glamour` is the v0/v1 trap). Behaviour:
+      `whatsnew` fetches the live `/releases` span filtered `> current`, glamour-rendered with a
+      raw-markdown fallback; offline → the cached latest body (when fresh + newer); offline **and** no
+      usable cache → returns the fetch error (it never *falsely* claims "you're on the latest"); fully
+      up-to-date → `You're on the latest release (vX)`. Internals: `latest()` became
+      `latestRelease()` returning `{Tag,Body,URL}`, `listReleases` + a shared `fetchJSON` were added,
+      `cacheEntry` gained `body`/`url` (omitempty, backward-compatible), and `readCache`/`writeCache`
+      were refactored from `Hinter` methods to free functions shared with `WhatsNewConfig`. Surface:
+      `WhatsNewCommand(WhatsNewConfig)` exported (ADR-0007 table updated). TDD: httptest for span /
+      up-to-date / offline-fallback / offline-no-cache-errors, deterministic `assemble`, glamour as a
+      trusted boundary. Suite green (150 tests, 8 packages). **Deferred:** pager, persisted last-seen.
 - [ ] **D — embedded-changelog offline fallback** — add the app's `go:embed`-ed `CHANGELOG.md` as
       the last source, completing the primacy order (cached → live → embedded); rendering is already
       glamour from C, so this adds only the third source. Apps supply the embedded FS.
