@@ -739,11 +739,19 @@ heavier machinery is gated on appetite (a low-audience "nerd" feature).*
       `WhatsNewCommand(WhatsNewConfig)` exported (ADR-0007 table updated). TDD: httptest for span /
       up-to-date / offline-fallback / offline-no-cache-errors, deterministic `assemble`, glamour as a
       trusted boundary. Suite green (150 tests, 8 packages). **Deferred:** pager, persisted last-seen.
-- [ ] **D — embedded-changelog offline fallback** — add the app's `go:embed`-ed `CHANGELOG.md` as
-      the last source, completing the primacy order (cached → live → embedded); rendering is already
-      glamour from C, so this adds only the third source. Apps supply the embedded FS.
-      *Deferred unless wanted:* a pager, and a persisted "last seen" filter (D uses
-      newer-than-current).
+- [x] **D — embedded-changelog offline fallback** — add the app's `go:embed`-ed `CHANGELOG.md` as
+      the last source, completing the primacy order (live → cached → embedded); rendering is already
+      glamour from C, so this adds only the third source. *Deferred unless wanted:* a pager, and a
+      persisted "last seen" filter (D uses newer-than-current). **Done (forge side):**
+      `WhatsNewConfig` gained a `Changelog string` field (a `go:embed` markdown blob, simpler than an
+      `fs.FS` — forge needs only the one doc), and `run`'s offline branch falls back to it *after* the
+      cache: primacy `live → cached → embedded`, else the fetch error. The embed is rendered as-is
+      through the glamour seam (already markdown), **not** filtered to `> current` — it answers
+      "what's baked into this build" (parsing the cocogitto `CHANGELOG.md` to filter by version would
+      be fragile; ADR-0012 *As built*). TDD: offline-falls-back-to-embedded + cache-beats-embedded
+      (precedence); offline-with-no-cache-and-no-changelog still errors. ADR-0007 surface + ADR-0012
+      tier D updated. Suite green (54 updatecheck). Ships next forge release; the app-supply task
+      below follows the tag.
 - [x] **Apps register `whatsnew` (bifrost + heraut)** — register the command in their tree
       (`root.AddCommand(updatecheck.WhatsNewCommand(...))`) with their repo / current / cache-path
       config. This is the ≥2-consumer proof for the new command surface (ADR-0001 bar). **Done off

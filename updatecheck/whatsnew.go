@@ -18,6 +18,7 @@ type WhatsNewConfig struct {
 	Repo      string           // "owner/name"
 	Current   string           // running version
 	CacheFile string           // offline fallback source ("" → no fallback)
+	Changelog string           // embedded changelog markdown, the last offline fallback ("" → none)
 	BaseURL   string           // "" → https://api.github.com
 	Client    *http.Client     // nil → default
 	Now       func() time.Time // nil → time.Now
@@ -42,6 +43,9 @@ func (cfg WhatsNewConfig) run(ctx context.Context, w io.Writer) error {
 	if err != nil {
 		if cached, ok := cfg.cachedNewer(); ok {
 			return render(w, assemble(cached))
+		}
+		if cfg.Changelog != "" {
+			return render(w, cfg.Changelog)
 		}
 		return fmt.Errorf("fetching releases: %w", err)
 	}

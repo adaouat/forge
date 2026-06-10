@@ -69,7 +69,11 @@ deterministically testable regardless of renderer.
   (`go:embed`) as a **deeper offline fallback**, completing the source order: **live API → cached
   body → embedded changelog**. When the live fetch fails *and* the cache is cold, the embed still
   answers "what's in the version I'm running". Rendering is already glamour from C; D adds only the
-  third source, so the apps supply the embedded FS and forge slots it in as the last fallback.
+  third source, so the apps supply the embedded changelog via `WhatsNewConfig.Changelog` — a
+  `go:embed` string (simpler than an `fs.FS`; forge needs only the one markdown blob) — and forge
+  slots it in as the last fallback. **As built:** the embed is rendered as-is through the glamour
+  seam (it is already markdown), *not* filtered to `> current` — it answers "what's baked into this
+  build"; parsing the cocogitto `CHANGELOG.md` to filter by version would be fragile.
 
 **Filter semantics.** The chosen filter is **newer-than-current-version** (what sits between what I
 run and what's upstream) — simpler than glab's persisted "last seen" and matching the upgrade-nudge

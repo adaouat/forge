@@ -113,3 +113,38 @@ func TestWhatsNewConfig_OfflineNoCacheErrors(t *testing.T) {
 	require.Error(t, err)
 	assert.Empty(t, buf.String())
 }
+
+func TestWhatsNewConfig_OfflineFallsBackToEmbeddedChangelog(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		w.WriteHeader(http.StatusInternalServerError)
+	}))
+	defer srv.Close()
+
+	var buf bytes.Buffer
+	cfg := WhatsNewConfig{
+		Repo: "adaouat/heraut", Current: "v1.2.0", BaseURL: srv.URL, Now: fixedNow,
+		Changelog: "# Changelog\n\n## v1.2.0\n- baked into this build",
+	}
+	require.NoError(t, cfg.run(context.Background(), &buf))
+	assert.Contains(t, buf.String(), "baked into this build")
+}
+
+func TestWhatsNewConfig_CacheBeatsEmbeddedOffline(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		w.WriteHeader(http.StatusInternalServerError)
+	}))
+	defer srv.Close()
+
+	cacheFile := filepath.Join(t.TempDir(), "check.json")
+	data, _ := json.Marshal(cacheEntry{CheckedAt: fixedNow().Add(-time.Hour), Latest: "v1.3.0", Body: "cached notes", URL: "u"})
+	require.NoError(t, os.WriteFile(cacheFile, data, 0o600))
+
+	var buf bytes.Buffer
+	cfg := WhatsNewConfig{
+		Repo: "adaouat/heraut", Current: "v1.2.0", BaseURL: srv.URL, CacheFile: cacheFile, Now: fixedNow,
+		Changelog: "embedded notes",
+	}
+	require.NoError(t, cfg.run(context.Background(), &buf))
+	assert.Contains(t, buf.String(), "cached notes")
+	assert.NotContains(t, buf.String(), "embedded notes", "fresh cache wins over the embedded fallback")
+}
