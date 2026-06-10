@@ -729,6 +729,18 @@ heavier machinery is gated on appetite (a low-audience "nerd" feature).*
       glamour from C, so this adds only the third source. Apps supply the embedded FS.
       *Deferred unless wanted:* a pager, and a persisted "last seen" filter (D uses
       newer-than-current).
+- [ ] **Apps register `whatsnew` (bifrost + heraut, after the C release is tagged)** — bump both
+      apps to the C forge release and register the command in their tree
+      (`root.AddCommand(updatecheck.WhatsNewCommand(...))`) with their repo / bin / cache-path config.
+      Tier A's hint pointer rides along automatically on the same bump (no code — `Hinter.Print`
+      already runs in both apps per ADR-0005). This is the ≥2-consumer proof for the new command
+      surface (ADR-0001 bar) — neither app ships `whatsnew` until it's wired here. TDD per app:
+      command-registration smoke test (the subcommand exists and runs against an `httptest` releases
+      endpoint). Both apps: build + suite + lint green before re-pinning.
+- [ ] **Apps supply the embedded changelog (bifrost + heraut, after the D release is tagged)** — each
+      app adds its `go:embed`-ed `CHANGELOG.md` to the `WhatsNewCommand` config and re-pins to the D
+      forge release, enabling the offline fallback (cached → live → **embedded**). Verify the offline
+      path renders the embedded notes when the cache is cold and the network is unreachable.
 
 ## Explicitly NOT on this roadmap
 
