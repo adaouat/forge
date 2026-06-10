@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.13.0](https://github.com/adaouat/forge/compare/v0.12.0..v0.13.0) - 2026-06-10
+
+### 🚀 Features
+
+- *(updatecheck)* Fetch release list and cache the latest body - ([c5fb64b](https://github.com/adaouat/forge/commit/c5fb64b658b992f57e893cf4064d4637cb6b006c)) by @bchatard
+
+- *(updatecheck)* Add changelog assemble/render seam - ([7430d49](https://github.com/adaouat/forge/commit/7430d49002ddb64c8ae944c716a1fe4c7b2704fe)) by @bchatard
+
+- *(updatecheck)* Add whatsnew command - ([ddeec05](https://github.com/adaouat/forge/commit/ddeec0541874343007795654a36980c08c62975b)) by @bchatard
+
+
+### 📚 Documentation
+
+- *(adr)* Reconcile 0012 to a live-first whatsnew source - ([f00188c](https://github.com/adaouat/forge/commit/f00188c6f52adb83757436949162688bff878b40)) by @bchatard
+
 ## [0.12.0](https://github.com/adaouat/forge/compare/v0.11.1..v0.12.0) - 2026-06-10
 
 ### 🚀 Features
