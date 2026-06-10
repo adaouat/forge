@@ -1,5 +1,23 @@
 # Changelog
 
+## [0.12.0](https://github.com/adaouat/forge/compare/v0.11.1..v0.12.0) - 2026-06-10
+
+### 🚀 Features
+
+- *(updatecheck)* Add what's-new pointer to the upgrade hint - ([120ff8f](https://github.com/adaouat/forge/commit/120ff8f1549ec887870055f61f01b4af6c568ce0)) by @bchatard
+
+
+### 📚 Documentation
+
+- *(adr)* Add 0012 whatsnew changelog + M10 roadmap - ([52f9ef6](https://github.com/adaouat/forge/commit/52f9ef6d3008cda3821ab76ebfac0eebfaa992cc)) by @bchatard
+
+- *(tasks)* Track app wiring for M10 whatsnew - ([c37e95f](https://github.com/adaouat/forge/commit/c37e95fcf9ad27cfb43f7ba42135d11d5dbc8ea4)) by @bchatard
+
+
+### ⚙️ Miscellaneous Tasks
+
+- *(release)* Expose GITHUB_TOKEN for git-cliff API calls - ([c0007be](https://github.com/adaouat/forge/commit/c0007be86fa12e7e8fcec0be01447711516a83bb)) by @bchatard
+
 ## [0.11.1](https://github.com/adaouat/forge/compare/v0.11.0..v0.11.1) - 2026-06-09
 
 ### 🐛 Bug Fixes
