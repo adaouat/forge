@@ -28,7 +28,32 @@ func TestHinter_NewerAvailable(t *testing.T) {
 		Print(context.Background(), &buf)
 
 	assert.Contains(t, buf.String(), "heraut v1.3.0 available")
-	assert.Contains(t, buf.String(), "run:")
+	assert.Contains(t, buf.String(), "what's new: https://github.com/adaouat/heraut/releases/latest")
+}
+
+func TestUpgradeLine(t *testing.T) {
+	const releases = "https://github.com/adaouat/heraut/releases/latest"
+	tests := []struct {
+		name string
+		cmd  string
+		want string
+	}{
+		{
+			name: "package-manager command shows run and what's-new",
+			cmd:  "brew upgrade heraut",
+			want: "heraut v1.3.0 available — run: brew upgrade heraut · what's new: " + releases,
+		},
+		{
+			name: "unknown install shows only the what's-new pointer",
+			cmd:  "",
+			want: "heraut v1.3.0 available · what's new: " + releases,
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			assert.Equal(t, tc.want, upgradeLine("heraut", "v1.3.0", tc.cmd, releases))
+		})
+	}
 }
 
 func TestHinter_UpToDate_NoOutput(t *testing.T) {

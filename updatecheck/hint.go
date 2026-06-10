@@ -48,11 +48,19 @@ func (h Hinter) Print(ctx context.Context, w io.Writer) {
 	if !isNewer(latest, h.Current) {
 		return
 	}
+	releases := "https://github.com/" + h.Repo + "/releases/latest"
 	cmd := DetectInstall().UpgradeCommand(h.Bin, h.Module)
+	_, _ = fmt.Fprintln(w, upgradeLine(h.Bin, latest, cmd, releases))
+}
+
+// upgradeLine formats the one-line hint. The what's-new pointer is always present; the
+// "run:" clause appears only when an install method was detected (cmd != ""), otherwise the
+// releases page doubles as both the changelog and the download. See forge ADR-0012 (tier A).
+func upgradeLine(bin, latest, cmd, releases string) string {
 	if cmd == "" {
-		cmd = "see https://github.com/" + h.Repo + "/releases/latest"
+		return fmt.Sprintf("%s %s available · what's new: %s", bin, latest, releases)
 	}
-	_, _ = fmt.Fprintf(w, "%s %s available — run: %s\n", h.Bin, latest, cmd)
+	return fmt.Sprintf("%s %s available — run: %s · what's new: %s", bin, latest, cmd, releases)
 }
 
 type cacheEntry struct {

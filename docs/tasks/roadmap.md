@@ -694,11 +694,22 @@ clears the bar; changelog content and the release process that writes it (cocogi
 app-side. Final target is the hybrid Tier D; shipped A→C→D so the cheap 80/20 lands first and the
 heavier machinery is gated on appetite (a low-audience "nerd" feature).*
 
-- [ ] **A — changelog pointer in the update hint** — augment `Hinter.Print` to *always* append
+- [x] **A — changelog pointer in the update hint** — augment `Hinter.Print` to *always* append
       `· what's new: <releases URL>`, regardless of which upgrade-command branch fires (today the
       URL only appears in the no-package-manager fallback). No new command, no dependency. TDD:
       extend the `Hinter` table to assert the pointer is present in both the detected-command and
-      fallback branches.
+      fallback branches. **Done:** the one-line message moved into a pure unexported
+      `upgradeLine(bin, latest, cmd, releases)` (same seam idea planned for C), so both branches are
+      tested deterministically without depending on which install method the test binary resolves
+      to — `DetectInstall()` always resolves the test binary to `Unknown`, so the existing httptest
+      tests only ever hit the no-command branch. Behaviour: the `what's new: …/releases/latest`
+      pointer is now always present; the `— run: <cmd>` clause appears only when an install method
+      is detected. **One deliberate output change:** in the `Unknown` branch the old
+      `run: see <url>` fallback is replaced by the what's-new pointer (the releases page doubles as
+      both download and changelog), so `TestHinter_NewerAvailable`'s `run:` assertion became the
+      what's-new assertion. No exported-surface change (`Print`'s signature is untouched), no new
+      dep — ADR-0007 needs no update. New `TestUpgradeLine` table (cmd set vs empty). Suite green
+      (139 tests, 8 packages).
 - [ ] **C — `updatecheck.WhatsNewCommand` (API source, cached body, glamour-rendered)** — a
       forge-owned `*cobra.Command` constructor (on-precedent: ADR-0010 already exposes `cobra`/`fang`
       via `cli.Run`); per-app input is config (repo, bin, cache path), mirroring `Hinter`. Extend the
