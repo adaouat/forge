@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.15.0](https://github.com/adaouat/forge/compare/v0.14.0..v0.15.0) - 2026-06-10
+
+### 🚀 Features
+
+- *(updatecheck)* Add embedded-changelog offline fallback to whatsnew - ([8ece275](https://github.com/adaouat/forge/commit/8ece275f25618467433b12901238532f7dd2bba1)) by @bchatard
+
+
+### 📚 Documentation
+
+- *(tasks)* Mark M10 apps-register-whatsnew done (+ M11 adoption) - ([32a7617](https://github.com/adaouat/forge/commit/32a761715ae795bdecc85d8d12c5cf25f88c53c2)) by @bchatard
+
 ## [0.14.0](https://github.com/adaouat/forge/compare/v0.13.0..v0.14.0) - 2026-06-10
 
 ### 🚀 Features
