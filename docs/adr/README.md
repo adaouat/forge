@@ -15,3 +15,4 @@ ADRs document significant architectural choices: what was decided, why, and what
 | [0009](0009-release-setup-composite-action.md) | Shared release setup via a composite action | Accepted |
 | [0010](0010-cli-framework-foundation.md) | forge is the CLI framework foundation | Accepted |
 | [0011](0011-logging-foundation.md) | Logging foundation: `slog` API, `charmbracelet/log` handler | Accepted |
+| [0012](0012-whatsnew-changelog.md) | `whatsnew`: in-terminal changelog after the update check | Accepted |

@@ -686,6 +686,39 @@ structured error context, routing to external sinks) stays out — domain logic,
       `changelog` are wired later. TDD: table test proving diagnostics surface at Debug and stay
       silent at Warn. heraut: build + 788 tests + lint green. bifrost still deferred.
 
+## M10 — What's-new changelog *([ADR-0012](../adr/0012-whatsnew-changelog.md))*
+
+*Completes the update lifecycle ADR-0005 started: the hint says a newer version exists and how
+to get it, `whatsnew` says what changed. Mechanical fetch/filter/render/cache + command wiring
+clears the bar; changelog content and the release process that writes it (cocogitto) stay
+app-side. Final target is the hybrid Tier D; shipped A→C→D so the cheap 80/20 lands first and the
+heavier machinery is gated on appetite (a low-audience "nerd" feature).*
+
+- [ ] **A — changelog pointer in the update hint** — augment `Hinter.Print` to *always* append
+      `· what's new: <releases URL>`, regardless of which upgrade-command branch fires (today the
+      URL only appears in the no-package-manager fallback). No new command, no dependency. TDD:
+      extend the `Hinter` table to assert the pointer is present in both the detected-command and
+      fallback branches.
+- [ ] **C — `updatecheck.WhatsNewCommand` (API source, cached body, glamour-rendered)** — a
+      forge-owned `*cobra.Command` constructor (on-precedent: ADR-0010 already exposes `cobra`/`fang`
+      via `cli.Run`); per-app input is config (repo, bin, cache path), mirroring `Hinter`. Extend the
+      24h cache entry with the latest release `body` (+ `html_url`) so the common one-version-behind
+      case renders instantly + offline with no extra call; cold/missing cache or multi-version span
+      → one live `GET …/releases` list call filtered `> current`. Backward-compatible cache (old
+      entries with no body fall through to live). Render through an `assemble`/`render` seam:
+      `assemble` builds the markdown (tested deterministically), `render` runs it through glamour
+      with raw-markdown fallback on error. Onboards glamour — verify `charm.land/glamour/v2` `go
+      get`s cleanly (proxy lists `v2.0.0`, same `/v2` shape as `log/v2`; the listing isn't proof —
+      the ADR-0011 check); if it fails, document the `github.com/charmbracelet/glamour` exception in
+      `docs/rules/coding.md` alongside `colorprofile`/`x/term`. Update the ADR-0007 surface table
+      when it lands. Apps register the command. TDD via `httptest` + deterministic `assemble`
+      assertions (treat glamour as a thin trusted boundary: no error, non-empty).
+- [ ] **D — embedded-changelog offline fallback** — add the app's `go:embed`-ed `CHANGELOG.md` as
+      the last source, completing the primacy order (cached → live → embedded); rendering is already
+      glamour from C, so this adds only the third source. Apps supply the embedded FS.
+      *Deferred unless wanted:* a pager, and a persisted "last seen" filter (D uses
+      newer-than-current).
+
 ## Explicitly NOT on this roadmap
 
 Per ADR-0001 Tier 3: config **schemas** and **merge semantics**, bifrost's hook runner and
