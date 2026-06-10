@@ -8,9 +8,11 @@ import (
 	"net/http/httptest"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 	"time"
 
+	"github.com/spf13/cobra"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -133,4 +135,61 @@ func TestHinter_StaleCacheRefetches(t *testing.T) {
 	assert.Contains(t, buf.String(), "v2.0.0", "stale cache should refetch")
 	updated, _ := os.ReadFile(cacheFile)
 	assert.Contains(t, string(updated), "v2.0.0", "cache is refreshed")
+}
+
+func TestCacheFile(t *testing.T) {
+	for _, app := range []string{"heraut", "bifrost"} {
+		t.Run(app, func(t *testing.T) {
+			got := CacheFile(app)
+			require.NotEmpty(t, got)
+			assert.True(t, strings.HasSuffix(got, filepath.Join(app, "update-check.json")), "got %q", got)
+		})
+	}
+}
+
+func TestHinter_PostRun(t *testing.T) {
+	newerSrv := func() *httptest.Server {
+		return httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+			_, _ = w.Write([]byte(`{"tag_name":"v1.3.0"}`))
+		}))
+	}
+	mustNotFetch := func() *httptest.Server {
+		return httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+			t.Error("hint must not fetch when skipped")
+			w.WriteHeader(http.StatusInternalServerError)
+		}))
+	}
+	run := func(h Hinter) string {
+		var buf bytes.Buffer
+		cmd := &cobra.Command{}
+		cmd.SetErr(&buf)
+		require.NoError(t, h.PostRun()(cmd, nil))
+		return buf.String()
+	}
+
+	t.Run("prints when newer", func(t *testing.T) {
+		srv := newerSrv()
+		defer srv.Close()
+		out := run(Hinter{Repo: "adaouat/heraut", Bin: "heraut", Current: "v1.2.0", BaseURL: srv.URL, Now: fixedNow})
+		assert.Contains(t, out, "heraut v1.3.0 available")
+	})
+
+	t.Run("dev build skips", func(t *testing.T) {
+		srv := mustNotFetch()
+		defer srv.Close()
+		assert.Empty(t, run(Hinter{Repo: "adaouat/heraut", Bin: "heraut", Current: "dev", BaseURL: srv.URL, Now: fixedNow}))
+	})
+
+	t.Run("env opt-out skips", func(t *testing.T) {
+		t.Setenv("HERAUT_CHECK_UPDATE", "false")
+		srv := mustNotFetch()
+		defer srv.Close()
+		assert.Empty(t, run(Hinter{Repo: "adaouat/heraut", Bin: "heraut", Current: "v1.2.0", BaseURL: srv.URL, OptOutEnv: "HERAUT_CHECK_UPDATE", Now: fixedNow}))
+	})
+
+	t.Run("Skip gate suppresses", func(t *testing.T) {
+		srv := mustNotFetch()
+		defer srv.Close()
+		assert.Empty(t, run(Hinter{Repo: "adaouat/heraut", Bin: "heraut", Current: "v1.2.0", BaseURL: srv.URL, Skip: func() bool { return true }, Now: fixedNow}))
+	})
 }

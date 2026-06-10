@@ -9,9 +9,14 @@ import (
 	"os"
 	"path/filepath"
 	"time"
+
+	"github.com/spf13/cobra"
 )
 
 const cacheWindow = 24 * time.Hour
+
+// hintTimeout bounds the post-run update check so a slow network never delays the prompt.
+const hintTimeout = 500 * time.Millisecond
 
 // Hinter prints a one-line upgrade hint when a newer release exists, fetching at
 // most once per 24h (when CacheFile is set). Every error is swallowed — the hint
@@ -22,9 +27,40 @@ type Hinter struct {
 	Module    string           // `go install` target path (used only when go-installed)
 	Current   string           // current version
 	CacheFile string           // "" → always fetch (no cache)
+	OptOutEnv string           // env var that disables the hint when set to "false"
+	Skip      func() bool      // optional app gate; hint skipped when it returns true (run-time)
 	BaseURL   string           // "" → https://api.github.com (test seam)
 	Client    *http.Client     // nil → default
 	Now       func() time.Time // nil → time.Now (test seam)
+}
+
+// CacheFile is the conventional update-check cache path for app — the hint writes it and
+// [WhatsNewCommand] reads it as its offline fallback. "" if the user cache dir is unavailable.
+func CacheFile(app string) string {
+	dir, err := os.UserCacheDir()
+	if err != nil {
+		return ""
+	}
+	return filepath.Join(dir, app, "update-check.json")
+}
+
+// PostRun returns a cobra PersistentPostRunE that prints the upgrade hint after each command,
+// unless this is a dev build (Current == "dev"), OptOutEnv is set to "false", or the optional
+// Skip gate returns true. It bounds the check to hintTimeout and swallows errors, so every tool
+// wires the hint identically: root.PersistentPostRunE = Hinter{…}.PostRun().
+func (h Hinter) PostRun() func(*cobra.Command, []string) error {
+	return func(c *cobra.Command, _ []string) error {
+		if h.Current == "dev" || (h.OptOutEnv != "" && os.Getenv(h.OptOutEnv) == "false") {
+			return nil
+		}
+		if h.Skip != nil && h.Skip() {
+			return nil
+		}
+		ctx, cancel := context.WithTimeout(context.Background(), hintTimeout)
+		defer cancel()
+		h.Print(ctx, c.ErrOrStderr())
+		return nil
+	}
 }
 
 // Print writes "<bin> X available — run: <upgrade command>" to w when a newer

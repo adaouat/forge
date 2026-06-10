@@ -67,3 +67,9 @@ asset download).
 - Install detection is a **heuristic with a generic fallback** — it proposes a tailored command
   when confident, otherwise points at the releases page / install script. `apt`/`rpm` are not
   detected in v1 (would require shelling out to `dpkg -S`/`rpm -qf`).
+- **Update-hint wiring extracted (M11).** The per-tool `PersistentPostRunE` block and the
+  `<cacheDir>/<app>/update-check.json` path were copied verbatim into every tool. forge now owns
+  them: `CacheFile(app)` derives the path, and `Hinter.PostRun()` returns the gated post-run hook
+  (dev-build + `OptOutEnv` opt-out + an optional `Skip` app-gate, bounded to 500ms). Each tool's
+  hint becomes a single `Hinter{…}.PostRun()` assignment; only app-specific gates (bifrost's
+  non-human output modes) stay in the app, via `Skip`.

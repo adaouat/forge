@@ -757,6 +757,31 @@ heavier machinery is gated on appetite (a low-audience "nerd" feature).*
       forge release, enabling the offline fallback (cached → live → **embedded**). Verify the offline
       path renders the embedded notes when the cache is cold and the network is unreachable.
 
+## M11 — Update-hint wiring extraction *([ADR-0005](../adr/0005-updates-via-package-managers.md))*
+
+*The update-hint `PersistentPostRunE` block and the `<cacheDir>/<app>/update-check.json` path are
+copied verbatim into every tool (bifrost, heraut, + the third). Identical mechanics + ≥2 consumers
++ stable contract → forge owns the wiring; the apps keep only their config and any app-specific gate
+(bifrost suppresses the hint in non-human output). Surfaced mid-M10-wiring; app adoption rides along
+with M10's "Apps register whatsnew" pass, off the same forge release.*
+
+- [x] **forge: `CacheFile(app)` + `Hinter.PostRun()`** — `updatecheck.CacheFile(app string) string`
+      derives the conventional cache path (`<userCacheDir>/<app>/update-check.json`, "" on error);
+      `Hinter` gains an `OptOutEnv` field, an optional `Skip func() bool` app-gate (evaluated at run
+      time, e.g. bifrost's non-human output), and a `PostRun()` method returning a cobra
+      `PersistentPostRunE` that skips dev builds (`Current == "dev"`), the `OptOutEnv == "false"`
+      opt-out, and when `Skip()` is true; bounds the check to 500ms and swallows errors. Keeps both
+      apps' wiring an identical single `Hinter{…}.PostRun()` assignment. `WhatsNewCommand` configs
+      reuse `CacheFile(app)`. ADR-0007 surface row + an ADR-0005 consequences note. TDD. **Done:**
+      all in `hint.go` (`hintTimeout = 500ms`). **`Skip` added at the user's prompt** so bifrost's
+      `output != "human"` gate keeps both apps' wiring identical — it *must* be a run-time closure,
+      not a build-time `if`, because `output` still holds its flag default when `NewRootCmd` builds
+      the tree (the user's `--output json` is parsed later). TDD: `TestCacheFile` (per-app suffix),
+      `TestHinter_PostRun` (prints-when-newer / dev-skip / env-opt-out / `Skip`-gate, each skip path
+      pointed at a must-not-fetch server proving no request fires). ADR-0007 surface + ADR-0005
+      consequences updated. Suite green (52 updatecheck, full suite green). Ships next forge release
+      (v0.14.0); the app pass (M10 "Apps register whatsnew" + the slimmed hint) follows the tag.
+
 ## Explicitly NOT on this roadmap
 
 Per ADR-0001 Tier 3: config **schemas** and **merge semantics**, bifrost's hook runner and
