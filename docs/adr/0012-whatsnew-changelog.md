@@ -40,8 +40,8 @@ in forge's public surface (`cli.Run` takes a `*cobra.Command`). Per-app input is
 (repo, bin, cache/state path, and — at D — the embedded changelog), exactly the shape `Hinter`
 already has; no app-specific name leaks.
 
-**Final target = Tier D** (hybrid source: cached → live API → embedded changelog, glamour-rendered),
-**shipped in tiers** so the simplest value lands first and the heavier machinery is gated on appetite
+**Final target = Tier D** (live-first hybrid source: live API → cached body → embedded changelog,
+glamour-rendered), **shipped in tiers** so the simplest value lands first and the heavier machinery is gated on appetite
 — this is a low-audience "nerd" feature and the rollout reflects that. The renderer is an isolated
 seam (`assemble(rels) string` builds the markdown, a separate `render` writes it), so glamour rides
 in with C rather than waiting for D: C's whole reason to exist over A *is* the richer in-terminal
@@ -53,22 +53,23 @@ deterministically testable regardless of renderer.
   fires. No new command, no dependency, ~2 lines. Independently worth it and the keep-it-simple
   floor: the changelog is one click away even if C/D never ship.
 
-- **Tier C — the `whatsnew` command, API source, glamour-rendered.** `updatecheck.WhatsNewCommand(cfg)`
-  returns a wired cobra command. Source = GitHub releases API. The 24h update check (already running)
-  is extended to **also cache the latest release `body` (+ `html_url`)** alongside `tag_name`, so the
-  common "just got nudged, one version behind" case renders **instantly and offline with no extra
-  call**. Cold/missing cache, or several versions behind (the single cached body can't cover the
-  span), → one live `GET …/releases` list call, filtered to `> current`. Rendering goes through the
-  `assemble`/`render` seam: `assemble` builds the markdown (tested deterministically), `render` runs
-  it through **glamour**, falling back to the raw markdown if glamour errors (glab's pattern). The
-  cache change is backward-compatible: an old entry with no `body` simply falls through to the live
-  path. This tier onboards the glamour dependency (see Consequences).
+- **Tier C — the `whatsnew` command, live API span, glamour-rendered.** `updatecheck.WhatsNewCommand(cfg)`
+  returns a wired cobra command. Source = a live `GET …/releases` list, filtered to `> current` — the
+  **full span** of releases newer than the running version, not just the latest, so no intermediate
+  release notes are lost. The 24h update check (already running) is extended to **also cache the
+  latest release `body` (+ `html_url`)** alongside `tag_name`, used as an **offline fallback**: when
+  the live fetch fails (no network), `whatsnew` renders the cached latest notes rather than nothing.
+  Rendering goes through the `assemble`/`render` seam: `assemble` builds the markdown from the release
+  list (tested deterministically), `render` runs it through **glamour**, falling back to raw markdown
+  if glamour errors (glab's pattern). The cache change is backward-compatible: an old entry with no
+  `body` just means the offline fallback has nothing to show. This tier onboards the glamour
+  dependency (see Consequences). See the *Refinement* note below for why the source is live-first.
 
 - **Tier D — final target: embedded offline fallback.** Add the app's embedded `CHANGELOG.md`
-  (`go:embed`) as the **offline fallback**, completing the source primacy order: **cached body →
-  live API → embedded changelog**. The embed answers "what's in the version I'm running" when offline
-  with a cold cache. Rendering is already glamour from C; D adds only the third source, so the apps
-  supply the embedded FS and forge slots it in as the last fallback.
+  (`go:embed`) as a **deeper offline fallback**, completing the source order: **live API → cached
+  body → embedded changelog**. When the live fetch fails *and* the cache is cold, the embed still
+  answers "what's in the version I'm running". Rendering is already glamour from C; D adds only the
+  third source, so the apps supply the embedded FS and forge slots it in as the last fallback.
 
 **Filter semantics.** The chosen filter is **newer-than-current-version** (what sits between what I
 run and what's upstream) — simpler than glab's persisted "last seen" and matching the upgrade-nudge
@@ -94,9 +95,9 @@ required for D.
   surface table updates **per-tier as each lands** — not now; nothing is built yet.
 - The cache schema change is **backward-compatible** — older `{checked_at, latest}` entries unmarshal
   with an empty body and degrade to the live/embed path. No migration.
-- **GitHub API pressure is negligible**: `whatsnew`'s live path is an explicit, low-frequency user
-  command, and the cache makes the nudge case a **zero-call** render. Unauthenticated 60 req/hr/IP is
-  ample.
+- **GitHub API pressure is negligible**: `whatsnew`'s live span fetch is **one call per invocation**
+  of an explicit, low-frequency command (the cache is an offline fallback, not a request-saver here).
+  Unauthenticated 60 req/hr/IP is ample.
 - **At C, forge gains glamour** (goldmark + chroma — a few MB, same charm family as the existing `ui`
   stack). The proxy lists `charm.land/glamour/v2 v2.0.0` — the same `/v2` shape as
   `charm.land/log/v2`, which `go get`s cleanly — so the dependency looks low-risk. The definitive
@@ -110,6 +111,20 @@ required for D.
   across the family); changelog content and the release process that produces it stay app-side.
 - **≥2 consumers**: bifrost + heraut both ship GitHub releases with cocogitto changelogs; the third
   tool inherits the command free, the same way it inherits the hint.
+
+### Refinement (decided at C, 2026-06-10): live-first span, cache = offline fallback
+
+Implementing C surfaced that the cache and the "filtered `> current`" span are two different scopes:
+the 24h hint check caches only the **latest** release body, but `whatsnew` can't cheaply tell whether
+the running version is one or several releases behind — it knows only `current` and the cached latest
+tag, not whether intermediate releases exist. So a cache-first design can't reliably decide when it's
+safe to skip the list. Resolved by making the **live `/releases` span the source of truth** (always
+complete and correct) and demoting the cache to an **offline fallback** (render the latest notes when
+the network is down) — primacy `live → cached → (D) embedded`. Trade-off accepted: `whatsnew` makes
+one API call per invocation when online, fine for an on-demand command; the "instant, zero-call"
+framing the cache-first draft implied does not apply. The full "everything since I last looked" delta
+(glab's persisted last-seen) stays deferred — newer-than-current already shows the span between the
+running and latest versions.
 
 ### Phasing → roadmap
 

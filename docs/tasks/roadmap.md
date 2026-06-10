@@ -710,20 +710,22 @@ heavier machinery is gated on appetite (a low-audience "nerd" feature).*
       what's-new assertion. No exported-surface change (`Print`'s signature is untouched), no new
       dep — ADR-0007 needs no update. New `TestUpgradeLine` table (cmd set vs empty). Suite green
       (139 tests, 8 packages).
-- [ ] **C — `updatecheck.WhatsNewCommand` (API source, cached body, glamour-rendered)** — a
-      forge-owned `*cobra.Command` constructor (on-precedent: ADR-0010 already exposes `cobra`/`fang`
-      via `cli.Run`); per-app input is config (repo, bin, cache path), mirroring `Hinter`. Extend the
-      24h cache entry with the latest release `body` (+ `html_url`) so the common one-version-behind
-      case renders instantly + offline with no extra call; cold/missing cache or multi-version span
-      → one live `GET …/releases` list call filtered `> current`. Backward-compatible cache (old
-      entries with no body fall through to live). Render through an `assemble`/`render` seam:
-      `assemble` builds the markdown (tested deterministically), `render` runs it through glamour
-      with raw-markdown fallback on error. Onboards glamour — verify `charm.land/glamour/v2` `go
-      get`s cleanly (proxy lists `v2.0.0`, same `/v2` shape as `log/v2`; the listing isn't proof —
-      the ADR-0011 check); if it fails, document the `github.com/charmbracelet/glamour` exception in
-      `docs/rules/coding.md` alongside `colorprofile`/`x/term`. Update the ADR-0007 surface table
-      when it lands. Apps register the command. TDD via `httptest` + deterministic `assemble`
-      assertions (treat glamour as a thin trusted boundary: no error, non-empty).
+- [ ] **C — `updatecheck.WhatsNewCommand` (live API span, glamour-rendered)** — a forge-owned
+      `*cobra.Command` constructor (on-precedent: ADR-0010 already exposes `cobra`/`fang` via
+      `cli.Run`); per-app input is config (repo, bin, cache path), mirroring `Hinter`. Source = a live
+      `GET …/releases` list filtered `> current` (the full span of releases newer than the running
+      version). Extend the 24h cache entry with the latest release `body` (+ `html_url`) as an
+      **offline fallback** — when the live fetch fails, render the cached latest notes instead of
+      nothing; backward-compatible (old entries with no body just leave the fallback empty). Render
+      through an `assemble`/`render` seam: `assemble` builds the markdown from the release list (tested
+      deterministically), `render` runs it through glamour with raw-markdown fallback on error.
+      Onboards glamour — verify `charm.land/glamour/v2` `go get`s cleanly (proxy lists `v2.0.0`, same
+      `/v2` shape as `log/v2`; the listing isn't proof — the ADR-0011 check); if it fails, document
+      the `github.com/charmbracelet/glamour` exception in `docs/rules/coding.md` alongside
+      `colorprofile`/`x/term`. Update the ADR-0007 surface table when it lands. Apps register the
+      command. TDD via `httptest` + deterministic `assemble` assertions (treat glamour as a thin
+      trusted boundary: no error, non-empty). See ADR-0012's *Refinement* note for the live-first
+      decision.
 - [ ] **D — embedded-changelog offline fallback** — add the app's `go:embed`-ed `CHANGELOG.md` as
       the last source, completing the primacy order (cached → live → embedded); rendering is already
       glamour from C, so this adds only the third source. Apps supply the embedded FS.
