@@ -821,13 +821,21 @@ revisited here; see the ADR's 2026-06-11 refinement note.*
       returning `"dark"`/`"notty"` based on `ui.HasColor(w)`; `render` now calls
       `glamour.Render(md, glamourStyle(w))`. No terminal queries. `TestGlamourStyle` covers
       both branches; existing `TestRender` (non-TTY buffer) unchanged in behavior.
-- [ ] **Pager via `$PAGER`/`$NO_PAGER`** — when `ui.IsTTY(w)`, pipe rendered output through
+- [x] **Pager via `$PAGER`/`$NO_PAGER`** — when `ui.IsTTY(w)`, pipe rendered output through
       `$PAGER` (default `less`, `LESS=FRX` if `$LESS` unset, git's convention: `-F` exit if
       content fits one screen, `-R` show ANSI colors, `-X` don't clear screen on exit);
       skipped via `$NO_PAGER` or when no pager binary is found, falling back to writing
       directly to `w` on any resolution/spawn failure. New `updatecheck/pager.go`
       (`resolvePager`, `pagedOutput`), TDD via `TestResolvePager` (table-driven, fake `$PATH`
       stubs) and `TestPagedOutput_NonTTY`. No new exported surface (ADR-0007 unaffected).
+
+      **Done:** `updatecheck/pager.go` adds `resolvePager` (env/`$PATH` resolution,
+      `LESS=FRX` default) and `pagedOutput` (TTY check + spawn, passthrough
+      stdout/stderr, content via stdin); `render` tries `pagedOutput` before writing
+      directly. `TestResolvePager` (table-driven, fake `$PATH` stubs) and
+      `TestPagedOutput_NonTTY`. Real interactive pager spawn is not unit-tested
+      (consistent with `exectest.FakeBin` being a "sparingly" tool); covered by manual
+      verification in Task 4.
 
 ## Explicitly NOT on this roadmap
 

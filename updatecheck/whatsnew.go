@@ -102,11 +102,15 @@ func glamourStyle(w io.Writer) string {
 }
 
 // render writes md to w through glamour, falling back to the raw markdown if glamour fails —
-// the styled render is best-effort, but the content must always reach the user. See ADR-0012.
+// the styled render is best-effort, but the content must always reach the user. When w is a
+// terminal, the rendered output is paged via $PAGER (see pagedOutput). See ADR-0012.
 func render(w io.Writer, md string) error {
 	out, err := glamour.Render(md, glamourStyle(w))
 	if err != nil {
 		out = md
+	}
+	if pagedOutput(w, out) {
+		return nil
 	}
 	if _, err := io.WriteString(w, out); err != nil {
 		return fmt.Errorf("writing changelog: %w", err)
