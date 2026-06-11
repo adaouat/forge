@@ -12,9 +12,11 @@ import (
 
 // pagedOutput pipes content through a pager when w is a terminal and a pager is
 // available, returning true if it did. When w isn't a TTY, no pager is found, or
-// the pager fails to run, it returns false so render falls back to writing
+// the pager can't be started, it returns false so render falls back to writing
 // content directly to w — paging must never cause whatsnew to fail or swallow
-// output. See ADR-0012's 2026-06-11 refinement.
+// output. Once the pager starts, its exit status is irrelevant to the caller: a
+// non-zero exit (e.g. the user pressing Ctrl-C in less) must not cause render to
+// also print the raw content afterward. See ADR-0012's 2026-06-11 refinement.
 func pagedOutput(w io.Writer, content string) bool {
 	if !ui.IsTTY(w) {
 		return false
@@ -33,7 +35,11 @@ func pagedOutput(w io.Writer, content string) bool {
 		cmd.Env = append(os.Environ(), extraEnv...)
 	}
 
-	return cmd.Run() == nil
+	if err := cmd.Start(); err != nil {
+		return false
+	}
+	_ = cmd.Wait()
+	return true
 }
 
 // resolvePager resolves the pager command from $PAGER (default "less"). $NO_PAGER set to
