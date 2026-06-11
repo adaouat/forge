@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"charm.land/glamour/v2"
+	"github.com/adaouat/forge/ui"
 	"github.com/spf13/cobra"
 )
 
@@ -89,10 +90,21 @@ func assemble(rels []release) string {
 	return b.String()
 }
 
+// glamourStyle picks a glamour style for w without querying the terminal: "dark" when w
+// supports color (per ui.HasColor), "notty" otherwise. Avoids glamour's "auto" style, which
+// queries the terminal via OSC11 and silently falls back to raw markdown when the terminal
+// doesn't answer. See ADR-0012's 2026-06-11 refinement.
+func glamourStyle(w io.Writer) string {
+	if ui.HasColor(w) {
+		return "dark"
+	}
+	return "notty"
+}
+
 // render writes md to w through glamour, falling back to the raw markdown if glamour fails —
 // the styled render is best-effort, but the content must always reach the user. See ADR-0012.
 func render(w io.Writer, md string) error {
-	out, err := glamour.Render(md, "auto")
+	out, err := glamour.Render(md, glamourStyle(w))
 	if err != nil {
 		out = md
 	}

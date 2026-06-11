@@ -811,11 +811,16 @@ terminal doesn't answer — observed in real use (heraut `whatsnew` under a pty 
 unanswered OSC11 queries then raw markdown). ADR-0012 also deferred a pager. Both are
 revisited here; see the ADR's 2026-06-11 refinement note.*
 
-- [ ] **Style selection via `ui.HasColor`, drop `"auto"`** — `render()` picks glamour style
+- [x] **Style selection via `ui.HasColor`, drop `"auto"`** — `render()` picks glamour style
       `"dark"` when `ui.HasColor(w)`, else `"notty"`, with no terminal query. TDD:
       `TestGlamourStyle` (buffer with no color → `"notty"`; `CLICOLOR_FORCE=1` + `TERM` set →
       `"dark"`). Existing `TestRender` stays green (non-TTY buffer → `"notty"`, same
       observable output as before).
+
+      **Done:** `glamourStyle(w io.Writer) string` added to `updatecheck/whatsnew.go`,
+      returning `"dark"`/`"notty"` based on `ui.HasColor(w)`; `render` now calls
+      `glamour.Render(md, glamourStyle(w))`. No terminal queries. `TestGlamourStyle` covers
+      both branches; existing `TestRender` (non-TTY buffer) unchanged in behavior.
 - [ ] **Pager via `$PAGER`/`$NO_PAGER`** — when `ui.IsTTY(w)`, pipe rendered output through
       `$PAGER` (default `less`, `LESS=FRX` if `$LESS` unset, git's convention: `-F` exit if
       content fits one screen, `-R` show ANSI colors, `-X` don't clear screen on exit);

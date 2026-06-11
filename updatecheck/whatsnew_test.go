@@ -48,6 +48,21 @@ func TestRender(t *testing.T) {
 	assert.Contains(t, out, "world")
 }
 
+func TestGlamourStyle(t *testing.T) {
+	t.Run("no color support -> notty", func(t *testing.T) {
+		t.Setenv("NO_COLOR", "")
+		t.Setenv("CLICOLOR_FORCE", "")
+		assert.Equal(t, "notty", glamourStyle(&bytes.Buffer{}))
+	})
+
+	t.Run("color forced -> dark", func(t *testing.T) {
+		t.Setenv("NO_COLOR", "")
+		t.Setenv("CLICOLOR_FORCE", "1")
+		t.Setenv("TERM", "xterm-256color")
+		assert.Equal(t, "dark", glamourStyle(&bytes.Buffer{}))
+	})
+}
+
 func TestWhatsNewCommand_RendersSpanNewerThanCurrent(t *testing.T) {
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, "/repos/adaouat/heraut/releases", r.URL.Path)
