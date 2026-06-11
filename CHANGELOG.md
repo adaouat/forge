@@ -1,5 +1,32 @@
 # Changelog
 
+## [0.16.0](https://github.com/adaouat/forge/compare/v0.15.0..v0.16.0) - 2026-06-11
+
+### 🚀 Features
+
+- *(updatecheck)* Drop glamour auto-style for whatsnew - ([f38f19c](https://github.com/adaouat/forge/commit/f38f19cf89042608848e5a9a403bf5c817edbcf2)) by @bchatard
+
+- *(updatecheck)* Page whatsnew output via $PAGER - ([fa40c88](https://github.com/adaouat/forge/commit/fa40c88d68a60b35af0fd767bfb9a76bfd1a6b74)) by @bchatard
+
+
+### 🐛 Bug Fixes
+
+- *(updatecheck)* Don't double-print whatsnew output on pager exit - ([a870870](https://github.com/adaouat/forge/commit/a8708705f891ff6858fa01e02520da9209e12ed3)) by @bchatard
+
+
+### 📚 Documentation
+
+- *(roadmap)* Add M12 whatsnew rendering refinements - ([c5235a2](https://github.com/adaouat/forge/commit/c5235a2cc8af4444befbfe42f9b2ecdc69119e66)) by @bchatard
+
+- *(specs)* Add whatsnew rendering refinements design - ([47aa772](https://github.com/adaouat/forge/commit/47aa772361fb76bc651234e19bbad8638d68cdfb)) by @bchatard
+
+- *(tasks)* Mark M10 apps-supply-embedded-changelog done - ([d65f508](https://github.com/adaouat/forge/commit/d65f5085dd42f5b8aff30544ef6dfb4f1377134a)) by @bchatard
+
+
+### ⚙️ Miscellaneous Tasks
+
+- *(typos)* Ignore backtick-quoted git SHAs - ([8cac60f](https://github.com/adaouat/forge/commit/8cac60f3963697a9cfe52c60bb4f5ce560daf17e)) by @bchatard
+
 ## [0.15.0](https://github.com/adaouat/forge/compare/v0.14.0..v0.15.0) - 2026-06-10
 
 ### 🚀 Features
