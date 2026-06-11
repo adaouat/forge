@@ -130,6 +130,29 @@ framing the cache-first draft implied does not apply. The full "everything since
 (glab's persisted last-seen) stays deferred — newer-than-current already shows the span between the
 running and latest versions.
 
+### Refinement (decided 2026-06-11): drop terminal-query styling, add a pager
+
+Real-world use surfaced a failure mode in C's `render()`: `glamour.Render(md, "auto")`
+queries the terminal for its background color via OSC11 escape sequences to pick a
+light/dark style. When the terminal doesn't answer (reproduced under a pty via `script`: 4
+unanswered OSC11 queries), glamour times out and `render()`'s existing fallback
+(`out = md`) emits **raw, unstyled markdown** — the reported "black/white, missing styling"
+behavior. Resolved by dropping `"auto"` entirely: `render()` now picks glamour style
+`"dark"` when `ui.HasColor(w)` (forge's existing `NO_COLOR`/`CLICOLOR_FORCE`/`TERM=dumb`/TTY
+check, no terminal round-trip) and `"notty"` otherwise — `"notty"` still formats markdown
+structurally without raw `#`/`**` syntax, strictly better than the old fallback. No new
+light/dark heuristic: a dark-style render on a light background is still readable, and most
+dev terminals default to dark themes.
+
+Separately, this also lifts the pager deferral ("Add one only if changelog length warrants
+it" — Tier D's multi-release spans plus the embedded-changelog fallback can be long).
+`render()` now pipes its output through `$PAGER` (default `less`, with `LESS=FRX` set when
+`$LESS` is unset) when `w` is a TTY, opt-out via `$NO_PAGER`, matching `git`/`gh`
+conventions — no new flags, no new forge dependency. Falls back to direct output on any
+resolution or spawn failure, so paging can never cause `whatsnew` to fail or swallow output.
+
+Full design: `docs/specs/2026-06-11-whatsnew-rendering-design.md`.
+
 ### Phasing → roadmap
 
 The tiers map one-to-one to M10 tasks (`docs/tasks/roadmap.md`): **A** (hint pointer), **C**

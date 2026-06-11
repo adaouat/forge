@@ -803,6 +803,27 @@ with M10's "Apps register whatsnew" pass, off the same forge release.*
       consequences updated. Suite green (52 updatecheck, full suite green). Ships next forge release
       (v0.14.0); the app pass (M10 "Apps register whatsnew" + the slimmed hint) follows the tag.
 
+## M12 — `whatsnew` rendering refinements *([ADR-0012](../adr/0012-whatsnew-changelog.md) refinement)*
+
+*`whatsnew`'s `render()` used glamour's `"auto"` style, which queries the terminal for its
+background color via OSC11 and silently falls back to raw, unstyled markdown when the
+terminal doesn't answer — observed in real use (heraut `whatsnew` under a pty showed 4
+unanswered OSC11 queries then raw markdown). ADR-0012 also deferred a pager. Both are
+revisited here; see the ADR's 2026-06-11 refinement note.*
+
+- [ ] **Style selection via `ui.HasColor`, drop `"auto"`** — `render()` picks glamour style
+      `"dark"` when `ui.HasColor(w)`, else `"notty"`, with no terminal query. TDD:
+      `TestGlamourStyle` (buffer with no color → `"notty"`; `CLICOLOR_FORCE=1` + `TERM` set →
+      `"dark"`). Existing `TestRender` stays green (non-TTY buffer → `"notty"`, same
+      observable output as before).
+- [ ] **Pager via `$PAGER`/`$NO_PAGER`** — when `ui.IsTTY(w)`, pipe rendered output through
+      `$PAGER` (default `less`, `LESS=FRX` if `$LESS` unset, git's convention: `-F` exit if
+      content fits one screen, `-R` show ANSI colors, `-X` don't clear screen on exit);
+      skipped via `$NO_PAGER` or when no pager binary is found, falling back to writing
+      directly to `w` on any resolution/spawn failure. New `updatecheck/pager.go`
+      (`resolvePager`, `pagedOutput`), TDD via `TestResolvePager` (table-driven, fake `$PATH`
+      stubs) and `TestPagedOutput_NonTTY`. No new exported surface (ADR-0007 unaffected).
+
 ## Explicitly NOT on this roadmap
 
 Per ADR-0001 Tier 3: config **schemas** and **merge semantics**, bifrost's hook runner and
