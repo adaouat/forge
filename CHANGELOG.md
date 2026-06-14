@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.17.0](https://github.com/adaouat/forge/compare/v0.16.0..v0.17.0) - 2026-06-14
+
+### 🚀 Features
+
+- *(cli)* Cancel cmd.Context() on SIGINT/SIGTERM - ([79610c5](https://github.com/adaouat/forge/commit/79610c5f56ed10d856e2e46fcf87fc5180f28e00)) by @bchatard
+
+- *(exitcode)* Add Interrupted exit code for context.Canceled - ([0d2cda0](https://github.com/adaouat/forge/commit/0d2cda0e94a4d66e4b043b5a0c69eae61a87e64f)) by @bchatard
+
+
+### 🐛 Bug Fixes
+
+- *(heraut)* Update config to add new required field - ([5b97e72](https://github.com/adaouat/forge/commit/5b97e728c743e19203f06077218a903abc5e4aa0)) by @bchatard
+
 ## [0.16.0](https://github.com/adaouat/forge/compare/v0.15.0..v0.16.0) - 2026-06-11
 
 ### 🚀 Features
