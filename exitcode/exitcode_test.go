@@ -1,6 +1,7 @@
 package exitcode_test
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"testing"
@@ -72,4 +73,24 @@ func TestCodes_GenericVocabulary(t *testing.T) {
 func TestResolve_UsesNamedDefaults(t *testing.T) {
 	assert.Equal(t, exitcode.OK, exitcode.Resolve(nil))
 	assert.Equal(t, exitcode.Usage, exitcode.Resolve(errors.New("boom")))
+}
+
+func TestCodes_Interrupted(t *testing.T) {
+	// 128+SIGINT, the conventional code for a Ctrl-C'd process.
+	assert.Equal(t, 130, exitcode.Interrupted)
+}
+
+func TestResolve_ContextCanceled_MapsToInterrupted(t *testing.T) {
+	assert.Equal(t, exitcode.Interrupted, exitcode.Resolve(context.Canceled))
+}
+
+func TestResolve_WrappedContextCanceled_MapsToInterrupted(t *testing.T) {
+	wrapped := fmt.Errorf("running command: %w", context.Canceled)
+	assert.Equal(t, exitcode.Interrupted, exitcode.Resolve(wrapped))
+}
+
+func TestResolve_ExplicitCodeBeatsContextCanceled(t *testing.T) {
+	// A command that classifies its own cancellation keeps that classification.
+	err := exitcode.Wrap(exitcode.Runtime, context.Canceled)
+	assert.Equal(t, exitcode.Runtime, exitcode.Resolve(err))
 }

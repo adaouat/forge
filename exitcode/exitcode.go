@@ -5,16 +5,20 @@
 // and leaves domain-specific codes to the consuming apps.
 package exitcode
 
-import "errors"
+import (
+	"context"
+	"errors"
+)
 
 // Generic exit-code vocabulary shared across the adaouat CLI family (ADR-0003).
 // Apps define their own domain codes in the reserved range 4-69.
 const (
-	OK       = 0  // success
-	Usage    = 1  // bad flags/args; default for unclassified errors
-	Config   = 2  // invalid config / validation failure
-	Runtime  = 3  // external command, network, or IO failure
-	Internal = 70 // unexpected internal condition (sysexits EX_SOFTWARE)
+	OK          = 0   // success
+	Usage       = 1   // bad flags/args; default for unclassified errors
+	Config      = 2   // invalid config / validation failure
+	Runtime     = 3   // external command, network, or IO failure
+	Interrupted = 130 // canceled via SIGINT/SIGTERM (128+SIGINT)
+	Internal    = 70  // unexpected internal condition (sysexits EX_SOFTWARE)
 )
 
 // ExitError carries a process exit code alongside an error or message.
@@ -50,7 +54,8 @@ func Wrap(code int, err error) error {
 }
 
 // Resolve maps an error to an exit code: nil → 0, an error carrying an exit code
-// → that code, anything else → 1 (the generic failure default).
+// → that code, a context.Canceled error (e.g. a Ctrl-C'd run) → 130, anything
+// else → 1 (the generic failure default).
 func Resolve(err error) int {
 	if err == nil {
 		return OK
@@ -58,6 +63,9 @@ func Resolve(err error) int {
 	var ee *ExitError
 	if errors.As(err, &ee) {
 		return ee.Code
+	}
+	if errors.Is(err, context.Canceled) {
+		return Interrupted
 	}
 	return Usage
 }
