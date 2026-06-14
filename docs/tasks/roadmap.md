@@ -837,6 +837,36 @@ revisited here; see the ADR's 2026-06-11 refinement note.*
       (consistent with `exectest.FakeBin` being a "sparingly" tool); covered by manual
       verification in Task 4.
 
+## M13 — Signal cancellation for `cli.Run` *(ADR-0010 amendment)*
+
+*`cli.Run` wraps `fang.Execute` but never passes `fang.WithNotifySignal`, so fang's
+`signal.NotifyContext` wiring (fang v2.0.1, `fang.go` ~167) is never enabled — every family
+tool's `cmd.Context()` is just `context.Background()` and never cancels on Ctrl-C/SIGTERM.
+Surfaced by bifrost wanting `bifrost deploy` to abort a long artifact extraction on Ctrl-C via
+`cmd.Context()`.*
+
+- [x] **`cli.Run` cancels on SIGINT/SIGTERM** — pass `fang.WithNotifySignal(os.Interrupt,
+      syscall.SIGTERM)` to `fang.Execute` (not `os.Kill`/`SIGKILL` — uncatchable, a no-op).
+      `cmd.Context()` is cancelled family-wide on Ctrl-C/SIGTERM. ADR-0010 gets a short note
+      (widens its scope from "wires version + theme" to "+ signal cancellation"). TDD.
+
+      **Done:** `cli/run.go` adds `fang.WithNotifySignal(os.Interrupt, syscall.SIGTERM)`.
+      `TestRun_cancelsContextOnSIGTERM` sends real `SIGTERM` to the test process (via
+      `syscall.Kill(os.Getpid(), ...)`) from a goroutine and asserts `cmd.Context()` is
+      canceled inside `RunE` and `Run` returns `context.Canceled` — practically testable
+      since `signal.NotifyContext` intercepts the signal rather than terminating the
+      process. ADR-0010 amended with a dated note (2026-06-14); signature unchanged.
+- [x] **`exitcode.Interrupted = 130`** — `exitcode.Resolve` maps `errors.Is(err,
+      context.Canceled)` to `130` (the `128+SIGINT` convention), so a Ctrl-C'd `RunE` that
+      surfaces `context.Canceled` exits `130` without each app special-casing it. ADR-0007
+      surface row updated. TDD.
+
+      **Done:** `exitcode.go` adds `Interrupted = 130` and an `errors.Is(err,
+      context.Canceled)` branch in `Resolve`, checked *after* `*ExitError` so a command
+      that already classified its own cancellation keeps that code (an `ExitError` wrapping
+      `context.Canceled` still resolves to its own code, not 130). ADR-0007's `exitcode`
+      row updated to list `Interrupted` and cross-reference ADR-0010.
+
 ## Explicitly NOT on this roadmap
 
 Per ADR-0001 Tier 3: config **schemas** and **merge semantics**, bifrost's hook runner and

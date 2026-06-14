@@ -51,3 +51,13 @@ via `cli.Run` / forge helpers); it can't for cobra (apps import it to build comm
 - Supersedes **ADR-0008** (theme now lives in forge) and amends **ADR-0001**'s framework-agnostic
   scope (its zero-domain-logic bar is untouched).
 - A pre-stability decision; consumers re-pin forge at the M8 release.
+
+## Amendment (2026-06-14) — signal cancellation
+
+`cli.Run` now passes `fang.WithNotifySignal(os.Interrupt, syscall.SIGTERM)` to
+`fang.Execute`, so `cmd.Context()` is canceled on Ctrl-C/SIGTERM family-wide (fang v2.0.1
+only wires `signal.NotifyContext` when at least one signal is registered). `os.Kill`/SIGKILL
+is deliberately excluded — it cannot be caught, so registering it is a no-op. A canceled
+`RunE` that surfaces `context.Canceled` resolves to `exitcode.Interrupted` (130). This widens
+`cli.Run`'s scope from "wires version + theme" to "+ signal cancellation"; the signature is
+unchanged.
