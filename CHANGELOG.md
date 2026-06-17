@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.17.1](https://github.com/adaouat/forge/compare/v0.17.0..v0.17.1) - 2026-06-17
+
+### 🐛 Bug Fixes
+
+- *(updatecheck)* Expand hint to multi-line and fix double newline - ([df9dcb5](https://github.com/adaouat/forge/commit/df9dcb5a3735002d512a806948a91a5e062b5f0d)) by @bchatard
+
 ## [0.17.0](https://github.com/adaouat/forge/compare/v0.16.0..v0.17.0) - 2026-06-14
 
 ### 🚀 Features
