@@ -43,12 +43,12 @@ func TestUpgradeLine(t *testing.T) {
 		{
 			name: "package-manager command shows run and what's-new",
 			cmd:  "brew upgrade heraut",
-			want: "heraut v1.3.0 available — run: brew upgrade heraut · what's new: " + releases,
+			want: "heraut v1.3.0 available\nrun: brew upgrade heraut\nwhat's new: " + releases,
 		},
 		{
 			name: "unknown install shows only the what's-new pointer",
 			cmd:  "",
-			want: "heraut v1.3.0 available · what's new: " + releases,
+			want: "heraut v1.3.0 available\nwhat's new: " + releases,
 		},
 	}
 	for _, tc := range tests {
