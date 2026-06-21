@@ -23,6 +23,7 @@ tag is pushed. It does, per app: `go get forge@<version>` → `go mod tidy` → 
 |---|---|
 | heraut | `../heraut` |
 | bifrost | `../bifrost` |
+| hermes | `../hermes` |
 
 When a new adaouat/* CLI is bootstrapped (see the **new-tool** skill), add a row here. To bump a
 subset, pass tool names as extra args; default is all of them.
