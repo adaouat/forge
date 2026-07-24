@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.17.2](https://github.com/adaouat/forge/compare/v0.17.1..v0.17.2) - 2026-07-24
+
+### 💼 Other
+
+- *(deps)* Bump vulnerable dependencies + go toolchain flagged by govulncheck - ([6eea188](https://github.com/adaouat/forge/commit/6eea188182b8544131379250b60765879e6c600b)) by @bchatard
+
+
+### 📚 Documentation
+
+- *(plans)* Add whatsnew rendering refinements implementation plan - ([8ee60e4](https://github.com/adaouat/forge/commit/8ee60e45fc480d52fc3b1a9ad709ddae3418f7ee)) by @bchatard
+
+
+### ⚙️ Miscellaneous Tasks
+
+- *(bump-forge)* Register hermes as a forge consumer - ([4b0c6a6](https://github.com/adaouat/forge/commit/4b0c6a6acfb9490067d35ad262706ffc6f4b0680)) by @bchatard
+
 ## [0.17.1](https://github.com/adaouat/forge/compare/v0.17.0..v0.17.1) - 2026-06-17
 
 ### 🐛 Bug Fixes
