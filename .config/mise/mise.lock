@@ -132,11 +132,11 @@ checksum = "sha256:f4f534a486e4bc3387fa18f08208f2f854b7aaea8a08f2a2d829a914a05ab
 url = "https://dl.google.com/go/go1.26.7.windows-amd64.zip"
 
 [[tools."go:golang.org/x/tools/gopls"]]
-version = "0.22.0"
+version = "0.23.0"
 backend = "go:golang.org/x/tools/gopls"
 
 [[tools."go:golang.org/x/vuln/cmd/govulncheck"]]
-version = "1.3.0"
+version = "1.7.0"
 backend = "go:golang.org/x/vuln/cmd/govulncheck"
 
 [[tools.golangci-lint]]
@@ -207,100 +207,128 @@ checksum = "sha256:5af7e769acb7f70d8630ed53ae1fb2cc4b205117f29df5d83619fa0ff72a3
 url = "https://github.com/jdx/hk/releases/download/v1.46.0/hk-x86_64-pc-windows-msvc.zip"
 
 [[tools.pkl]]
-version = "0.31.1"
+version = "0.32.1"
 backend = "aqua:apple/pkl"
 
 [tools.pkl."platforms.linux-arm64"]
-checksum = "sha256:7ef10e743daa921fb94ae7bdb9ec6986f362bf250c55814b9ea2aeb13f2d083e"
-url = "https://github.com/apple/pkl/releases/download/0.31.1/pkl-linux-aarch64"
+checksum = "sha256:a76d2dd47da435a8f911b0347373f47c7e59ea54fb75ff846d20b8df10dba058"
+url = "https://github.com/apple/pkl/releases/download/0.32.1/pkl-linux-aarch64"
+url_api = "https://api.github.com/repos/apple/pkl/releases/assets/487426568"
 
 [tools.pkl."platforms.linux-arm64-musl"]
-checksum = "sha256:7ef10e743daa921fb94ae7bdb9ec6986f362bf250c55814b9ea2aeb13f2d083e"
-url = "https://github.com/apple/pkl/releases/download/0.31.1/pkl-linux-aarch64"
+checksum = "sha256:a76d2dd47da435a8f911b0347373f47c7e59ea54fb75ff846d20b8df10dba058"
+url = "https://github.com/apple/pkl/releases/download/0.32.1/pkl-linux-aarch64"
+url_api = "https://api.github.com/repos/apple/pkl/releases/assets/487426568"
 
 [tools.pkl."platforms.linux-x64"]
-checksum = "sha256:618f13955d755cafbfe8c9cba1d27635848cd49dbc6abffd398d2751db1231bf"
-url = "https://github.com/apple/pkl/releases/download/0.31.1/pkl-linux-amd64"
+checksum = "sha256:3180b62da95c0cad1d904e9bb6c5f4a8f9032413c21e53194bb91ff1ee5f3211"
+url = "https://github.com/apple/pkl/releases/download/0.32.1/pkl-linux-amd64"
+url_api = "https://api.github.com/repos/apple/pkl/releases/assets/487426567"
 
 [tools.pkl."platforms.linux-x64-musl"]
-checksum = "sha256:618f13955d755cafbfe8c9cba1d27635848cd49dbc6abffd398d2751db1231bf"
-url = "https://github.com/apple/pkl/releases/download/0.31.1/pkl-linux-amd64"
+checksum = "sha256:3180b62da95c0cad1d904e9bb6c5f4a8f9032413c21e53194bb91ff1ee5f3211"
+url = "https://github.com/apple/pkl/releases/download/0.32.1/pkl-linux-amd64"
+url_api = "https://api.github.com/repos/apple/pkl/releases/assets/487426567"
 
 [tools.pkl."platforms.macos-arm64"]
-checksum = "sha256:1b6a5438d9624cd2798a7530721bbbfa27ef72efe5c878a1b6c546c6e7ca0e8f"
-url = "https://github.com/apple/pkl/releases/download/0.31.1/pkl-macos-aarch64"
+checksum = "sha256:563eb51c9a20b16a3625464ed745c675ed9750381f2126722696a0d7cac1d9d3"
+url = "https://github.com/apple/pkl/releases/download/0.32.1/pkl-macos-aarch64"
+url_api = "https://api.github.com/repos/apple/pkl/releases/assets/487426570"
 
 [tools.pkl."platforms.macos-x64"]
-checksum = "sha256:22123ed4ae4c03afa8c54c69f77f0bec39b0fa0f67b09d6d148e0a376a2a471d"
-url = "https://github.com/apple/pkl/releases/download/0.31.1/pkl-macos-amd64"
+checksum = "sha256:5b74b903234047960144f66f2cebdd12d267d9b98e8155ed91d2ae5ed27e2d1f"
+url = "https://github.com/apple/pkl/releases/download/0.32.1/pkl-macos-amd64"
+url_api = "https://api.github.com/repos/apple/pkl/releases/assets/487426599"
 
 [tools.pkl."platforms.windows-x64"]
-checksum = "sha256:a8834481667325b44c539dbb758d7365a16389070f343c04b639bbe525ede013"
-url = "https://github.com/apple/pkl/releases/download/0.31.1/pkl-windows-amd64.exe"
+checksum = "sha256:8550a00fcf027335e42c5e2cd553b88e98845408cb1880b3e3d1860caf46d22a"
+url = "https://github.com/apple/pkl/releases/download/0.32.1/pkl-windows-amd64.exe"
+url_api = "https://api.github.com/repos/apple/pkl/releases/assets/487426668"
 
 [[tools.tombi]]
-version = "1.1.1"
+version = "1.4.0"
 backend = "aqua:tombi-toml/tombi"
 
 [tools.tombi."platforms.linux-arm64"]
-checksum = "sha256:990aa9d963cb38aaa3cb327cca07420d3af601322eff3a6fe6ab4cdc3acc776a"
-url = "https://github.com/tombi-toml/tombi/releases/download/v1.1.1/tombi-cli-1.1.1-aarch64-unknown-linux-musl.tar.gz"
+checksum = "sha256:b70750d462954294c354a014bb90399273876b953c21e3a136aafd3d1d41f5e8"
+url = "https://github.com/tombi-toml/tombi/releases/download/v1.4.0/tombi-cli-1.4.0-aarch64-unknown-linux-musl.tar.gz"
+url_api = "https://api.github.com/repos/tombi-toml/tombi/releases/assets/513163060"
+provenance = "github-attestations"
 
 [tools.tombi."platforms.linux-arm64-musl"]
-checksum = "sha256:990aa9d963cb38aaa3cb327cca07420d3af601322eff3a6fe6ab4cdc3acc776a"
-url = "https://github.com/tombi-toml/tombi/releases/download/v1.1.1/tombi-cli-1.1.1-aarch64-unknown-linux-musl.tar.gz"
+checksum = "sha256:b70750d462954294c354a014bb90399273876b953c21e3a136aafd3d1d41f5e8"
+url = "https://github.com/tombi-toml/tombi/releases/download/v1.4.0/tombi-cli-1.4.0-aarch64-unknown-linux-musl.tar.gz"
+url_api = "https://api.github.com/repos/tombi-toml/tombi/releases/assets/513163060"
+provenance = "github-attestations"
 
 [tools.tombi."platforms.linux-x64"]
-checksum = "sha256:6b01a72fbf67eb158a2efc72f7081756d87e2397054e0faf4de4b36478813342"
-url = "https://github.com/tombi-toml/tombi/releases/download/v1.1.1/tombi-cli-1.1.1-x86_64-unknown-linux-musl.tar.gz"
+checksum = "sha256:e2dc1190e0590b1fd0581fa8f85017215ed9b05a4d85c1cf18e0979b6cf24fe1"
+url = "https://github.com/tombi-toml/tombi/releases/download/v1.4.0/tombi-cli-1.4.0-x86_64-unknown-linux-musl.tar.gz"
+url_api = "https://api.github.com/repos/tombi-toml/tombi/releases/assets/513163088"
+provenance = "github-attestations"
 
 [tools.tombi."platforms.linux-x64-musl"]
-checksum = "sha256:6b01a72fbf67eb158a2efc72f7081756d87e2397054e0faf4de4b36478813342"
-url = "https://github.com/tombi-toml/tombi/releases/download/v1.1.1/tombi-cli-1.1.1-x86_64-unknown-linux-musl.tar.gz"
+checksum = "sha256:e2dc1190e0590b1fd0581fa8f85017215ed9b05a4d85c1cf18e0979b6cf24fe1"
+url = "https://github.com/tombi-toml/tombi/releases/download/v1.4.0/tombi-cli-1.4.0-x86_64-unknown-linux-musl.tar.gz"
+url_api = "https://api.github.com/repos/tombi-toml/tombi/releases/assets/513163088"
+provenance = "github-attestations"
 
 [tools.tombi."platforms.macos-arm64"]
-checksum = "sha256:3e675cbae672e37c9158f2a29cfd03033b912742cde6105cb3cbffd156488fb1"
-url = "https://github.com/tombi-toml/tombi/releases/download/v1.1.1/tombi-cli-1.1.1-aarch64-apple-darwin.tar.gz"
+checksum = "sha256:248159d26488f11fe8c36b9239b1ab84abe3533f4a5d8d066e56c091a99ffde1"
+url = "https://github.com/tombi-toml/tombi/releases/download/v1.4.0/tombi-cli-1.4.0-aarch64-apple-darwin.tar.gz"
+url_api = "https://api.github.com/repos/tombi-toml/tombi/releases/assets/513163062"
+provenance = "github-attestations"
 
 [tools.tombi."platforms.macos-x64"]
-checksum = "sha256:f4c70cfb7b1ada225df2b996ba97820a80dd9704484945f57fc18ad8fa18d9c6"
-url = "https://github.com/tombi-toml/tombi/releases/download/v1.1.1/tombi-cli-1.1.1-x86_64-apple-darwin.tar.gz"
+checksum = "sha256:7016e0028bf0ff122faeb49b0bb248c9d73885ce73b8ada26be6248e207977bc"
+url = "https://github.com/tombi-toml/tombi/releases/download/v1.4.0/tombi-cli-1.4.0-x86_64-apple-darwin.tar.gz"
+url_api = "https://api.github.com/repos/tombi-toml/tombi/releases/assets/513163065"
+provenance = "github-attestations"
 
 [tools.tombi."platforms.windows-x64"]
-checksum = "sha256:e899a3ae3a9361456061676b6264a5db0d4bb3e7d45e8890265d0ab5906439d1"
-url = "https://github.com/tombi-toml/tombi/releases/download/v1.1.1/tombi-cli-1.1.1-x86_64-pc-windows-msvc.zip"
+checksum = "sha256:376f26ef04c32b7de57352fb1572d550d2f728958f00bfa585cec94a1df677ab"
+url = "https://github.com/tombi-toml/tombi/releases/download/v1.4.0/tombi-cli-1.4.0-x86_64-pc-windows-msvc.zip"
+url_api = "https://api.github.com/repos/tombi-toml/tombi/releases/assets/513163086"
+provenance = "github-attestations"
 
 [[tools.typos]]
-version = "1.47.0"
+version = "1.49.0"
 backend = "aqua:crate-ci/typos"
 
 [tools.typos."platforms.linux-arm64"]
-checksum = "sha256:0349ec65605216136b57c3ea6f1a02034e7e8bc128788474b635396997015d54"
-url = "https://github.com/crate-ci/typos/releases/download/v1.47.0/typos-v1.47.0-aarch64-unknown-linux-musl.tar.gz"
+checksum = "sha256:85c8b87b22a0fb1da130cd4d495e0beba7f1225eb580933184509e146ec4c509"
+url = "https://github.com/crate-ci/typos/releases/download/v1.49.0/typos-v1.49.0-aarch64-unknown-linux-musl.tar.gz"
+url_api = "https://api.github.com/repos/crate-ci/typos/releases/assets/500258983"
 
 [tools.typos."platforms.linux-arm64-musl"]
-checksum = "sha256:0349ec65605216136b57c3ea6f1a02034e7e8bc128788474b635396997015d54"
-url = "https://github.com/crate-ci/typos/releases/download/v1.47.0/typos-v1.47.0-aarch64-unknown-linux-musl.tar.gz"
+checksum = "sha256:85c8b87b22a0fb1da130cd4d495e0beba7f1225eb580933184509e146ec4c509"
+url = "https://github.com/crate-ci/typos/releases/download/v1.49.0/typos-v1.49.0-aarch64-unknown-linux-musl.tar.gz"
+url_api = "https://api.github.com/repos/crate-ci/typos/releases/assets/500258983"
 
 [tools.typos."platforms.linux-x64"]
-checksum = "sha256:6f8a935cea6c60b060082b862a7e777bfd92d939a4fd4194d8085b086dfe24e4"
-url = "https://github.com/crate-ci/typos/releases/download/v1.47.0/typos-v1.47.0-x86_64-unknown-linux-musl.tar.gz"
+checksum = "sha256:48bd2d58e02ce713b8c0f1aa239e68ee4f7d8c551013135806e6aed3938d9e10"
+url = "https://github.com/crate-ci/typos/releases/download/v1.49.0/typos-v1.49.0-x86_64-unknown-linux-musl.tar.gz"
+url_api = "https://api.github.com/repos/crate-ci/typos/releases/assets/500261019"
 
 [tools.typos."platforms.linux-x64-musl"]
-checksum = "sha256:6f8a935cea6c60b060082b862a7e777bfd92d939a4fd4194d8085b086dfe24e4"
-url = "https://github.com/crate-ci/typos/releases/download/v1.47.0/typos-v1.47.0-x86_64-unknown-linux-musl.tar.gz"
+checksum = "sha256:48bd2d58e02ce713b8c0f1aa239e68ee4f7d8c551013135806e6aed3938d9e10"
+url = "https://github.com/crate-ci/typos/releases/download/v1.49.0/typos-v1.49.0-x86_64-unknown-linux-musl.tar.gz"
+url_api = "https://api.github.com/repos/crate-ci/typos/releases/assets/500261019"
 
 [tools.typos."platforms.macos-arm64"]
-checksum = "sha256:9baa4690960c82cdc3d28bc4744c6ca84df24d99cc1f709869cc14fa8717601a"
-url = "https://github.com/crate-ci/typos/releases/download/v1.47.0/typos-v1.47.0-aarch64-apple-darwin.tar.gz"
+checksum = "sha256:8c0e7bd40b2b60c0b0cfe9f74dd814b4d4385c956ce86860f7da9e62d91fdc73"
+url = "https://github.com/crate-ci/typos/releases/download/v1.49.0/typos-v1.49.0-aarch64-apple-darwin.tar.gz"
+url_api = "https://api.github.com/repos/crate-ci/typos/releases/assets/500262463"
 
 [tools.typos."platforms.macos-x64"]
-checksum = "sha256:aae88e65ed25c091dd4c4a9767b2d36f7913d08f76b38c1bb8ccd189284870d7"
-url = "https://github.com/crate-ci/typos/releases/download/v1.47.0/typos-v1.47.0-x86_64-apple-darwin.tar.gz"
+checksum = "sha256:4cecbf653a9fc45f023abf57f4e2e2f6b138c2d2387b09289beacdd3f0ea7bfd"
+url = "https://github.com/crate-ci/typos/releases/download/v1.49.0/typos-v1.49.0-x86_64-apple-darwin.tar.gz"
+url_api = "https://api.github.com/repos/crate-ci/typos/releases/assets/500259181"
 
 [tools.typos."platforms.windows-x64"]
-checksum = "sha256:8773b1b3029b1e149b7bd676785b065b236173a7509bc9ab19fa64e638ae989a"
-url = "https://github.com/crate-ci/typos/releases/download/v1.47.0/typos-v1.47.0-x86_64-pc-windows-msvc.zip"
+checksum = "sha256:06d3a1b71c282e021671070696a72696d5c60ea485b47dc4f8f1fbcf90144d02"
+url = "https://github.com/crate-ci/typos/releases/download/v1.49.0/typos-v1.49.0-x86_64-pc-windows-msvc.zip"
+url_api = "https://api.github.com/repos/crate-ci/typos/releases/assets/500264256"
 
 [[tools.yamlfmt]]
 version = "0.21.0"
