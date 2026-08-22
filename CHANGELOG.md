@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.17.3](https://github.com/adaouat/forge/compare/v0.17.2..v0.17.3) - 2026-08-22
+
+### 💼 Other
+
+- *(deps)* Full dependency refresh + go toolchain bump flagged by govulncheck - ([06157d0](https://github.com/adaouat/forge/commit/06157d0034f64e9270c60b91f639234c402ae360)) by @bchatard
+
+
+### ⚙️ Miscellaneous Tasks
+
+- *(mise)* Bump latest-pinned dev tools - ([4da0e7b](https://github.com/adaouat/forge/commit/4da0e7ba13b46143a38e6c1a404ddb25dad8199f)) by @bchatard
+
 ## [0.17.2](https://github.com/adaouat/forge/compare/v0.17.1..v0.17.2) - 2026-07-24
 
 ### 💼 Other
