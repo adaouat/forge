@@ -1,22 +1,40 @@
 # Changelog
 
-## [0.17.3](https://github.com/adaouat/forge/compare/v0.17.2..v0.17.3) - 2026-08-22
+<!-- heraut-release: v0.17.4 -->
+## [0.17.4](https://github.com/adaouat/forge/compare/v0.17.3..v0.17.4) - 2026-08-28
+
+### 🐛 Bug Fixes
+
+- *(heraut)* Correct forge -> forges typo, wire regenerate_changelog - ([6a52fd6](https://github.com/adaouat/forge/commit/6a52fd67980e7dd082f815f44662cd6486a25ef1)) by @bchatard
+
+
+### ⚙️ Miscellaneous Tasks
+
+- *(heraut)* Bump config to v0.58.0 schema - ([9e14381](https://github.com/adaouat/forge/commit/9e14381ca614d0bbd02b4378f6d7ce4c7c6aed25)) by @bchatard
+
+- *(mise)* Bump golangci-lint to 2.13 for go1.27 support - ([144e7fb](https://github.com/adaouat/forge/commit/144e7fbfb075fe24193c4e11edcd0ef714338a28)) by @bchatard
+
 
 ### 💼 Other
 
-- *(deps)* Full dependency refresh + go toolchain bump flagged by govulncheck - ([06157d0](https://github.com/adaouat/forge/commit/06157d0034f64e9270c60b91f639234c402ae360)) by @bchatard
+- *(deps)* Bump go toolchain to 1.27 - ([1bec41c](https://github.com/adaouat/forge/commit/1bec41c46583cd7de721fef6e17005adc5dfcc59)) by @bchatard
 
+- *(deps)* Refresh dependency tree to latest - ([6b9902b](https://github.com/adaouat/forge/commit/6b9902b9d4d8ce57d48a1fb0453d7f8305f15f63)) by @bchatard
+
+<!-- heraut-release: v0.17.3 -->
+## [0.17.3](https://github.com/adaouat/forge/compare/v0.17.2..v0.17.3) - 2026-08-22
 
 ### ⚙️ Miscellaneous Tasks
 
 - *(mise)* Bump latest-pinned dev tools - ([4da0e7b](https://github.com/adaouat/forge/commit/4da0e7ba13b46143a38e6c1a404ddb25dad8199f)) by @bchatard
 
-## [0.17.2](https://github.com/adaouat/forge/compare/v0.17.1..v0.17.2) - 2026-07-24
 
 ### 💼 Other
 
-- *(deps)* Bump vulnerable dependencies + go toolchain flagged by govulncheck - ([6eea188](https://github.com/adaouat/forge/commit/6eea188182b8544131379250b60765879e6c600b)) by @bchatard
+- *(deps)* Full dependency refresh + go toolchain bump flagged by govulncheck - ([06157d0](https://github.com/adaouat/forge/commit/06157d0034f64e9270c60b91f639234c402ae360)) by @bchatard
 
+<!-- heraut-release: v0.17.2 -->
+## [0.17.2](https://github.com/adaouat/forge/compare/v0.17.1..v0.17.2) - 2026-07-24
 
 ### 📚 Documentation
 
@@ -27,12 +45,19 @@
 
 - *(bump-forge)* Register hermes as a forge consumer - ([4b0c6a6](https://github.com/adaouat/forge/commit/4b0c6a6acfb9490067d35ad262706ffc6f4b0680)) by @bchatard
 
+
+### 💼 Other
+
+- *(deps)* Bump vulnerable dependencies + go toolchain flagged by govulncheck - ([6eea188](https://github.com/adaouat/forge/commit/6eea188182b8544131379250b60765879e6c600b)) by @bchatard
+
+<!-- heraut-release: v0.17.1 -->
 ## [0.17.1](https://github.com/adaouat/forge/compare/v0.17.0..v0.17.1) - 2026-06-17
 
 ### 🐛 Bug Fixes
 
 - *(updatecheck)* Expand hint to multi-line and fix double newline - ([df9dcb5](https://github.com/adaouat/forge/commit/df9dcb5a3735002d512a806948a91a5e062b5f0d)) by @bchatard
 
+<!-- heraut-release: v0.17.0 -->
 ## [0.17.0](https://github.com/adaouat/forge/compare/v0.16.0..v0.17.0) - 2026-06-14
 
 ### 🚀 Features
@@ -46,6 +71,7 @@
 
 - *(heraut)* Update config to add new required field - ([5b97e72](https://github.com/adaouat/forge/commit/5b97e728c743e19203f06077218a903abc5e4aa0)) by @bchatard
 
+<!-- heraut-release: v0.16.0 -->
 ## [0.16.0](https://github.com/adaouat/forge/compare/v0.15.0..v0.16.0) - 2026-06-11
 
 ### 🚀 Features
@@ -73,6 +99,7 @@
 
 - *(typos)* Ignore backtick-quoted git SHAs - ([8cac60f](https://github.com/adaouat/forge/commit/8cac60f3963697a9cfe52c60bb4f5ce560daf17e)) by @bchatard
 
+<!-- heraut-release: v0.15.0 -->
 ## [0.15.0](https://github.com/adaouat/forge/compare/v0.14.0..v0.15.0) - 2026-06-10
 
 ### 🚀 Features
@@ -84,12 +111,14 @@
 
 - *(tasks)* Mark M10 apps-register-whatsnew done (+ M11 adoption) - ([32a7617](https://github.com/adaouat/forge/commit/32a761715ae795bdecc85d8d12c5cf25f88c53c2)) by @bchatard
 
+<!-- heraut-release: v0.14.0 -->
 ## [0.14.0](https://github.com/adaouat/forge/compare/v0.13.0..v0.14.0) - 2026-06-10
 
 ### 🚀 Features
 
 - *(updatecheck)* Share update-hint wiring via CacheFile + PostRun - ([03b85c1](https://github.com/adaouat/forge/commit/03b85c1166ffa2b25b8b4e5236a0617720b5eebe)) by @bchatard
 
+<!-- heraut-release: v0.13.0 -->
 ## [0.13.0](https://github.com/adaouat/forge/compare/v0.12.0..v0.13.0) - 2026-06-10
 
 ### 🚀 Features
@@ -105,6 +134,7 @@
 
 - *(adr)* Reconcile 0012 to a live-first whatsnew source - ([f00188c](https://github.com/adaouat/forge/commit/f00188c6f52adb83757436949162688bff878b40)) by @bchatard
 
+<!-- heraut-release: v0.12.0 -->
 ## [0.12.0](https://github.com/adaouat/forge/compare/v0.11.1..v0.12.0) - 2026-06-10
 
 ### 🚀 Features
@@ -123,6 +153,7 @@
 
 - *(release)* Expose GITHUB_TOKEN for git-cliff API calls - ([c0007be](https://github.com/adaouat/forge/commit/c0007be86fa12e7e8fcec0be01447711516a83bb)) by @bchatard
 
+<!-- heraut-release: v0.11.1 -->
 ## [0.11.1](https://github.com/adaouat/forge/compare/v0.11.0..v0.11.1) - 2026-06-09
 
 ### 🐛 Bug Fixes
@@ -136,12 +167,14 @@
 
 - *(tasks)* Record bifrost forge/log adoption (deploy-path diagnostics) - ([9b991ff](https://github.com/adaouat/forge/commit/9b991ff4b4fa9071f9df12633cd6b5920e018932)) by @bchatard
 
+<!-- heraut-release: v0.11.0 -->
 ## [0.11.0](https://github.com/adaouat/forge/compare/v0.10.0..v0.11.0) - 2026-06-08
 
 ### 🚀 Features
 
 - *(log)* Add LevelFor — the family --verbose to level mapping - ([4671893](https://github.com/adaouat/forge/commit/4671893c190469061b10268066ad4a9d0948aefe)) by @bchatard
 
+<!-- heraut-release: v0.10.0 -->
 ## [0.10.0](https://github.com/adaouat/forge/compare/v0.9.0..v0.10.0) - 2026-06-08
 
 ### 🚀 Features
@@ -164,6 +197,7 @@
 
 - *(claude)* Drop command files shadowed by same-named skills - ([d7e30c3](https://github.com/adaouat/forge/commit/d7e30c348e080da65e3a1c52badab73f48cf08e1)) by @bchatard
 
+<!-- heraut-release: v0.9.0 -->
 ## [0.9.0](https://github.com/adaouat/forge/compare/v0.8.0..v0.9.0) - 2026-06-07
 
 ### 🚀 Features
@@ -213,6 +247,7 @@
 
 - *(claude)* Apply review feedback to new-tool skill - ([453852a](https://github.com/adaouat/forge/commit/453852a99cdb71eb3b1c306ab8f8612d5d0bc419)) by @bchatard
 
+<!-- heraut-release: v0.8.0 -->
 ## [0.8.0](https://github.com/adaouat/forge/compare/v0.7.2..v0.8.0) - 2026-06-05
 
 ### 🚀 Features
@@ -238,6 +273,7 @@
 
 - *(roadmap)* Mark forge huh theme done (M8) - ([01e1059](https://github.com/adaouat/forge/commit/01e1059f0bcc5d44c8a5080ad0fcbd2d1f6c6200)) by @bchatard
 
+<!-- heraut-release: v0.7.2 -->
 ## [0.7.2](https://github.com/adaouat/forge/compare/v0.7.1..v0.7.2) - 2026-06-05
 
 ### 📚 Documentation
@@ -249,6 +285,7 @@
 
 - Extract release-setup composite action; forge uses it - ([c60467d](https://github.com/adaouat/forge/commit/c60467d2881bad22e7c80c623d7e540350231776)) by @bchatard
 
+<!-- heraut-release: v0.7.1 -->
 ## [0.7.1](https://github.com/adaouat/forge/compare/v0.7.0..v0.7.1) - 2026-06-05
 
 ### 📚 Documentation
@@ -260,6 +297,7 @@
 
 - Add release workflow (heraut-driven) - ([27fef85](https://github.com/adaouat/forge/commit/27fef851feeea9b71d4b64167c5ee37f7b0628c6)) by @bchatard
 
+<!-- heraut-release: v0.7.0 -->
 ## [0.7.0](https://github.com/adaouat/forge/compare/v0.6.2..v0.7.0) - 2026-06-04
 
 ### 🚀 Features
@@ -279,6 +317,7 @@
 
 - Update status from pre-implementation to shipped - ([93cc898](https://github.com/adaouat/forge/commit/93cc898609594daa361319be498900964fb8763e)) by @bchatard
 
+<!-- heraut-release: v0.6.2 -->
 ## [0.6.2](https://github.com/adaouat/forge/compare/v0.6.1..v0.6.2) - 2026-06-04
 
 ### 📚 Documentation
@@ -287,12 +326,8 @@
 
 - *(roadmap)* Mark Homebrew tap + casks done - ([9ac0ad5](https://github.com/adaouat/forge/commit/9ac0ad5d401e79adb369f30f0ffaa3006bc180df)) by @bchatard
 
+<!-- heraut-release: v0.6.1 -->
 ## [0.6.1](https://github.com/adaouat/forge/compare/v0.6.0..v0.6.1) - 2026-06-04
-
-### 💼 Other
-
-- Bump Go to 1.26.4 for stdlib security fixes - ([6230dc8](https://github.com/adaouat/forge/commit/6230dc820cc6acd0cb74b03cdb31a333d85f9bb3)) by @bchatard
-
 
 ### 📚 Documentation
 
@@ -303,6 +338,12 @@
 
 - Make go-ci coverage-threshold a required input - ([1bde7d9](https://github.com/adaouat/forge/commit/1bde7d93158afe08bf587118220c5912d9e69d87)) by @bchatard
 
+
+### 💼 Other
+
+- Bump Go to 1.26.4 for stdlib security fixes - ([6230dc8](https://github.com/adaouat/forge/commit/6230dc820cc6acd0cb74b03cdb31a333d85f9bb3)) by @bchatard
+
+<!-- heraut-release: v0.6.0 -->
 ## [0.6.0](https://github.com/adaouat/forge/compare/v0.5.0..v0.6.0) - 2026-06-04
 
 ### 🚀 Features
@@ -333,6 +374,7 @@
 
 - Add reusable lint/test workflow for the CLI family - ([759f467](https://github.com/adaouat/forge/commit/759f467c1e3ba7cae33a1646b84558907d498088)) by @bchatard
 
+<!-- heraut-release: v0.5.0 -->
 ## [0.5.0](https://github.com/adaouat/forge/compare/v0.4.0..v0.5.0) - 2026-06-04
 
 ### 🚀 Features
@@ -353,6 +395,7 @@
 
 - *(roadmap)* Mark M4 config migrations done, close M4 - ([07749ca](https://github.com/adaouat/forge/commit/07749cac4f6bec085be927937f28f795612e2ca8)) by @bchatard
 
+<!-- heraut-release: v0.4.0 -->
 ## [0.4.0](https://github.com/adaouat/forge/compare/v0.3.0..v0.4.0) - 2026-06-03
 
 ### 🚀 Features
@@ -378,6 +421,7 @@
 
 - *(roadmap)* Mark bifrost numbered deploy steps done - ([8372162](https://github.com/adaouat/forge/commit/8372162186be92ae525b6fa492537f00c87489c9)) by @bchatard
 
+<!-- heraut-release: v0.3.0 -->
 ## [0.3.0](https://github.com/adaouat/forge/compare/v0.2.0..v0.3.0) - 2026-06-03
 
 ### 🚀 Features
@@ -397,6 +441,7 @@
 
 - *(roadmap)* Mark heraut/bifrost exit-code adoption done - ([526e6a2](https://github.com/adaouat/forge/commit/526e6a2f6216604c164bada6f115da0fad2983a2)) by @bchatard
 
+<!-- heraut-release: v0.2.0 -->
 ## [0.2.0](https://github.com/adaouat/forge/compare/v0.1.0..v0.2.0) - 2026-06-02
 
 ### 🚀 Features
@@ -418,12 +463,8 @@
 
 - *(roadmap)* Note allow_fail stderr fix in M1.4 - ([7a3e910](https://github.com/adaouat/forge/commit/7a3e910469d4e1b8deed42d9ec4c1cda0f6a0cc4)) by @bchatard
 
+<!-- heraut-release: v0.1.0 -->
 ## [0.1.0] - 2026-06-02
-
-### 💼 Other
-
-- Initialize the go module github.com/adaouat/forge - ([a2829bd](https://github.com/adaouat/forge/commit/a2829bd081d279e23b89593bb1d8837f2c741b39)) by @bchatard
-
 
 ### 📚 Documentation
 
@@ -450,3 +491,7 @@
 
 - Add lint/test/build workflow - ([3911d4e](https://github.com/adaouat/forge/commit/3911d4ec1992c299c293deb7720b4e239ba7e9cc)) by @bchatard
 
+
+### 💼 Other
+
+- Initialize the go module github.com/adaouat/forge - ([a2829bd](https://github.com/adaouat/forge/commit/a2829bd081d279e23b89593bb1d8837f2c741b39)) by @bchatard
