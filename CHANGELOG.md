@@ -1,5 +1,17 @@
 # Changelog
 
+<!-- heraut-release: v0.18.0 -->
+## [0.18.0](https://github.com/adaouat/forge/compare/v0.17.4..v0.18.0) - 2026-08-28
+
+### 🚀 Features
+
+- *(exitcode)* Add WrapSummary, flip Error() to prefer Message - ([a5cdc1f](https://github.com/adaouat/forge/commit/a5cdc1fcac5109ed4ca500ade15869d8ab848b32)) by @bchatard
+
+
+### 📚 Documentation
+
+- *(adr)* Add ADR-0013 exitcode summary/full-error split - ([d7ab84a](https://github.com/adaouat/forge/commit/d7ab84accbf4719764a8194b461d7678268803ed)) by @bchatard
+
 <!-- heraut-release: v0.17.4 -->
 ## [0.17.4](https://github.com/adaouat/forge/compare/v0.17.3..v0.17.4) - 2026-08-28
 
