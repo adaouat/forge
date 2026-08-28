@@ -56,9 +56,61 @@ func TestExitError_LiteralWithMessage(t *testing.T) {
 	assert.NoError(t, errors.Unwrap(err))
 }
 
-func TestExitError_ErrTakesPrecedenceOverMessage(t *testing.T) {
-	err := &exitcode.ExitError{Code: 1, Message: "ignored", Err: errors.New("real")}
+func TestExitError_NoMessageOrErr_ReturnsEmptyString(t *testing.T) {
+	// A bare &ExitError{Code: N} must not panic dereferencing a nil Err.
+	err := &exitcode.ExitError{Code: 1}
+	assert.Equal(t, "", err.Error())
+}
+
+func TestExitError_MessageTakesPrecedenceOverErr(t *testing.T) {
+	// ADR-0013: a summary (Message) displays instead of the full Err, so a
+	// caller that already showed the full error elsewhere doesn't repeat it.
+	err := &exitcode.ExitError{Code: 1, Message: "summary", Err: errors.New("real")}
+	assert.Equal(t, "summary", err.Error())
+}
+
+func TestExitError_FallsBackToErrWhenMessageEmpty(t *testing.T) {
+	err := &exitcode.ExitError{Code: 1, Err: errors.New("real")}
 	assert.Equal(t, "real", err.Error())
+}
+
+func TestWrapSummary_Nil_ReturnsNil(t *testing.T) {
+	assert.NoError(t, exitcode.WrapSummary(2, nil, "summary"))
+}
+
+func TestWrapSummary_DisplaysSummaryNotFullError(t *testing.T) {
+	base := errors.New("full detail already shown by a step reporter")
+	wrapped := exitcode.WrapSummary(exitcode.Runtime, base, "release failed")
+
+	require.Error(t, wrapped)
+	assert.Equal(t, "release failed", wrapped.Error())
+}
+
+func TestWrapSummary_UnwrapReachesFullError(t *testing.T) {
+	base := errors.New("full detail")
+	wrapped := exitcode.WrapSummary(exitcode.Runtime, base, "summary")
+	assert.Equal(t, base, errors.Unwrap(wrapped))
+}
+
+func TestWrapSummary_ErrorsIsSeesThroughToSentinel(t *testing.T) {
+	sentinel := errors.New("sentinel")
+	base := fmt.Errorf("step: %w", sentinel)
+	wrapped := exitcode.WrapSummary(exitcode.Runtime, base, "summary")
+	assert.ErrorIs(t, wrapped, sentinel)
+}
+
+func TestWrapSummary_ResolveUsesGivenCode(t *testing.T) {
+	wrapped := exitcode.WrapSummary(exitcode.Config, errors.New("bad config"), "summary")
+	assert.Equal(t, exitcode.Config, exitcode.Resolve(wrapped))
+}
+
+func TestWrapSummary_AlreadyClassified_PreservesInnerCode(t *testing.T) {
+	// Mirrors Wrap's first/innermost-classification-wins rule (ADR-0013).
+	inner := exitcode.Wrap(4, errors.New("guard"))
+	outer := exitcode.WrapSummary(3, inner, "summary")
+
+	assert.Equal(t, 4, exitcode.Resolve(outer))
+	assert.Equal(t, "summary", outer.Error())
 }
 
 func TestCodes_GenericVocabulary(t *testing.T) {

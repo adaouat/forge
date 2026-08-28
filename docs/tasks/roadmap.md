@@ -867,6 +867,31 @@ Surfaced by bifrost wanting `bifrost deploy` to abort a long artifact extraction
       `context.Canceled` still resolves to its own code, not 130). ADR-0007's `exitcode`
       row updated to list `Interrupted` and cross-reference ADR-0010.
 
+## M14 — `exitcode` summary/full-error split *([ADR-0013](../adr/0013-exitcode-summary-and-full-error.md))*
+
+*Surfaced by heraut (built on `cli`+`ui`+`exitcode`): a `ui.Spinner`-reported step failure
+printed twice — once inline by the spinner's own render, once again verbatim in fang's boxed
+ERROR panel — because `ExitError.Error()` always preferred `Err` over `Message`, so there was
+no way to show a short summary at the top level while keeping the full error inspectable via
+`Unwrap` downstream. Generic to any tool combining `ui.Spinner` with `cli.Run`, not heraut-
+specific.*
+
+- [x] **`Error()` precedence flip + `WrapSummary(code, err, summary)`.** Verified first (grep
+      across heraut + bifrost) that no existing call site sets both `Message` and `Err` on one
+      `ExitError`, so the flip is behavior-preserving for every real caller today. **Done:**
+      `Error()` now prefers `Message` when non-empty, else `Err.Error()`, else `""`.
+      `WrapSummary` mirrors `Wrap`'s "first/innermost classification wins" rule — if `err`
+      already carries a code, that code is preserved and the summary still attaches on top.
+      `TestExitError_ErrTakesPrecedenceOverMessage` renamed + inverted to
+      `TestExitError_MessageTakesPrecedenceOverErr` (ADR-0013 is the deliberate-change
+      exception `docs/rules/testing.md` requires); a new `TestExitError_FallsBackToErrWhenMessageEmpty`
+      locks the other branch. 6 new `WrapSummary` tests (nil, summary-display,
+      Unwrap-reaches-base, `errors.Is` sees through a sentinel, `Resolve` uses the given code,
+      already-classified preserves the inner code). All prior `Wrap`-based tests pass unchanged.
+      `Wrap`/`Resolve` themselves untouched. ADR-0007's `exitcode` row updated (`WrapSummary` +
+      ADR-0013). Lint + suite green. **Not in scope:** heraut wiring this into its `RunE`
+      boundaries — a separate, later change on heraut's side.
+
 ## Explicitly NOT on this roadmap
 
 Per ADR-0001 Tier 3: config **schemas** and **merge semantics**, bifrost's hook runner and

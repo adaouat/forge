@@ -28,7 +28,7 @@ changes (a new method, a new exported symbol) are minor and need no ADR.
 |---|---|---|
 | `exec` | `Runner` interface (`Run` / `RunEnv` / `RunDir`), `CmdRunner`, `New` | [0002](0002-exec-runner-working-directory.md) (`RunDir`) |
 | `exec/exectest` | `MockRunner` (`Calls`, `QueueResponse`), `Call`, `FakeBin` — the test contract apps assert against | [0002](0002-exec-runner-working-directory.md) |
-| `exitcode` | `OK`/`Usage`/`Config`/`Runtime`/`Interrupted`/`Internal` codes, `ExitError{Code,Message,Err}`, `Resolve`, `Wrap` | [0003](0003-shared-exit-code-vocabulary.md), [0010](0010-cli-framework-foundation.md) |
+| `exitcode` | `OK`/`Usage`/`Config`/`Runtime`/`Interrupted`/`Internal` codes, `ExitError{Code,Message,Err}` (`Error()` prefers `Message` over `Err`), `Resolve`, `Wrap`, `WrapSummary` | [0003](0003-shared-exit-code-vocabulary.md), [0010](0010-cli-framework-foundation.md), [0013](0013-exitcode-summary-and-full-error.md) |
 | `ui` | detection (`HasColor`/`IsTTY`), status (`Success`/`Warn`/`Err`/`Info`/`Header`), `Mode`, header renderers (`HelpLong`/`VersionTemplate`), `Spinner` (`Run`/`Step`/`Total`, `Result`, `Skip`) | [0004](0004-ui-spinner-task-runner.md) (`Spinner`) |
 | `ui` (theme) | `Palette`/`NewPalette`, `Accent`/`DefaultAccent`, `ColorScheme`, `HuhTheme` | [0008](0008-ui-theme-palette.md), [0010](0010-cli-framework-foundation.md) |
 | `config` | `Decode`/`Load` (+ `ErrEmptyConfig`), `Resolver` (`Resolve`/`Label`/`InitDest`, `Source`), `ValidationError`/`ValidationErrors` | — *(fixed here)* |

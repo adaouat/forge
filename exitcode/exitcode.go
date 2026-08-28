@@ -31,10 +31,13 @@ type ExitError struct {
 }
 
 func (e *ExitError) Error() string {
+	if e.Message != "" {
+		return e.Message
+	}
 	if e.Err != nil {
 		return e.Err.Error()
 	}
-	return e.Message
+	return ""
 }
 
 func (e *ExitError) Unwrap() error { return e.Err }
@@ -51,6 +54,32 @@ func Wrap(code int, err error) error {
 		return err
 	}
 	return &ExitError{Code: code, Err: err}
+}
+
+// WrapSummary annotates err with an exit code and a short display summary,
+// while keeping err reachable via Unwrap for errors.Is/errors.As
+// classification. Error() prefers the summary once set, so it displays
+// instead of the full err — use it at a boundary where the full error was
+// already shown elsewhere (e.g. a ui.Spinner step) and the top-level error
+// display (e.g. fang's error panel) shouldn't repeat it, right before
+// returning from a command's RunE:
+//
+//	if err := pipeline.Run(ctx); err != nil {
+//		return exitcode.WrapSummary(exitcode.Runtime, err, "release failed")
+//	}
+//
+// Like Wrap, if err already carries an exit code anywhere in its chain,
+// that code is preserved — the first/innermost classification wins — but
+// the summary still attaches on top of it.
+func WrapSummary(code int, err error, summary string) error {
+	if err == nil {
+		return nil
+	}
+	var ee *ExitError
+	if errors.As(err, &ee) {
+		code = ee.Code
+	}
+	return &ExitError{Code: code, Message: summary, Err: err}
 }
 
 // Resolve maps an error to an exit code: nil → 0, an error carrying an exit code
