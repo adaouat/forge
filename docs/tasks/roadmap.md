@@ -892,6 +892,31 @@ specific.*
       ADR-0013). Lint + suite green. **Not in scope:** heraut wiring this into its `RunE`
       boundaries — a separate, later change on heraut's side.
 
+## M15 — Canonical tool stack drops `cocogitto`/`git-cliff` for `heraut` *([ADR-0014](../adr/0014-heraut-replaces-cocogitto-and-git-cliff.md))*
+
+*heraut absorbed commit-message linting (`heraut commit verify`) and changelog generation
+(`internal/generators/native`) natively, dropping its own dependency on the external
+`cocogitto`/`git-cliff` binaries in the process. forge's canonical `.config` had not caught up.*
+
+- [x] **Drop `cocogitto`/`git-cliff` from forge's Tier-2 scaffolding; adopt `heraut` as a mise
+      tool.** `mise/config.toml`: remove the `cocogitto`/`git-cliff` pins and the dead `cog`
+      shell alias; add `"github:adaouat/heraut" = "0"`. `hk/config.pkl`: `commit-msg`'s
+      `cocogitto` step becomes `heraut:commit:verify` (`heraut commit verify --file {{
+      commit_msg_file }}`); new `heraut:check:config` step validates `.config/heraut.yml` via
+      `heraut check config`. Delete `.config/cocogitto/config.toml`. Also bumped `hk` 1.46→1.58
+      and the `heraut.yml` schema pointer to v0.62.0 as part of the same pass.
+
+      **Done:** implemented by the user directly (not TDD — pure tooling config, no Go code);
+      reviewed and two bugs fixed: the new `heraut:check:config` step's glob carried a stray
+      `./` prefix (`"./.config/heraut.yml"`) that never matched, corrected to
+      `".config/heraut.yml"`; and `mise/config.toml` still had a `[shell_alias] cog = …`
+      pointing at the deleted cocogitto config. ADR-0014 written to record the decision (was
+      undocumented — `CLAUDE.md`, ADR-0001's Tier-2 list, `docs/guides/new-tool.md`,
+      `docs/guides/tier2-sync.md`, and `.claude/skills/new-tool/SKILL.md` all still named
+      `cocogitto` and are updated alongside it). **Deferred:** bifrost has not been migrated —
+      it still runs `cocogitto`/`cog` as of this writing; that sync is a separate, later task
+      per [tier2-sync.md](../guides/tier2-sync.md), not bundled here.
+
 ## Explicitly NOT on this roadmap
 
 Per ADR-0001 Tier 3: config **schemas** and **merge semantics**, bifrost's hook runner and
