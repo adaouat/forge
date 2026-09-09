@@ -48,7 +48,8 @@ the bar, it belongs in the consuming app, not here.
 
 Inherited from the sibling apps (and canonicalized here once M0 lands):
 `charm.land` registry for all charmbracelet deps (never `github.com/charmbracelet/<module>`
-direct), conventional commits enforced by hk + cocogitto, TDD (failing test first), mise +
-hk tooling. These rules now live canonically in `docs/rules/` (ported in M0); the apps still
-keep their copies in `.claude/rules/`.
+direct), conventional commits enforced by hk + heraut (`heraut commit verify`, replacing
+cocogitto — [ADR-0014](docs/adr/0014-heraut-replaces-cocogitto-and-git-cliff.md)), TDD (failing
+test first), mise + hk tooling. These rules now live canonically in `docs/rules/` (ported in
+M0); the apps still keep their copies in `.claude/rules/`.
 </content>

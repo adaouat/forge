@@ -16,8 +16,8 @@ diff-and-apply step — this guide.
 | `docs/rules/coding.md` | `.claude/rules/coding.md` | error handling, `charm.land`, version pinning |
 | `docs/rules/agent.md` | `.claude/rules/**claude.md**` | renamed on the app side (historical) |
 | `.config/mise/` | `.config/mise/` | shared tool **pins** (go, golangci-lint, hk, …) |
-| `.config/hk/` | `.config/hk/` | linter set (golangci-lint, yamlfmt, typos, actionlint) |
-| `.config/{cocogitto,typos,yamlfmt}/` | same | commit-lint + format config |
+| `.config/hk/` | `.config/hk/` | linter set (golangci-lint, yamlfmt, typos, actionlint) + commit-lint via `heraut commit verify` ([ADR-0014](../adr/0014-heraut-replaces-cocogitto-and-git-cliff.md)) |
+| `.config/{typos,yamlfmt}/` | same | format config |
 
 The apps' copies are **adapted, not identical**: heraut's `coding.md` is ~2× forge's (hexagonal
 layers, pipeline rules); bifrost's are leaner; both add app-specific tools to `.config/mise`

@@ -36,7 +36,7 @@ so it must come first. Run from the workspace root (forge's parent):
 
 ```bash
 mkdir ../<tool> && git -C ../<tool> init
-cp -R .config ../<tool>/.config         # mise, hk, cocogitto, typos, yamlfmt — pure tooling, identical
+cp -R .config ../<tool>/.config         # mise, hk, typos, yamlfmt — pure tooling, identical
 mkdir -p ../<tool>/.claude/rules
 cp docs/rules/workflow.md docs/rules/testing.md docs/rules/coding.md ../<tool>/.claude/rules/
 cp docs/rules/agent.md ../<tool>/.claude/rules/claude.md

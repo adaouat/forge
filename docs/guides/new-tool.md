@@ -25,7 +25,7 @@ foundation: [ADR-0010](../adr/0010-cli-framework-foundation.md).
 
 Set up the family's tooling **before** writing any Go — `.config/mise` is what installs the
 **pinned Go version** (and golangci-lint, hk, …), so it has to come first. Copy forge's canonical
-`.config/{mise,hk,cocogitto,typos,yamlfmt}` and `.claude/rules` (see [tier2-sync.md](tier2-sync.md)):
+`.config/{mise,hk,typos,yamlfmt}` and `.claude/rules` (see [tier2-sync.md](tier2-sync.md)):
 
 ```bash
 mkdir <tool> && cd <tool>

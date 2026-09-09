@@ -903,8 +903,8 @@ specific.*
       shell alias; add `"github:adaouat/heraut" = "0"`. `hk/config.pkl`: `commit-msg`'s
       `cocogitto` step becomes `heraut:commit:verify` (`heraut commit verify --file {{
       commit_msg_file }}`); new `heraut:check:config` step validates `.config/heraut.yml` via
-      `heraut check config`. Delete `.config/cocogitto/config.toml`. Also bumped `hk` 1.46→1.58
-      and the `heraut.yml` schema pointer to v0.62.0 as part of the same pass.
+      `heraut check config`. Delete `.config/cocogitto/config.toml`. Also bumped the
+      `heraut.yml` schema pointer to v0.62.0 as part of the same pass.
 
       **Done:** implemented by the user directly (not TDD — pure tooling config, no Go code);
       reviewed and two bugs fixed: the new `heraut:check:config` step's glob carried a stray
@@ -915,7 +915,12 @@ specific.*
       `docs/guides/tier2-sync.md`, and `.claude/skills/new-tool/SKILL.md` all still named
       `cocogitto` and are updated alongside it). **Deferred:** bifrost has not been migrated —
       it still runs `cocogitto`/`cog` as of this writing; that sync is a separate, later task
-      per [tier2-sync.md](../guides/tier2-sync.md), not bundled here.
+      per [tier2-sync.md](../guides/tier2-sync.md), not bundled here. **Not bumped:** the
+      change originally also bumped `hk` 1.46→1.58, but 1.58.1 runs step commands from the
+      config file's own directory instead of the repo root, breaking every step with a
+      hardcoded relative path (`typos`, `yamlfmt`) whenever `.config/hk/config.pkl` itself is
+      part of the diff — confirmed by bisecting the same staged diff against both hk binaries.
+      `hk` stays pinned at 1.46 until that regression is understood/fixed upstream.
 
 ## Explicitly NOT on this roadmap
 

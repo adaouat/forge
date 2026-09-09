@@ -55,8 +55,10 @@ a premature abstraction"* and YAGNI. Forge carries **zero domain logic**.
 ### In scope — scaffolding (Tier 2)
 
 Canonical, copied into apps with a documented sync source (not a runtime dependency):
-`docs/rules/*`, `.config/{mise,hk,cocogitto,typos,yamlfmt}`, the docs methodology, and
-the CI/goreleaser/Dockerfile patterns.
+`docs/rules/*`, `.config/{mise,hk,typos,yamlfmt}`, the docs methodology, and
+the CI/goreleaser/Dockerfile patterns. (`cocogitto` dropped out of this list per
+[ADR-0014](0014-heraut-replaces-cocogitto-and-git-cliff.md) — `heraut` now owns commit-message
+linting directly.)
 
 ### Explicitly out of scope (Tier 3 — false friends)
 
