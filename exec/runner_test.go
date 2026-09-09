@@ -2,6 +2,7 @@ package exec_test
 
 import (
 	"bytes"
+	"io"
 	"os"
 	"path/filepath"
 	"strings"
@@ -123,4 +124,41 @@ func TestCmdRunner_RunDir_dryRun(t *testing.T) {
 
 func TestCmdRunner_implementsRunner(t *testing.T) {
 	var _ exec.Runner = exec.New(false, false)
+}
+
+func TestCmdRunner_Run_interactive_streamsAllThreeDirectly(t *testing.T) {
+	stdinR, stdinW, err := os.Pipe()
+	require.NoError(t, err)
+	stdoutR, stdoutW, err := os.Pipe()
+	require.NoError(t, err)
+	stderrR, stderrW, err := os.Pipe()
+	require.NoError(t, err)
+
+	oldStdin, oldStdout, oldStderr := os.Stdin, os.Stdout, os.Stderr
+	os.Stdin, os.Stdout, os.Stderr = stdinR, stdoutW, stderrW
+	t.Cleanup(func() { os.Stdin, os.Stdout, os.Stderr = oldStdin, oldStdout, oldStderr })
+
+	go func() {
+		_, _ = stdinW.Write([]byte("hello-stdin\n"))
+		_ = stdinW.Close()
+	}()
+
+	r := exec.New(false, false)
+	r.Interactive = true
+
+	stdout, stderr, err := r.Run("sh", "-c", "cat; echo err-line >&2")
+	require.NoError(t, stdoutW.Close())
+	require.NoError(t, stderrW.Close())
+	require.NoError(t, err)
+
+	assert.Empty(t, stdout, "interactive mode does not capture stdout")
+	assert.Empty(t, stderr, "interactive mode does not capture stderr")
+
+	outBuf, readErr := io.ReadAll(stdoutR)
+	require.NoError(t, readErr)
+	errBuf, readErr := io.ReadAll(stderrR)
+	require.NoError(t, readErr)
+
+	assert.Equal(t, "hello-stdin\n", string(outBuf), "child's stdout should have echoed the piped stdin")
+	assert.Equal(t, "err-line\n", string(errBuf), "child's stderr should have streamed directly through")
 }

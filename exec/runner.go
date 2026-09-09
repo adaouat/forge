@@ -27,6 +27,12 @@ var _ Runner = (*CmdRunner)(nil)
 type CmdRunner struct {
 	DryRun  bool
 	Verbose bool
+	// Interactive, when true, connects the child process directly to the
+	// current process's stdin/stdout/stderr instead of capturing output —
+	// for subprocesses that need a real terminal (e.g. a GPG pinentry
+	// prompt, a $EDITOR invocation). The stdout/stderr strings returned by
+	// Run/RunEnv/RunDir are empty in this mode.
+	Interactive bool
 	// Out receives dry-run and verbose log lines; defaults to os.Stderr when nil.
 	Out io.Writer
 }
@@ -66,8 +72,14 @@ func (r *CmdRunner) RunDir(dir string, env []string, name string, args ...string
 	}
 
 	var stdout, stderr bytes.Buffer
-	cmd.Stdout = &stdout
-	cmd.Stderr = &stderr
+	if r.Interactive {
+		cmd.Stdin = os.Stdin
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+	} else {
+		cmd.Stdout = &stdout
+		cmd.Stderr = &stderr
+	}
 
 	runErr := cmd.Run()
 

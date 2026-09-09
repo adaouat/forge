@@ -922,6 +922,40 @@ specific.*
       part of the diff — confirmed by bisecting the same staged diff against both hk binaries.
       `hk` stays pinned at 1.46 until that regression is understood/fixed upstream.
 
+## M16 — `exec.CmdRunner` interactive mode
+
+*Surfaced by a heraut bug report: `RunDir` never sets `cmd.Stdin`, so every subprocess
+`CmdRunner` spawns reads from `/dev/null` unconditionally. Concretely, `git commit` with
+`commit.gpgsign = true` and an unprimed `gpg-agent` invokes `pinentry-curses`, which detects
+the controlling terminal but never receives the passphrase, and the commit times out
+(`gpg: signing failed: Timeout`). Generalized per the report's own follow-on point: stdout/
+stderr are captured into buffers rather than streamed, so a prompt written to stdout (not just
+a tty-drawing tool like pinentry) would be invisible even with stdin fixed — user's call was to
+close the whole class in one opt-in flag rather than stdin alone.*
+
+- [x] **`CmdRunner.Interactive bool`** — when true, `RunDir` connects the child directly to the
+      current process's stdin/stdout/stderr (`cmd.Stdin/Stdout/Stderr = os.Stdin/Stdout/Stderr`)
+      instead of capturing into buffers; `Run`/`RunEnv`/`RunDir`'s returned stdout/stderr strings
+      are empty in this mode. Opt-in, zero-value-`false` default — existing batch/CI callers are
+      unaffected. TDD via temporary `os.Stdin`/`os.Stdout`/`os.Stderr` package-var swaps (pipes)
+      around a real `sh -c` subprocess, matching the pattern already used for real-signal tests
+      (`cli.TestRun_cancelsContextOnSIGTERM`). Additive field — no ADR required per ADR-0007's
+      own policy (breaking changes need one; additive fields don't); update ADR-0007's `exec` row
+      to name the field for completeness.
+
+      **Done:** implemented as designed — `Interactive` short-circuits the `bytes.Buffer`
+      capture path in `RunDir` for all three streams together (chosen over stdin-only, the
+      report's minimal suggestion, per the user's explicit scope call: a tool that prompts via
+      stdout rather than a tty, unlike pinentry, would still be invisible with stdin-only fixed).
+      One new test, `TestCmdRunner_Run_interactive_streamsAllThreeDirectly`: swaps the package
+      `os.Stdin`/`os.Stdout`/`os.Stderr` vars to pipes for the duration of the test, feeds the
+      child's stdin, and asserts both that the returned stdout/stderr strings are empty *and*
+      that the child's output reached the swapped pipes directly. `exectest.MockRunner` is
+      untouched — it never spawns a real process, so the field has nothing to simulate there.
+      No consumer wiring in this pass (heraut/bifrost adopt `Interactive` on their own gpgsign/
+      editor call sites separately, once this ships in a tagged forge release). `go build ./...`,
+      full suite, and `hk check` (golangci-lint/typos/gofmt) all green.
+
 ## Explicitly NOT on this roadmap
 
 Per ADR-0001 Tier 3: config **schemas** and **merge semantics**, bifrost's hook runner and
