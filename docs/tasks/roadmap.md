@@ -956,6 +956,52 @@ close the whole class in one opt-in flag rather than stdin alone.*
       editor call sites separately, once this ships in a tagged forge release). `go build ./...`,
       full suite, and `hk check` (golangci-lint/typos/gofmt) all green.
 
+## M17 — ANSI-safe `man` page generation *(cli)*
+
+*Surfaced by a heraut bug report: `heraut man`'s `.SH DESCRIPTION` contained raw ANSI escape
+codes verbatim — heraut's `internal/ui/header.go` pre-renders its gold-accented ASCII-art
+banner (lipgloss `.Render()`) into `cobra.Command.Long` at construction time. fang's `--help`
+path launders this safely (`colorprofile.Writer` downgrades/strips ANSI based on the actual
+destination), but fang's `man` RunE (`fang.go:150-159`) feeds `cmd.Root()` straight into
+`mango.NewManPage` and writes to stdout with no color-profile handling at all — so whatever's
+baked into `Long`/`Short`/`Example` leaks verbatim into the roff document. Generic to any tool
+combining a styled banner with `cli.Run`, not heraut-specific: `cli.Run` now has three real
+consumers (bifrost, heraut, hermes) and none has a settled correct pattern for a colored
+banner (heraut's is the one that's broken; bifrost's is unstyled; hermes has none yet) — a
+clean ADR-0001 case (identical need + stable contract + ≥2, here 3, consumers) for forge to
+own the fix once rather than each app working around it.*
+
+- [x] **`cli` disables fang's built-in `man`, registers an ANSI-safe replacement.** `Run` adds
+      `fang.WithoutManpage()` and its own hidden `man` subcommand whose `RunE` temporarily
+      strips ANSI from every command's `Short`/`Long`/`Example` across the whole tree (via
+      `github.com/charmbracelet/x/ansi.Strip`, already an indirect dep through `colorprofile`),
+      builds the man page through the same `mango.NewManPage`/`roff.NewDocument` fang used, and
+      restores the original (styled) fields afterward — so `--help` is unaffected, only the man
+      snapshot is guaranteed plain. Scope: `Short`/`Long`/`Example` only, matching the actual
+      reproduction surface (no consumer styles flag usage text today). `mango-cobra`/`roff`
+      (already indirect via fang) and `x/ansi` (already indirect via `colorprofile`) promoted to
+      direct requires — no new dependency footprint. TDD: a fake cobra tree with ANSI embedded
+      at root and a subcommand, asserting the generated roff carries no ESC bytes and every
+      field is restored after. No `cli.Run` signature change — additive/bug-fix, no ADR needed
+      per ADR-0007's own policy (mirrors M16 and M13's additive-field precedent).
+
+      **Done:** `cli/man.go` — `manCommand()` (mirrors fang's hidden `man` command exactly,
+      `Use`/`Short`/`SilenceUsage`/`DisableFlagsInUseLine`/`Hidden`/`Args` unchanged) writes via
+      `cmd.OutOrStdout()` rather than fang's hardcoded `os.Stdout` (more testable, respects
+      `cmd.SetOut`, no behavior change for real runs). `stripANSI(root) func()` walks the tree
+      once, mutates in place, returns a restore closure run via `defer`. `run.go`'s `Run` now
+      calls `cmd.AddCommand(manCommand())` before `fang.Execute`, with `fang.WithoutManpage()`
+      added to the options. 2 new tests (`TestStripANSI_stripsAndRestoresWholeTree`,
+      `TestManCommand_RunE_emitsANSIFreeManPage`); `go.mod` diff is exactly the three deps moving
+      from `// indirect` to direct (no version changes). Verified beyond the unit tests with a
+      throwaway module (`replace` to local forge) driving the real `cli.Run` end-to-end against a
+      lipgloss-styled `Long` + a real subcommand + fang's own auto-added `completion`/`help`
+      commands — output confirmed ANSI-free with the banner text and subcommand list intact, then
+      discarded (scratch-only, never committed). Full suite (8 packages) + `hk check`
+      (`go_fmt`/`typos`/`gomod_tidy`/`golangci_lint`) green. **Not in scope:** flag-usage-string
+      stripping (no current consumer styles flags) and heraut/bifrost/hermes re-pinning to the
+      release that carries this fix — app-side follow-ups once tagged.
+
 ## Explicitly NOT on this roadmap
 
 Per ADR-0001 Tier 3: config **schemas** and **merge semantics**, bifrost's hook runner and
