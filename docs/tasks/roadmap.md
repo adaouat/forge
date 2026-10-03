@@ -1002,6 +1002,45 @@ own the fix once rather than each app working around it.*
       stripping (no current consumer styles flags) and heraut/bifrost/hermes re-pinning to the
       release that carries this fix — app-side follow-ups once tagged.
 
+## M18 — Release pipeline catch-up from heraut
+
+*Surfaced by a 2026-10-03 review of heraut's release pipeline (goreleaser build-only + packslip)
+against forge's canonical release templates. heraut's pipeline gained several hardening steps
+that bifrost and hermes (whose `release.yml` files are identical but for the tool name) never
+received, and one heraut breaking change silently broke every other family release workflow.*
+
+- [x] **`heraut release --version` → `--set-version`.** heraut v0.64.0 (`bad4968`) renamed the
+      override flag; `release-setup` always downloads the latest heraut, which now rejects
+      `--version` ("Unknown flag: --version"). The next release of forge, bifrost and hermes fails
+      at the `Release` step. Fix forge's own `release.yml`, the `goreleaser.sample.yml`/
+      `distribution.md` mentions, and the same line in bifrost's and hermes's `release.yml` and
+      `.goreleaser.yml` comments.
+
+      **Done:** pure rename, one line per file: forge's `release.yml`, `goreleaser.sample.yml`
+      and `distribution.md`; bifrost's and hermes's `release.yml` + `.goreleaser.yml` comment
+      (committed in each app's own repo). Verified against heraut v0.72.0: `--version` errors
+      with "Unknown flag", `--set-version` and `--regenerate-changelog` are both accepted;
+      `actionlint` green in all three repos. No release was run to prove it end-to-end — the
+      next release of each repo is the real check. `release-setup` needed no change (it only
+      calls `heraut version next`). Other release-pipeline drift is deliberately left to the
+      next M18 task.
+- [ ] **Port heraut's release hardening into the canonical template.** Update
+      `goreleaser.sample.yml`, `distribution.md` and the `new-tool` skill's release section with:
+      packslip signing (`jdx/packslip`, `upload: false`, run *before* `heraut release` because the
+      release is immutable) and the `packslip:adaouat/<tool>` mise install channel; per-binary
+      SBOMs (with the mise-trust env passthrough syft needs); the `homebrew` tar.gz archive carrying
+      static completions/man pages into the cask (plus the matching `release.assets` globs); the
+      cask's Gatekeeper quarantine-strip hook (a judgment call — it bypasses a macOS check); and
+      `GITHUB_TOKEN` on the `Preflight check`/`Release` steps (heraut's PR attribution reads it,
+      not `GH_TOKEN`). Move heraut's manual-version normalization (`heraut version next
+      --set-version`) into `release-setup` itself. Fix `distribution.md`'s stale status (bifrost
+      is build-only/heraut-owned, not self-release) and the apps' "forge ADR-0018" comments
+      (that ADR is heraut's). App adoption (bifrost, hermes) follows as their own changes.
+- [ ] **Decide: share the build-only release workflow.** bifrost's and hermes's `release.yml` are
+      identical modulo the tool name; only heraut adds Docker and Pkl packaging. Evaluate a
+      reusable workflow (as ADR-0006 did for `go-ci.yml`) or a canonical template file, which
+      revisits ADR-0009's prelude-only scope — needs a new ADR before any code.
+
 ## Explicitly NOT on this roadmap
 
 Per ADR-0001 Tier 3: config **schemas** and **merge semantics**, bifrost's hook runner and

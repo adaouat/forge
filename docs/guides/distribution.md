@@ -36,7 +36,7 @@ heraut is the family's release tool, so the canonical end state is **heraut owns
 Release**:
 
 - **heraut-owned** — goreleaser is build-only (`release: disable: true`); heraut creates the
-  release (`heraut release --version`) and additionally publishes a Docker image to GHCR.
+  release (`heraut release --set-version`) and additionally publishes a Docker image to GHCR.
 - **Self-release (interim)** — goreleaser cuts the release itself (`release: disable: false` /
   omitted). An app stays here until heraut-driven release is wired for it. bifrost is here today.
 

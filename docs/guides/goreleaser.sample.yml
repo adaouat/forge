@@ -42,7 +42,7 @@ checksum:
 
 # Release ownership (see distribution.md). Self-release = this app cuts the GitHub
 # Release; the canonical end state is heraut-owned — set `disable: true` so goreleaser
-# is build-only and `heraut release --version` creates the release.
+# is build-only and `heraut release --set-version` creates the release.
 release:
   disable: false
 
