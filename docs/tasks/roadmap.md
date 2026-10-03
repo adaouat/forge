@@ -1024,7 +1024,7 @@ received, and one heraut breaking change silently broke every other family relea
       next release of each repo is the real check. `release-setup` needed no change (it only
       calls `heraut version next`). Other release-pipeline drift is deliberately left to the
       next M18 task.
-- [ ] **Port heraut's release hardening into the canonical template.** Update
+- [x] **Port heraut's release hardening into the canonical template.** Update
       `goreleaser.sample.yml`, `distribution.md` and the `new-tool` skill's release section with:
       packslip signing (`jdx/packslip`, `upload: false`, run *before* `heraut release` because the
       release is immutable) and the `packslip:adaouat/<tool>` mise install channel; per-binary
@@ -1036,6 +1036,28 @@ received, and one heraut breaking change silently broke every other family relea
       --set-version`) into `release-setup` itself. Fix `distribution.md`'s stale status (bifrost
       is build-only/heraut-owned, not self-release) and the apps' "forge ADR-0018" comments
       (that ADR is heraut's). App adoption (bifrost, hermes) follows as their own changes.
+
+      **Done:** four forge commits. `release-setup` now runs a manual override through `heraut
+      version next --set-version` (checked against heraut v0.72.0: `0.20.0`/`v0.20.0` →
+      `v0.20.0`; it only fixes the prefix — v0.72.0 still accepts non-SemVer input such as
+      `garbage`, so it is not a validator). `goreleaser.sample.yml` is now the build-only form
+      (`release.disable`, cask `url.template` + `ids: [homebrew]`, SBOMs, completions/man-page
+      archive, Gatekeeper hook *commented out* as a per-tool opt-in rather than a default);
+      validated with a goreleaser 2.18.2 `--snapshot` run against hermes, which also surfaced
+      that the archive's `LICENSE.md` must exist (hermes has none) — documented in the sample
+      and the skill. `distribution.md` rewritten: ownership status corrected, a new ordered
+      "release workflow" section (packslip snippet pinned to v1.4.0 for the musl fix, the
+      goreleaser ≥ 2.18.2 floor, `GITHUB_TOKEN`), the full `release.assets` list, and the
+      `packslip:` mise channel. The `new-tool` skill's release section follows, and its
+      `.gitignore` gains `/completions` + `/manpages`. The "forge ADR-0018" comments were fixed
+      in bifrost and hermes. **Deviation:** no release `.yml` template was added — the skill
+      still points at heraut's workflow minus its heraut-only steps, pending the decision below.
+- [ ] **bifrost + hermes adopt the release hardening.** In each app: packslip step, SBOMs (+
+      pinned `syft`), the `homebrew` archive/cask completions + man page, `GITHUB_TOKEN` on
+      preflight/release, the expanded `release.assets`, `release-setup` re-pinned to the forge
+      tag that carries the normalization, and the Gatekeeper hook decision. hermes needs a
+      `LICENSE.md` first. heraut separately: drop its own `Normalize version override` step,
+      bump packslip to v1.4.0 and goreleaser to 2.18.2.
 - [ ] **Decide: share the build-only release workflow.** bifrost's and hermes's `release.yml` are
       identical modulo the tool name; only heraut adds Docker and Pkl packaging. Evaluate a
       reusable workflow (as ADR-0006 did for `go-ci.yml`) or a canonical template file, which

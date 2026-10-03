@@ -45,6 +45,8 @@ cat > ../<tool>/.gitignore <<'EOF'
 /<tool>
 *.test
 /dist
+/completions
+/manpages
 /coverage.out
 
 # IDE
@@ -232,14 +234,24 @@ heraut releases the whole family. This part is template-copy, not generated — 
 
 - **`.goreleaser.yml`** — copy `docs/guides/goreleaser.sample.yml`, replace every `<app>` with
   `<tool>`, fill the description. Keep `builds.binary` **plain** so the Homebrew cask installs as
-  `<tool>`. Decide release ownership (`release.disable` true → heraut-owned, needs `url.template`).
-- **`.config/heraut.yml`** — already adapted in step 1.
-- **`.github/workflows/release.yml`** — copy `../heraut/.github/workflows/release.yml` (or
-  bifrost's): it calls forge's **release-setup** composite (ADR-0009), then `heraut release`, plus
-  the goreleaser build + artifacts.json collect + cask-push steps. forge's *own* release.yml omits
-  those (forge is a library) — don't use it as the tool template.
+  `<tool>`. The tool needs a `LICENSE.md` (the `homebrew` archive fails without it) and `syft`
+  pinned in `.config/mise/config.toml` (SBOMs). **PAUSE — Gatekeeper hook:** the sample's
+  quarantine-strip cask hook is commented out; enabling it bypasses a macOS check — the user's call.
+- **`.config/heraut.yml`** — beyond step 1's repository edit, add `release.assets` exactly as
+  listed in `distribution.md` ("The release workflow"): raw binaries, the `homebrew` `.tar.gz`
+  archives (the cask URL 404s without them), `checksums.txt`, `packslip.sigstore.json`, SBOMs.
+- **`.github/workflows/release.yml`** — copy `../heraut/.github/workflows/release.yml` and drop
+  its heraut-only parts (`FRESH_BIN`/version sanity check, Pkl packaging, Docker jobs, the
+  `Normalize version override` step — release-setup does that now). Keep, in order: forge's
+  **release-setup** composite (ADR-0009), goreleaser build (exact `version:` ≥ 2.18.2),
+  artifacts.json collect, attest, **packslip** (before the release — it's immutable), preflight +
+  `heraut release --set-version` (both with `GITHUB_TOKEN` as well as `GH_TOKEN`), cask push.
+  Call the `heraut` release-setup installed (`"./$FRESH_BIN"` is heraut releasing itself). forge's *own* release.yml
+  omits the build steps (forge is a library) — don't use it as the tool template.
+- **mise install channel** — once the first release has a packslip, the tool installs with
+  `"packslip:adaouat/<tool>"`.
 
-Full model + the build-only/Homebrew variants: `docs/guides/distribution.md`.
+Full model + step-by-step workflow: `docs/guides/distribution.md`.
 
 ## 6. The update hint
 
