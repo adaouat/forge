@@ -1,14 +1,22 @@
 # Annotated GoReleaser template for the adaouat CLI family.
 # Copy into <app>/.goreleaser.yml and replace every <app> with the binary name.
-# Model: raw versioned binaries (no archive), version injected via ldflags.
-# Release-ownership + Homebrew (build-only) variants: docs/guides/distribution.md.
+# Model: raw versioned binaries (no archive), version injected via ldflags, goreleaser
+# build-only — heraut creates the GitHub Release. See docs/guides/distribution.md.
 version: 2
 
 project_name: <app>
 
+# completions/ and manpages/ feed the `homebrew` archive below (gitignore both, plus
+# /dist). `completion` (fang) and `man` (forge cli) exist on every cli.Run tool.
 before:
   hooks:
     - go mod tidy
+    - rm -rf completions manpages
+    - mkdir completions manpages
+    - sh -c 'go run ./cmd/<app> completion bash >./completions/<app>.bash'
+    - sh -c 'go run ./cmd/<app> completion zsh >./completions/<app>.zsh'
+    - sh -c 'go run ./cmd/<app> completion fish >./completions/<app>.fish'
+    - sh -c 'go run ./cmd/<app> man | gzip -c >./manpages/<app>.1.gz'
 
 builds:
   - id: <app>
@@ -28,33 +36,70 @@ builds:
       # Mandatory: the updatecheck hint is silent on a "dev" version.
       - -X main.Version={{ .Tag }}
 
-# Raw binaries, no tar/zip wrapper (heraut ADR-0013). mise and Homebrew consume
-# these directly — no extraction step, no zip-slip surface. The version lives in the
-# asset name (builds.binary is plain).
 archives:
+  # Raw binaries, no tar/zip wrapper (heraut ADR-0013): the user-facing download, and
+  # what mise and curl install. The version lives in the asset name (builds.binary is plain).
   - id: default
     formats:
       - binary
     name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+  # Cask-only archive carrying completions + man page for the static homebrew_casks
+  # fields below. Not advertised as a download; its *.tar.gz must still be listed in
+  # .config/heraut.yml release.assets, or the cask URL 404s.
+  - id: homebrew
+    formats:
+      - tar.gz
+    name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    files:
+      - LICENSE.md # must exist — a missing file fails the archive step
+      - completions/*
+      - manpages/*
 
 checksum:
   name_template: "checksums.txt"
 
-# Release ownership (see distribution.md). Self-release = this app cuts the GitHub
-# Release; the canonical end state is heraut-owned — set `disable: true` so goreleaser
-# is build-only and `heraut release --set-version` creates the release.
-release:
-  disable: false
+# One SBOM per binary (needs syft on PATH — pin it in .config/mise/config.toml).
+# goreleaser runs syft with a minimal env; if PATH resolves syft's mise shim, the shim
+# re-reads the mise config and fails "not trusted" without these two vars.
+sboms:
+  - id: binaries
+    artifacts: binary
+    env:
+      - "MISE_TRUSTED_CONFIG_PATHS={{ envOrDefault \"MISE_TRUSTED_CONFIG_PATHS\" \"\" }}"
+      - "MISE_YES={{ envOrDefault \"MISE_YES\" \"\" }}"
 
-# Homebrew cask pushed to the shared tap on release (homebrew_casks, not the deprecated
-# `brews`). This is the goreleaser-owned-release form: the default download URL works and
-# goreleaser pushes the cask. A build-only app (release.disable: true) additionally needs
-# an explicit url.template and a post-release push step — see distribution.md "Homebrew".
+# Build-only: `heraut release --set-version` creates the GitHub Release (heraut ADR-0018).
+release:
+  disable: true
+
+# Homebrew cask. goreleaser only *generates* it (--skip=publish); the release workflow
+# pushes it to the tap after `heraut release` uploads the assets. release.disable means
+# goreleaser can't derive the download URL, hence url.template. completions/manpages are
+# static file references resolved by brew — unlike generate_completions_from_executable,
+# they never run the unsigned binary, which hangs under Gatekeeper.
 homebrew_casks:
   - repository:
       owner: adaouat
       name: homebrew-tap
-      token: "{{ .Env.HOMEBREW_TAP_TOKEN }}"
     directory: Casks
+    ids:
+      - homebrew
+    url:
+      template: "https://github.com/adaouat/<app>/releases/download/{{ .Tag }}/{{ .ArtifactName }}"
     homepage: "https://github.com/adaouat/<app>"
     description: "<one-line description>"
+    completions:
+      bash: completions/<app>.bash
+      zsh: completions/<app>.zsh
+      fish: completions/<app>.fish
+    manpages:
+      - manpages/<app>.1.gz
+    # Opt-in, per tool: the binaries aren't Developer ID-signed/notarized, so the first run
+    # of a cask install hangs under Gatekeeper. This strips com.apple.quarantine after
+    # install, which bypasses that macOS check — drop it once signing+notarization ships.
+    # hooks:
+    #   post:
+    #     install: |-
+    #       if OS.mac?
+    #         system_command "/usr/bin/xattr", args: ["-dr", "com.apple.quarantine", "#{staged_path}/<app>"]
+    #       end
