@@ -57,13 +57,16 @@ runs:
       env:
         VERSION_INPUT: ${{ inputs.version }}
       run: |-
+        # Strip the release block so the bootstrap heraut (which predates fields added in the
+        # version being released) does not fail on unknown YAML keys.
+        yq 'del(.release)' .config/heraut.yml > /tmp/heraut-version.yml
         if [[ -n "$VERSION_INPUT" ]]; then
-          V="$VERSION_INPUT"
+          # Normalize the tag prefix (e.g. "1.2.3" -> "v1.2.3"): the raw input would otherwise
+          # reach GORELEASER_CURRENT_TAG unprefixed and be baked into main.Version and the
+          # Homebrew cask URL before `heraut release` re-derives the tag.
+          V=$(HERAUT_FILE=/tmp/heraut-version.yml heraut version next --set-version "$VERSION_INPUT")
           echo "VERSION_OVERRIDDEN=true" >> "$GITHUB_ENV"
         else
-          # Strip the release block so the bootstrap heraut (which predates fields added in the
-          # version being released) does not fail on unknown YAML keys.
-          yq 'del(.release)' .config/heraut.yml > /tmp/heraut-version.yml
           V=$(HERAUT_FILE=/tmp/heraut-version.yml heraut version next)
           echo "VERSION_OVERRIDDEN=false" >> "$GITHUB_ENV"
         fi
