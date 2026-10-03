@@ -52,7 +52,7 @@ living document.
 
 ## Git hooks (hk)
 
-Hooks live in `.config/hk/config.pkl` and run on every commit (pre-commit linters,
+Hooks live in `.config/hk.pkl` and run on every commit (pre-commit linters,
 commit-msg conventional-commit validation, prepare-commit-msg `typos`).
 
 **Never** pass `--no-verify`, `--no-gpg-sign`, or any flag that bypasses hooks. If a hook
