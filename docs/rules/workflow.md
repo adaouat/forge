@@ -81,7 +81,7 @@ Pin every action to a full commit SHA, never a mutable tag. Add the semantic ver
 comment so intent stays readable:
 
 ```yaml
-uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 ```
 
 To update, find the new SHA for the desired tag (`github.com/<owner>/<action>/tags`) and
