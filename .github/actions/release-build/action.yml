@@ -1,0 +1,70 @@
+name: Release build
+description: >-
+  Shared build stage for the family's heraut-driven releases: goreleaser (build-only), versioned binaries collected into dist/, build provenance attestation, and a packslip manifest — everything `heraut release` uploads. Runs after release-setup (it reads $VERSION). The caller's job needs contents, id-token and attestations write permissions. See forge ADR-0015.
+inputs:
+  app:
+    description: Binary name (goreleaser project_name); versioned assets are named <app>_<version>_<os>_<arch>.
+    required: true
+  github-token:
+    description: Token for goreleaser and packslip.
+    required: true
+
+outputs:
+  artifacts:
+    description: Space-separated dist/ paths of the versioned raw binaries.
+    value: ${{ steps.collect.outputs.artifacts }}
+
+runs:
+  using: composite
+  steps:
+    - name: Build binaries
+      uses: goreleaser/goreleaser-action@f06c13b6b1a9625abc9e6e439d9c05a8f2190e94 # v7.2.3
+      with:
+        # Exact pin: 2.18.0–2.18.1 broke GORELEASER_CURRENT_TAG for a not-yet-created tag,
+        # which this build-then-release order always hits (goreleaser#7124).
+        version: "2.18.2"
+        args: release --clean --skip=publish,announce,validate
+      env:
+        GORELEASER_CURRENT_TAG: ${{ env.VERSION }}
+        GITHUB_TOKEN: ${{ inputs.github-token }}
+
+    # builds.binary is plain <app> (so the Homebrew cask installs under that name), so the
+    # versioned asset names only exist in artifacts.json. The same list feeds packslip, which
+    # keeps platform-specific tools (e.g. macOS-only) free of a hand-maintained list.
+    - name: Collect release binaries
+      id: collect
+      shell: bash
+      env:
+        APP: ${{ inputs.app }}
+      run: |-
+        artifacts=()
+        while IFS=$'\t' read -r path name; do
+          cp "$path" "dist/$name"
+          artifacts+=("dist/$name")
+        done < <(jq -r --arg prefix "${APP}_" \
+          '.[] | select(.type == "Binary" and (.name | startswith($prefix))) | "\(.path)\t\(.name)"' \
+          dist/artifacts.json)
+        if [[ ${#artifacts[@]} -eq 0 ]]; then
+          echo "::error::no versioned ${APP}_* binaries in dist/artifacts.json — is the goreleaser project named '${APP}'?"
+          exit 1
+        fi
+        echo "artifacts=${artifacts[*]}" >> "$GITHUB_OUTPUT"
+
+    - name: Attest build provenance
+      uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6 # v4.2.2
+      with:
+        subject-checksums: dist/checksums.txt
+
+    # Runs in the caller's job, so the Sigstore identity is the app's own release.yml — a
+    # reusable workflow here would sign as forge's and be refused (ADR-0015). upload: false
+    # because the release heraut creates is immutable: the manifest must already be in dist/.
+    # `tag` is explicit: under workflow_dispatch the action can't infer it.
+    - name: Publish packslip
+      uses: jdx/packslip@87479dfc6443253dff69601cace5fc6ea07e6df5 # v1.4.0
+      with:
+        artifacts: ${{ steps.collect.outputs.artifacts }}
+        bin: ${{ inputs.app }}
+        tag: ${{ env.VERSION }}
+        out: dist
+        upload: false
+        token: ${{ inputs.github-token }}

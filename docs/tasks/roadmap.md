@@ -1085,11 +1085,25 @@ received, and one heraut breaking change silently broke every other family relea
       verification and is refused by consumers (packslip *Publishing* docs, spec "Reusable
       workflows"); composite actions keep the app's `release.yml` as the signer. A template file
       was rejected as the same drift M18 had just paid for. Implementation is tracked below.
-- [ ] **`release-build` composite action** ([ADR-0015](../adr/0015-shared-release-build-and-publish.md)).
+- [x] **`release-build` composite action** ([ADR-0015](../adr/0015-shared-release-build-and-publish.md)).
       goreleaser build (exact version owned here) → collect → attest → packslip, input `app`;
       packslip artifacts derived from `dist/artifacts.json` `Binary` entries. Validate the
       artifacts.json derivation against real snapshot output for a multi-OS (bifrost) and a
       macOS-only (hermes) tool before wiring any app.
+
+      **Done:** `.github/actions/release-build/action.yml`. Inputs `app` + `github-token`;
+      output `artifacts` (the collected dist/ paths). Pins: goreleaser-action v7.2.3 running
+      goreleaser 2.18.2, actions/attest v4.2.2 (both exact tags, newer than the apps' `# v7` /
+      `# v4` pins), packslip v1.4.0. The collect step selects `Binary` entries named `<app>_*`
+      and feeds the same list to packslip, so no per-app artifact list remains; it fails with
+      an explicit error when none match (a wrong `app`). Validated by running the step's exact
+      script against the bifrost (5 binaries) and hermes (2, darwin-only) snapshot outputs and a
+      wrong-name case, then `packslip create` v1.4.0 (throwaway local key, unlogged) over both
+      lists: all accepted, Linux builds recorded with no libc (the musl fix). **Not
+      validated:** the action has not run in GitHub Actions — forge's own release builds no
+      binaries, so the first app release on it is the end-to-end test (apps-adopt task).
+      Docs (`distribution.md`, `new-tool`) are updated with `release-publish`, so they describe
+      the finished pair once.
 - [ ] **`release-publish` composite action** (ADR-0015). Preflight → `heraut release
       --set-version` (`GH_TOKEN` + `GITHUB_TOKEN`) → cask push; inputs `app`, `github-token`,
       `homebrew-tap-token` (optional), `regenerate-changelog`, `heraut-bin` (default `heraut`).
