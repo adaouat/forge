@@ -240,14 +240,13 @@ heraut releases the whole family. This part is template-copy, not generated — 
 - **`.config/heraut.yml`** — beyond step 1's repository edit, add `release.assets` exactly as
   listed in `distribution.md` ("The release workflow"): raw binaries, the `homebrew` `.tar.gz`
   archives (the cask URL 404s without them), `checksums.txt`, `packslip.sigstore.json`, SBOMs.
-- **`.github/workflows/release.yml`** — copy `../heraut/.github/workflows/release.yml` and drop
-  its heraut-only parts (`FRESH_BIN`/version sanity check, Pkl packaging, Docker jobs, the
-  `Normalize version override` step — release-setup does that now). Keep, in order: forge's
-  **release-setup** composite (ADR-0009), goreleaser build (exact `version:` ≥ 2.18.2),
-  artifacts.json collect, attest, **packslip** (before the release — it's immutable), preflight +
-  `heraut release --set-version` (both with `GITHUB_TOKEN` as well as `GH_TOKEN`), cask push.
-  Call the `heraut` release-setup installed (`"./$FRESH_BIN"` is heraut releasing itself). forge's *own* release.yml
-  omits the build steps (forge is a library) — don't use it as the tool template.
+- **`.github/workflows/release.yml`** — copy forge's own `.github/workflows/release.yml` for
+  the `workflow_dispatch` inputs, then make the job the one in `distribution.md` ("The release
+  workflow"): checkout → `release-setup` → `release-build` → `release-publish`, each
+  `adaouat/forge/.github/actions/<name>@<forge-sha> # <forge-tag>` (the same SHA as the tool's
+  forge release), with `contents`/`id-token`/`attestations: write` and
+  `<TOOL>_CHECK_UPDATE: false`. Keep the steps in the tool's own job — a reusable workflow would
+  make forge the packslip signer and mise would refuse it (ADR-0015).
 - **mise install channel** — once the first release has a packslip, the tool installs with
   `"packslip:adaouat/<tool>"`.
 

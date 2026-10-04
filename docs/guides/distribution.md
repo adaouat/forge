@@ -41,48 +41,63 @@ users get the same from `<app> completion` / `<app> man`.
 `heraut release --set-version "$VERSION"` creates the release, tag and changelog (heraut
 ADR-0018, build-then-release). bifrost, heraut and hermes all follow this model.
 
-Release *workflows* stay per-app. bifrost's and hermes's are identical modulo the tool name;
-heraut's adds a Docker/GHCR image and its Pkl package. Whether to share the common part is an
-open roadmap decision (M18).
+Each tool keeps its own `release.yml` — that file is the Sigstore signer of its packslip and
+attestations — but the steps live in three forge composite actions
+([ADR-0009](../adr/0009-release-setup-composite-action.md),
+[ADR-0015](../adr/0015-shared-release-build-and-publish.md)). heraut adds its Pkl package and a
+version sanity check between them, plus separate Docker/GHCR jobs.
 
 ## The release workflow
 
 Order matters. The release heraut creates is **immutable** — assets cannot be added after it is
 published (`gh release upload` fails with 422) — so everything that ends up on the release must
-be in `dist/` before the `Release` step.
+be in `dist/` before `heraut release` runs. The three actions encode that order:
 
-1. **Checkout** with `fetch-depth: 0` (changelog needs full history).
-2. **Release setup** — forge's [`release-setup`](../../.github/actions/release-setup/action.yml)
-   composite ([ADR-0009](../adr/0009-release-setup-composite-action.md)): mise, the bootstrap
-   heraut, GPG, bot identity, and the resolved `VERSION`. A manual version override is
-   normalized there (`1.2.3` → `v1.2.3`) so goreleaser never bakes an unprefixed tag.
-3. **Build** — `goreleaser/goreleaser-action` with an **exact** `version:` pin and
-   `GORELEASER_CURRENT_TAG: ${{ env.VERSION }}` (the tag doesn't exist yet). Avoid goreleaser
-   2.18.0–2.18.1's not-yet-tagged-tag regression (goreleaser#7124, fixed in 2.18.2).
-4. **Collect** — `builds.binary` is plain, so copy each build output to its versioned asset name
-   using `dist/artifacts.json`.
-5. **Attest** — `actions/attest` over `dist/checksums.txt` (needs `id-token: write` +
-   `attestations: write`).
-6. **packslip** — `jdx/packslip` signs a Sigstore manifest over the raw binaries so a
-   packslip-aware installer (mise) verifies what it downloads:
-   ```yaml
-   - name: Publish packslip
-     uses: jdx/packslip@87479dfc6443253dff69601cace5fc6ea07e6df5 # v1.4.0
-     with:
-       artifacts: >-
-         dist/<app>_*_linux_amd64 dist/<app>_*_linux_arm64 dist/<app>_*_darwin_amd64 dist/<app>_*_darwin_arm64 dist/<app>_*_windows_amd64.exe
-       bin: <app>
-       tag: ${{ env.VERSION }} # workflow_dispatch: the action can't infer the tag
-       out: dist
-       upload: false # heraut uploads it with the other assets (immutable release)
-   ```
-   Use v1.4.0 or later: earlier versions record `CGO_ENABLED=0` Linux builds as glibc-only, so
-   mise on musl (Alpine) finds no matching asset.
-7. **Preflight** (`heraut check`) and **Release** (`heraut release --set-version "$VERSION"`).
-   Both need `GITHUB_TOKEN` *as well as* `GH_TOKEN` — heraut's PR attribution reads
-   `GITHUB_TOKEN`; without it those GraphQL calls go unauthenticated and hit the 60/hr limit.
-8. **Push the cask** to the tap (goreleaser only generated it). Skip gracefully when
-   `HOMEBREW_TAP_TOKEN` is unset.
+| Action | Steps |
+|---|---|
+| [`release-setup`](../../.github/actions/release-setup/action.yml) | mise, the bootstrap heraut, GPG, bot identity, resolved `$VERSION` (a manual override is normalized: `1.2.3` → `v1.2.3`) |
+| [`release-build`](../../.github/actions/release-build/action.yml) | goreleaser build-only (forge owns the exact version) → copy versioned binaries out of `dist/artifacts.json` → `actions/attest` over `checksums.txt` → packslip manifest into `dist/` |
+| [`release-publish`](../../.github/actions/release-publish/action.yml) | `heraut check` → `heraut release --set-version "$VERSION"` (with `GH_TOKEN` *and* `GITHUB_TOKEN`, which heraut's PR attribution reads) → push the generated cask to the tap (skipped without a token) |
+
+They run as steps of the tool's own job — never wrap them in a reusable workflow: packslip and
+the attestation would then be signed by forge's workflow, and mise refuses such a bundle
+(ADR-0015). A tool's release job:
+
+```yaml
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # release, tag, assets
+      id-token: write # Sigstore signing (attest, packslip)
+      attestations: write
+    env:
+      <APP>_CHECK_UPDATE: false
+    steps:
+      - uses: actions/checkout@<sha> # v7
+        with:
+          fetch-depth: 0 # changelog needs full history
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - uses: adaouat/forge/.github/actions/release-setup@<forge-sha> # <forge-tag>
+        with:
+          gpg-private-key: ${{ secrets.RELEASE_GPG_PRIVATE_KEY }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          version: ${{ inputs.version }}
+      - uses: adaouat/forge/.github/actions/release-build@<forge-sha> # <forge-tag>
+        with:
+          app: <app>
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+      - uses: adaouat/forge/.github/actions/release-publish@<forge-sha> # <forge-tag>
+        with:
+          app: <app>
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          homebrew-tap-token: ${{ secrets.HOMEBREW_TAP_TOKEN }}
+          regenerate-changelog: ${{ inputs.regenerate_changelog }}
+```
+
+with the `version` / `regenerate_changelog` `workflow_dispatch` inputs from forge's own
+[`release.yml`](../../.github/workflows/release.yml). The packslip list is derived from
+`artifacts.json`, so a tool building fewer platforms (hermes is macOS-only) needs no extra input.
 
 `.config/heraut.yml` `release.assets` must list everything in `dist/` that ships:
 
@@ -137,5 +152,6 @@ All channels consume the same raw binaries.
 - **Homebrew tap** — `adaouat/homebrew-tap` (one cask per tool, generated on release).
 - **Lint/test CI** — shared via forge's reusable `go-ci.yml`
   ([ADR-0006](../adr/0006-shared-ci-reusable-workflow.md)).
-- **Release workflows** — per-app (see *Release ownership*). heraut has every step above;
-  bifrost and hermes don't yet have packslip, SBOMs, the `homebrew` archive or `GITHUB_TOKEN`.
+- **Release workflows** — per-app files calling the three actions (see *Release ownership*).
+  Apps move onto `release-build`/`release-publish` once forge is tagged with them (roadmap M18);
+  until then each carries the same steps inline.

@@ -1104,10 +1104,24 @@ received, and one heraut breaking change silently broke every other family relea
       binaries, so the first app release on it is the end-to-end test (apps-adopt task).
       Docs (`distribution.md`, `new-tool`) are updated with `release-publish`, so they describe
       the finished pair once.
-- [ ] **`release-publish` composite action** (ADR-0015). Preflight → `heraut release
+- [x] **`release-publish` composite action** (ADR-0015). Preflight → `heraut release
       --set-version` (`GH_TOKEN` + `GITHUB_TOKEN`) → cask push; inputs `app`, `github-token`,
       `homebrew-tap-token` (optional), `regenerate-changelog`, `heraut-bin` (default `heraut`).
       Update `distribution.md` and the `new-tool` skill to "call the three actions".
+
+      **Done:** `.github/actions/release-publish/action.yml`, inputs as planned. The cask push
+      fails loudly when a token is given but `dist/homebrew/Casks/<app>.rb` is missing, and
+      clones into `$RUNNER_TEMP` instead of `/tmp`; `install -D` (GNU-only) became `mkdir -p` +
+      `cp`. Validated by running the steps' scripts locally under `bash -eo pipefail` (GitHub's
+      `shell: bash`): a fake heraut binary for the release args with and without
+      `--regenerate-changelog`, and a local bare repo standing in for the tap for no-token skip,
+      missing cask, first push, unchanged and changed cask. **Deviation:** forge's own
+      `release.yml` now calls `release-publish` (`app: forge`, no tap token), so preflight and
+      `heraut release` go through the shared action on every forge release — ADR-0015's
+      consequences said forge would use neither action and were amended. Dropped the explicit
+      `GITHUB_REPOSITORY` env (GitHub sets it by default). `distribution.md` now documents the
+      three actions with a sample job instead of the inline steps, and the `new-tool` skill
+      points at it.
 - [ ] **Apps adopt the release actions.** Once forge is tagged with both actions: bifrost and
       hermes replace their inline build/publish steps; heraut keeps Pkl packaging + the version
       sanity check between the two and passes `heraut-bin`. Folds in the pending `release-setup`
