@@ -37,16 +37,10 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           version: ${{ inputs.version }}
 
-      - name: Preflight check
-        run: heraut check
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GITHUB_REPOSITORY: ${{ github.repository }}
-
-      - name: Release
-        run: heraut release --set-version "$VERSION" ${{ inputs.regenerate_changelog && '--regenerate-changelog' || '' }}
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GITHUB_REPOSITORY: ${{ github.repository }}
+      # preflight + heraut release (ADR-0015). forge is a library: no release-build, no cask.
+      - name: Release publish
+        uses: ./.github/actions/release-publish
+        with:
+          app: forge
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          regenerate-changelog: ${{ inputs.regenerate_changelog }}

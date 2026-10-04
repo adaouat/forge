@@ -1,0 +1,74 @@
+name: Release publish
+description: >-
+  Shared publish stage for the family's heraut-driven releases: `heraut check`, `heraut release --set-version $VERSION` (which creates the immutable GitHub Release from everything in dist/), and the Homebrew cask push. Runs after release-setup and release-build. See forge ADR-0015.
+inputs:
+  app:
+    description: Binary name; the cask is dist/homebrew/Casks/<app>.rb.
+    required: true
+  github-token:
+    description: Token for heraut (release creation and PR attribution).
+    required: true
+  homebrew-tap-token:
+    description: Token with push access to adaouat/homebrew-tap; empty skips the cask push.
+    required: false
+    default: ""
+  regenerate-changelog:
+    description: Pass --regenerate-changelog to `heraut release` ("true" or "false").
+    required: false
+    default: "false"
+  heraut-bin:
+    description: heraut binary to run — heraut releasing itself passes its fresh build.
+    required: false
+    default: heraut
+
+runs:
+  using: composite
+  steps:
+    # GITHUB_TOKEN as well as GH_TOKEN: heraut's PR attribution reads GITHUB_TOKEN; without it
+    # those GraphQL calls go unauthenticated and hit the 60/hr limit.
+    - name: Preflight check
+      shell: bash
+      env:
+        HERAUT_BIN: ${{ inputs.heraut-bin }}
+        GH_TOKEN: ${{ inputs.github-token }}
+        GITHUB_TOKEN: ${{ inputs.github-token }}
+      run: '"$HERAUT_BIN" check'
+
+    - name: Release
+      shell: bash
+      env:
+        HERAUT_BIN: ${{ inputs.heraut-bin }}
+        REGENERATE_CHANGELOG: ${{ inputs.regenerate-changelog }}
+        GH_TOKEN: ${{ inputs.github-token }}
+        GITHUB_TOKEN: ${{ inputs.github-token }}
+      run: |-
+        args=(release --set-version "$VERSION")
+        [[ "$REGENERATE_CHANGELOG" == "true" ]] && args+=(--regenerate-changelog)
+        "$HERAUT_BIN" "${args[@]}"
+
+    # goreleaser is build-only, so it only generated the cask; push it now that the release
+    # carries the assets its URLs point at.
+    - name: Publish Homebrew cask
+      shell: bash
+      env:
+        APP: ${{ inputs.app }}
+        HOMEBREW_TAP_TOKEN: ${{ inputs.homebrew-tap-token }}
+      run: |-
+        if [[ -z "$HOMEBREW_TAP_TOKEN" ]]; then
+          echo "homebrew-tap-token not set — skipping cask publish."
+          exit 0
+        fi
+        cask="dist/homebrew/Casks/${APP}.rb"
+        if [[ ! -f "$cask" ]]; then
+          echo "::error::$cask not found — does .goreleaser.yml define homebrew_casks?"
+          exit 1
+        fi
+        tap="$RUNNER_TEMP/homebrew-tap"
+        git clone "https://x-access-token:${HOMEBREW_TAP_TOKEN}@github.com/adaouat/homebrew-tap.git" "$tap"
+        mkdir -p "$tap/Casks"
+        cp "$cask" "$tap/Casks/${APP}.rb"
+        cd "$tap"
+        git add "Casks/${APP}.rb"
+        git diff --cached --quiet && { echo "cask unchanged"; exit 0; }
+        git commit -m "chore(deps.${APP}): ${VERSION}"
+        git push

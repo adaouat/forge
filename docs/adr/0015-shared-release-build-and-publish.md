@@ -69,9 +69,10 @@ signing identity per-repo.
 - **Three real consumers, identical behavior** — clears the [ADR-0001](0001-shared-core-module.md)
   bar. The parameters are a tool name, a token and a binary path, not behavior toggles.
 - **Coupling grows** in the same way as ADR-0006/0009: an app's release depends on forge's actions
-  at the pinned SHA. Mitigated by SHA pinning — apps upgrade deliberately. A release-only bug is
-  found at release time, so forge's own release (which uses neither new action — it builds no
-  binaries) does not exercise them. A tool's first release after re-pinning is the real test.
+  at the pinned SHA. Mitigated by SHA pinning — apps upgrade deliberately. forge's own release
+  calls `release-publish` (no cask token, so the push is skipped), which exercises preflight and
+  `heraut release` on every forge release; `release-build` is only exercised by the tools, so a
+  tool's first release after re-pinning is its real test.
 - **Signing identity is unchanged**: each artifact is still signed by `adaouat/<tool>`'s
   `release.yml`, so existing mise `packslip:` pins and lockfile signers keep verifying. Renaming a
   tool's `release.yml` would still be a signer change consumers must approve — unrelated to this
