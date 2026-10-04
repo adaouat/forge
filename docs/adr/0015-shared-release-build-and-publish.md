@@ -1,6 +1,6 @@
 # ADR-0015 — Shared release build and publish via composite actions
 
-**Status:** Proposed
+**Status:** Accepted
 **Date:** 2026-10-04
 
 ## Context
@@ -43,7 +43,7 @@ a heraut flag rename (`--version` → `--set-version`) broke all three release w
 
 ## Decision
 
-Option 4 *(proposed)*. Add two composite actions next to `release-setup`, split where heraut
+Option 4. Add two composite actions next to `release-setup`, split where heraut
 inserts its own steps:
 
 - **`release-build`** — goreleaser build (forge owns the exact goreleaser version) → collect →

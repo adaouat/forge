@@ -1073,10 +1073,31 @@ received, and one heraut breaking change silently broke every other family relea
       `95af0f3` (override normalization) is tagged and pushed: bump the `release-setup` SHA in
       bifrost, hermes and heraut (all on `66461c2` / v0.7.2), then drop heraut's own `Normalize
       version override` step. Bump their `actions/checkout` to v7 at the same time.
-- [ ] **Decide: share the build-only release workflow.** bifrost's and hermes's `release.yml` are
+- [x] **Decide: share the build-only release workflow.** bifrost's and hermes's `release.yml` are
       identical modulo the tool name; only heraut adds Docker and Pkl packaging. Evaluate a
       reusable workflow (as ADR-0006 did for `go-ci.yml`) or a canonical template file, which
       revisits ADR-0009's prelude-only scope — needs a new ADR before any code.
+
+      **Done:** [ADR-0015](../adr/0015-shared-release-build-and-publish.md), accepted 2026-10-04 —
+      two more composite actions, `release-build` and `release-publish`, after `release-setup`.
+      The reusable-workflow option was ruled out on evidence, not preference: packslip run in a
+      reusable workflow hosted in another repo signs as that repo's workflow, fails its own
+      verification and is refused by consumers (packslip *Publishing* docs, spec "Reusable
+      workflows"); composite actions keep the app's `release.yml` as the signer. A template file
+      was rejected as the same drift M18 had just paid for. Implementation is tracked below.
+- [ ] **`release-build` composite action** ([ADR-0015](../adr/0015-shared-release-build-and-publish.md)).
+      goreleaser build (exact version owned here) → collect → attest → packslip, input `app`;
+      packslip artifacts derived from `dist/artifacts.json` `Binary` entries. Validate the
+      artifacts.json derivation against real snapshot output for a multi-OS (bifrost) and a
+      macOS-only (hermes) tool before wiring any app.
+- [ ] **`release-publish` composite action** (ADR-0015). Preflight → `heraut release
+      --set-version` (`GH_TOKEN` + `GITHUB_TOKEN`) → cask push; inputs `app`, `github-token`,
+      `homebrew-tap-token` (optional), `regenerate-changelog`, `heraut-bin` (default `heraut`).
+      Update `distribution.md` and the `new-tool` skill to "call the three actions".
+- [ ] **Apps adopt the release actions.** Once forge is tagged with both actions: bifrost and
+      hermes replace their inline build/publish steps; heraut keeps Pkl packaging + the version
+      sanity check between the two and passes `heraut-bin`. Folds in the pending `release-setup`
+      re-pin above. Each app's next release is the end-to-end check.
 
 ## Explicitly NOT on this roadmap
 
