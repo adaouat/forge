@@ -69,4 +69,3 @@ the `github.com/charmbracelet/<module>` import is the only option and is allowed
 
 Re-confirm before adding any other `github.com/charmbracelet` dependency: if a `charm.land`
 path resolves *and* the module's `go.mod` declares it, use that; otherwise document it here.
-</content>

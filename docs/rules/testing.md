@@ -83,4 +83,3 @@ helper first, then both call it.
 Fix the root cause. Do not comment out the assertion, add an unexplained `t.Skip()`, loosen
 the assertion, or suppress the linter. Each defeats the test's purpose. If the test itself is
 wrong, fix it in a separate commit with an explanation.
-</content>

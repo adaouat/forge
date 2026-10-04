@@ -98,4 +98,3 @@ lowercase kebab-case (`m1-exec-extraction.md`); never keep the auto-generated ra
 forge is a **library** — there is no binary and no GoReleaser. A release is a `v*` git tag;
 consumers pick it up by bumping their `go.mod` and running `go mod tidy`. A tag that changes
 an exported contract is preceded by the ADR that justifies it.
-</content>

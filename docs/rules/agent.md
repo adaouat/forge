@@ -74,4 +74,3 @@ If two committed docs disagree, raise it — do not silently pick one.
 - Save important architectural decisions, user preferences, and non-obvious constraints to
   memory so they survive context resets.
 - Verify memory before acting on it — stale memory is worse than no memory.
-</content>
