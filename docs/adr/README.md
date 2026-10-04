@@ -18,3 +18,4 @@ ADRs document significant architectural choices: what was decided, why, and what
 | [0012](0012-whatsnew-changelog.md) | `whatsnew`: in-terminal changelog after the update check | Accepted |
 | [0013](0013-exitcode-summary-and-full-error.md) | `exitcode.ExitError` summary/full-error split | Accepted |
 | [0014](0014-heraut-replaces-cocogitto-and-git-cliff.md) | `heraut` replaces `cocogitto`/`git-cliff` in the canonical tool stack | Accepted |
+| [0015](0015-shared-release-build-and-publish.md) | Shared release build and publish via composite actions | Proposed |
