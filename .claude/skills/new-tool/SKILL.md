@@ -64,8 +64,8 @@ EOF
 > with `gitignore not found` if it's missing. (Remember to expand `<tool>` inside the heredoc.)
 
 Then:
-- **Adapt `.config/heraut.yml`** — change `repository: adaouat/forge` → `adaouat/<tool>` (on macOS,
-  `sed -i ''`; GNU `sed -i`).
+- **Adapt `.config/heraut.yml`** — forge's copy has no `repository:` key; add
+  `repository: adaouat/<tool>` under the `GitHub` entry of `forges:` (right after `platform: github`).
 - **PAUSE — adapt the rules.** forge's rules are *library*-flavored ("zero domain logic", the
   extraction bar). A tool has domain logic — replace that framing. Keep the shared conventions
   (conventional commits, TDD, `charm.land` registry, SHA-pinned actions, version pins). Use
