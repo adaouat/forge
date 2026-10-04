@@ -72,7 +72,7 @@ jobs:
       id-token: write # Sigstore signing (attest, packslip)
       attestations: write
     env:
-      <APP>_CHECK_UPDATE: false
+      HERAUT_CHECK_UPDATE: false # the job runs heraut — silence its update check
     steps:
       - uses: actions/checkout@<sha> # v7
         with:

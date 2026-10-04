@@ -245,7 +245,7 @@ heraut releases the whole family. This part is template-copy, not generated — 
   workflow"): checkout → `release-setup` → `release-build` → `release-publish`, each
   `adaouat/forge/.github/actions/<name>@<forge-sha> # <forge-tag>` (the same SHA as the tool's
   forge release), with `contents`/`id-token`/`attestations: write` and
-  `<TOOL>_CHECK_UPDATE: false`. Keep the steps in the tool's own job — a reusable workflow would
+  `HERAUT_CHECK_UPDATE: false` (the job runs heraut, not the tool). Keep the steps in the tool's own job — a reusable workflow would
   make forge the packslip signer and mise would refuse it (ADR-0015).
 - **mise install channel** — once the first release has a packslip, the tool installs with
   `"packslip:adaouat/<tool>"`.

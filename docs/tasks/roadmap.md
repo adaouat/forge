@@ -1069,10 +1069,13 @@ received, and one heraut breaking change silently broke every other family relea
       man page and the hook; man page ANSI-free) and `actionlint`; no real release was run.
       **Deferred:** the `release-setup` re-pin (and, with it, dropping heraut's own normalize
       step) needs a published forge tag — tracked below.
-- [ ] **Re-pin `release-setup` once forge is tagged.** After the forge release that carries
+- [x] **Re-pin `release-setup` once forge is tagged.** After the forge release that carries
       `95af0f3` (override normalization) is tagged and pushed: bump the `release-setup` SHA in
       bifrost, hermes and heraut (all on `66461c2` / v0.7.2), then drop heraut's own `Normalize
       version override` step. Bump their `actions/checkout` to v7 at the same time.
+
+      **Done:** folded into the apps-adopt task below — all three apps now pin forge v0.19.2
+      (`c9e88f2`), heraut's normalize step is gone, checkout is v7 everywhere.
 - [x] **Decide: share the build-only release workflow.** bifrost's and hermes's `release.yml` are
       identical modulo the tool name; only heraut adds Docker and Pkl packaging. Evaluate a
       reusable workflow (as ADR-0006 did for `go-ci.yml`) or a canonical template file, which
@@ -1122,10 +1125,22 @@ received, and one heraut breaking change silently broke every other family relea
       `GITHUB_REPOSITORY` env (GitHub sets it by default). `distribution.md` now documents the
       three actions with a sample job instead of the inline steps, and the `new-tool` skill
       points at it.
-- [ ] **Apps adopt the release actions.** Once forge is tagged with both actions: bifrost and
+- [x] **Apps adopt the release actions.** Once forge is tagged with both actions: bifrost and
       hermes replace their inline build/publish steps; heraut keeps Pkl packaging + the version
       sanity check between the two and passes `heraut-bin`. Folds in the pending `release-setup`
       re-pin above. Each app's next release is the end-to-end check.
+
+      **Done:** bifrost `b7032a8`, hermes `7a28792`, heraut `0cbd8ce` — all three actions pinned
+      to forge v0.19.2 (`c9e88f2`), checkout v7. bifrost/hermes jobs are now checkout + the three
+      actions (−73/+15 lines each). heraut keeps its Pkl packaging and version sanity check
+      between `release-build` and `release-publish`, sets `FRESH_BIN` in a one-line step (the old
+      collect step did it) and passes it as `heraut-bin`; its job output `tag` is now
+      release-setup's (already normalized), and its Docker jobs only got the checkout bump.
+      **Found on the way:** hermes set `HERMES_CHECK_UPDATE`, which never silenced the update
+      check of the binary the job actually runs (heraut) — fixed to `HERAUT_CHECK_UPDATE`; forge's
+      `distribution.md` sample and the `new-tool` skill had the same `<APP>_CHECK_UPDATE` mistake
+      and were corrected. forge v0.19.2's own release already ran `release-publish` green;
+      `release-build` and the manual-override path are proven only by each app's next release.
 
 ## Explicitly NOT on this roadmap
 
