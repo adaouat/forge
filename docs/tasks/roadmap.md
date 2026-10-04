@@ -1052,12 +1052,27 @@ received, and one heraut breaking change silently broke every other family relea
       `.gitignore` gains `/completions` + `/manpages`. The "forge ADR-0018" comments were fixed
       in bifrost and hermes. **Deviation:** no release `.yml` template was added — the skill
       still points at heraut's workflow minus its heraut-only steps, pending the decision below.
-- [ ] **bifrost + hermes adopt the release hardening.** In each app: packslip step, SBOMs (+
+- [x] **bifrost + hermes adopt the release hardening.** In each app: packslip step, SBOMs (+
       pinned `syft`), the `homebrew` archive/cask completions + man page, `GITHUB_TOKEN` on
       preflight/release, the expanded `release.assets`, `release-setup` re-pinned to the forge
       tag that carries the normalization, and the Gatekeeper hook decision. hermes needs a
       `LICENSE.md` first. heraut separately: drop its own `Normalize version override` step,
       bump packslip to v1.4.0 and goreleaser to 2.18.2.
+
+      **Done:** bifrost `25f80c6`; hermes `b6ac56e` (MIT `LICENSE.md`, copied from heraut) +
+      `bff74a5`; heraut `5a04898` (goreleaser 2.18.2, packslip v1.4.0). Each app's
+      `.goreleaser.yml` is now the forge sample filled in, with `syft = "1.54"` pinned + locked.
+      Gatekeeper hook: **enabled in both** (user decision — family-consistent with heraut).
+      hermes stays macOS-only, so its builds, packslip `artifacts` and `release.assets` cover
+      only the two darwin targets. Validated per app with a goreleaser 2.18.2 `--snapshot` run
+      (SBOMs via syft, tar.gz archives with LICENSE/completions/man page, cask with completions,
+      man page and the hook; man page ANSI-free) and `actionlint`; no real release was run.
+      **Deferred:** the `release-setup` re-pin (and, with it, dropping heraut's own normalize
+      step) needs a published forge tag — tracked below.
+- [ ] **Re-pin `release-setup` once forge is tagged.** After the forge release that carries
+      `95af0f3` (override normalization) is tagged and pushed: bump the `release-setup` SHA in
+      bifrost, hermes and heraut (all on `66461c2` / v0.7.2), then drop heraut's own `Normalize
+      version override` step. Bump their `actions/checkout` to v7 at the same time.
 - [ ] **Decide: share the build-only release workflow.** bifrost's and hermes's `release.yml` are
       identical modulo the tool name; only heraut adds Docker and Pkl packaging. Evaluate a
       reusable workflow (as ADR-0006 did for `go-ci.yml`) or a canonical template file, which
