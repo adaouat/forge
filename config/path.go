@@ -2,6 +2,7 @@ package config
 
 import (
 	"os"
+	"path/filepath"
 	"strings"
 )
 
@@ -31,7 +32,14 @@ func (r Resolver) defaultPath() string { return "." + r.App + ".yml" }
 //  2. <APP>_FILE env var if set → FromEnv
 //  3. .config/<app>.yml if it exists → FromXDG
 //  4. .<app>.yml fallback → FromDefault
+//
+// A leading "~" in the flag or env value is expanded via ExpandHome.
 func (r Resolver) Resolve(explicit string) (string, Source) {
+	path, src := r.resolve(ExpandHome(explicit))
+	return ExpandHome(path), src
+}
+
+func (r Resolver) resolve(explicit string) (string, Source) {
 	if explicit != "" {
 		return explicit, FromFlag
 	}
@@ -42,6 +50,21 @@ func (r Resolver) Resolve(explicit string) (string, Source) {
 		return r.xdgPath(), FromXDG
 	}
 	return r.defaultPath(), FromDefault
+}
+
+// ExpandHome replaces a leading "~" or "~/" with the user's home directory; any other
+// path (including "~user/...") is returned unchanged, as is every path when the home
+// directory cannot be determined.
+func ExpandHome(path string) string {
+	if path != "~" && !strings.HasPrefix(path, "~/") {
+		return path
+	}
+	// Unchanged rather than an error, so the later open failure names what the user wrote.
+	home, err := os.UserHomeDir()
+	if err != nil || home == "" {
+		return path
+	}
+	return filepath.Join(home, path[1:])
 }
 
 // Label returns a human-readable description of a Source, for messages like
