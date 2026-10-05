@@ -249,6 +249,9 @@ heraut releases the whole family. This part is template-copy, not generated — 
   make forge the packslip signer and mise would refuse it (ADR-0015).
 - **mise install channel** — once the first release has a packslip, the tool installs with
   `"packslip:adaouat/<tool>"`.
+- **Private repository?** `release-build` then skips attestation and packslip by itself. Follow
+  `distribution.md` → *Private repositories*: only `contents: write` (+ `pull-requests: read`),
+  no `packslip.sigstore.json` asset, no cask, install via `github:adaouat/<tool>`.
 
 Full model + step-by-step workflow: `docs/guides/distribution.md`.
 

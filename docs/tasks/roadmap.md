@@ -1171,6 +1171,37 @@ returned the value untouched, so the tool opened the relative path `~/...` and f
       `bifrost init`), and bifrost's own SSH `expandHome` could later reuse `ExpandHome`. Both
       are bifrost-side follow-ups.
 
+## M20 — `release-build` on private repositories *([ADR-0017](../adr/0017-release-build-private-repositories.md), amends ADR-0015)*
+
+*A private tool on the free plan cannot release through `release-build`: artifact attestations in
+private repositories need GitHub Enterprise Cloud, so `actions/attest` and packslip's own attest
+sub-step fail and block the release. packslip's manifest signing would itself succeed, but it
+always uses the public Sigstore instance, so it would publish the private repository's workflow
+identity to the public Rekor log.*
+
+- [x] **Skip attestation and packslip unless the caller is public.** Both steps gated on
+      `github.event.repository.visibility == 'public'` (the rule `actions/attest` uses), a
+      `::notice::` step when skipped; build, collect (`artifacts` output), checksums and SBOMs
+      unchanged. Public callers unchanged. `distribution.md` gains a *Private repositories*
+      section.
+
+      **Done:** the facts were confirmed before any design, from the pinned sources: the attest
+      README (Enterprise Cloud required), `actions/attest`'s `src/main.ts` (visibility rule,
+      fail-safe to private), packslip's `action.yml` (its own `attest: true` default runs
+      `attest-build-provenance`) and `src/sigstore.rs` (always public Fulcio/Rekor, hence the
+      disclosure risk). The presence of `repository.visibility` under `workflow_dispatch` was
+      proven by heraut's 2026-10-04 release log ("Public Good Sigstore instance").
+      **Deviation from the brief:** no `attest` input. A forced `true` fails without Enterprise
+      Cloud and leaks through packslip even with it, and a forced `false` has no use, so the
+      skip is derived (ADR-0017 records why this keeps ADR-0015's no-toggles rule). Validated
+      offline only: `hk check`, and actionlint over a scratch workflow calling the action locally
+      (plus a negative check that it reads the action's inputs); `act` is not installed. The
+      first real run is a private tool's release. `release-setup`/`release-publish` need no
+      change. The guide documents `pull-requests: read` for heraut's PR attribution, the lenient
+      asset glob, the `github:` install and the silent update hint; the `new-tool` skill points at
+      it. **Not changed:** the duplicate attestation on public releases (over `checksums.txt` and
+      per binary by packslip).
+
 ## Explicitly NOT on this roadmap
 
 Per ADR-0001 Tier 3: config **schemas** and **merge semantics**, bifrost's hook runner and

@@ -56,7 +56,7 @@ be in `dist/` before `heraut release` runs. The three actions encode that order:
 | Action | Steps |
 |---|---|
 | [`release-setup`](../../.github/actions/release-setup/action.yml) | mise, the bootstrap heraut, GPG, bot identity, resolved `$VERSION` (a manual override is normalized: `1.2.3` → `v1.2.3`) |
-| [`release-build`](../../.github/actions/release-build/action.yml) | goreleaser build-only (forge owns the exact version) → copy versioned binaries out of `dist/artifacts.json` → `actions/attest` over `checksums.txt` → packslip manifest into `dist/` |
+| [`release-build`](../../.github/actions/release-build/action.yml) | goreleaser build-only (forge owns the exact version) → copy versioned binaries out of `dist/artifacts.json` → `actions/attest` over `checksums.txt` → packslip manifest into `dist/` (both skipped for a non-public repository; see [Private repositories](#private-repositories)) |
 | [`release-publish`](../../.github/actions/release-publish/action.yml) | `heraut check` → `heraut release --set-version "$VERSION"` (with `GH_TOKEN` *and* `GITHUB_TOKEN`, which heraut's PR attribution reads) → push the generated cask to the tap (skipped without a token) |
 
 They run as steps of the tool's own job — never wrap them in a reusable workflow: packslip and
@@ -146,6 +146,41 @@ All channels consume the same raw binaries.
     binary hangs until `com.apple.quarantine` is removed. The sample carries an opt-in
     `hooks.post.install` that strips it — a deliberate bypass of a macOS check, decided per tool
     (heraut has it) until signing+notarization ships.
+
+## Private repositories
+
+The pipeline above assumes a **public** repository. A private tool can use the same three
+actions, with these differences ([ADR-0017](../adr/0017-release-build-private-repositories.md)).
+
+- **No provenance.** Artifact attestations in private repositories need GitHub Enterprise Cloud,
+  and packslip always signs through the public Sigstore instance, whose Rekor log would publish
+  the private repository's workflow identity. `release-build` therefore skips both itself, with
+  no input to set: it runs them only when `github.event.repository.visibility` is `public`, and
+  otherwise logs a `::notice::`. The build, the collected binaries (`artifacts` output),
+  `checksums.txt` and the SBOMs are produced as usual.
+- **Permissions.** The release job needs only `contents: write`. Drop `id-token: write` and
+  `attestations: write`. Add `pull-requests: read`, because a job-level `permissions:` block
+  sets every unlisted scope to none, and on a private repository heraut then cannot read PRs
+  for changelog attribution. Its default `optional` enrichment policy degrades to "remote
+  metadata unavailable — PR authors/numbers omitted" instead of failing.
+- **`release.assets`.** Omit `dist/packslip.sigstore.json` (it is never produced). If it stays,
+  heraut's GitHub driver prints `warning: no files matched asset pattern
+  "dist/packslip.sigstore.json" — skipping` to stderr and creates the release with the other
+  assets. A pattern matching nothing never fails the release; only invalid glob syntax does.
+  Also omit the `homebrew` `.tar.gz` archives (see below).
+- **No Homebrew cask.** The tap is public and a cask cannot download private release assets
+  anonymously. Leave `homebrew_casks` and the `homebrew` archive out of `.goreleaser.yml` and
+  call `release-publish` without `homebrew-tap-token` (the push is then skipped).
+- **Install through mise's `github:` backend**, not `packslip:` (there is no manifest to verify):
+  ```bash
+  mise use github:adaouat/<app>
+  ```
+  It authenticates with `GITHUB_TOKEN` or `MISE_GITHUB_TOKEN`, or with the `gh` CLI login, and
+  verifies no provenance (there is none). The curl one-liner does not work either, because
+  private release assets need authentication. Use
+  `gh release download --repo adaouat/<app> --pattern '<app>_*_<os>_<arch>'` instead.
+- **No update hint.** `updatecheck` queries the GitHub API unauthenticated; for a private
+  repository that lookup fails, and the `Hinter` stays silent by design.
 
 ## Status
 
