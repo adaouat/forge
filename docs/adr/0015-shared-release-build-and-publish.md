@@ -1,6 +1,6 @@
 # ADR-0015 — Shared release build and publish via composite actions
 
-**Status:** Accepted
+**Status:** Accepted — amended by [ADR-0017](0017-release-build-private-repositories.md) (provenance skipped on private repositories)
 **Date:** 2026-10-04
 
 ## Context
