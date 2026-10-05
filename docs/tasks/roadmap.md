@@ -1142,6 +1142,35 @@ received, and one heraut breaking change silently broke every other family relea
       and were corrected. forge v0.19.2's own release already ran `release-publish` green;
       `release-build` and the manual-override path are proven only by each app's next release.
 
+## M19 — `config` expands a leading `~` *([ADR-0016](../adr/0016-config-resolver-expands-home.md))*
+
+*Surfaced by a consumer CLI: `<APP>_FILE = "~/.config/<app>.yml"` set as a quoted value (a mise
+`[env]` entry; a `.env` file or a launchd plist behave the same) reaches the process with a
+literal `~`, because only a shell expands it, and only when unquoted. `Resolver.Resolve`
+returned the value untouched, so the tool opened the relative path `~/...` and failed with
+`no such file or directory`. Every consumer of `Resolver` (heraut's `HERAUT_FILE`, bifrost's
+`BIFROST_FILE`) has the same defect.*
+
+- [x] **`ExpandHome` + `Resolve` expands both inputs.** New exported `config.ExpandHome(path
+      string) string`: `~` and `~/...` → the user's home directory; anything else (`~user/x`,
+      `~name.yml`, a `~` mid-path, absolute, relative, empty) returned as is; no determinable home
+      → unchanged. `Resolve` expands `explicit` and the path it returns (covering `<APP>_FILE`);
+      `Source` unchanged. `Label`/`InitDest`/`Load`/`Decode` untouched.
+
+      **Done:** `Resolve` is now a thin wrapper, `ExpandHome` around the unchanged precedence logic
+      (moved to an unexported `resolve`). Tests first: a 9-row `TestExpandHome` table, plus the
+      no-home case (`HOME=""`), and `TestResolve_ExpandsHome` (flag → `FromFlag`, env →
+      `FromEnv`, env with surrounding whitespace, which proves trimming happens before expansion)
+      plus `TestResolve_NoHomeLeavesTildeUnchanged`. A no-op stub showed exactly the six
+      expansion rows failing before the real implementation. Every existing test row unchanged;
+      `config` is at 100 % statement coverage. Classified per ADR-0007 as additive (`ExpandHome`)
+      plus a documented-behaviour change (`Resolve`), so recorded in
+      [ADR-0016](../adr/0016-config-resolver-expands-home.md), and ADR-0007's `config` row
+      updated. Consumers need no code change, only the forge bump. **Found on the way, not in
+      scope:** bifrost's `ResolveInitDest` reads `BIFROST_FILE` directly (no expansion for
+      `bifrost init`), and bifrost's own SSH `expandHome` could later reuse `ExpandHome`. Both
+      are bifrost-side follow-ups.
+
 ## Explicitly NOT on this roadmap
 
 Per ADR-0001 Tier 3: config **schemas** and **merge semantics**, bifrost's hook runner and
