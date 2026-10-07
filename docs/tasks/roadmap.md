@@ -1202,6 +1202,27 @@ identity to the public Rekor log.*
       it. **Not changed:** the duplicate attestation on public releases (over `checksums.txt` and
       per binary by packslip).
 
+## M21 — `cli.Run` renders error text verbatim *(cli)*
+
+*Surfaced by heraut's end-to-end suite (heraut T357): fang's default `ErrorText` style runs the
+first whitespace-delimited word of every error through `cases.Title`, so a message that starts with
+a flag or a tag is rewritten (`--pre-release …` → `--Pre-Release …`, `v1.4.0-beta.1 …` →
+`V1.4.0-Beta.1 …`). Every tool built on `cli.Run` has the defect.*
+
+- [x] **Capitalise only a plain leading word.** `cli.Run` passes `fang.WithErrorHandler`: it
+      replaces the error text's transform so the first word is capitalised only when it consists of
+      letters alone (`unknown flag:` → `Unknown flag:`); a first word containing a digit, `-`, `.`,
+      `_`, `/` or `+` is left untouched. The rest of the message and the usage-error hint are
+      fang's own.
+
+      **Done:** `cli/errors.go` (`errorHandler` + `capitalizeLeadingWord`) wired in `run.go`. The
+      test drives `Run` end to end with a buffer as stderr, which takes fang's styled branch, and
+      strips ANSI before comparing; written first, it failed on exactly the four identifier rows
+      (leading flag, tag, hyphenated word, config key) while the plain-word rows already passed.
+      A first word ending in `:`/`,`/`;`/`.` still counts as plain (`error:` → `Error:`). Recorded
+      as an [ADR-0010](../adr/0010-cli-framework-foundation.md) amendment; no signature change, so
+      consumers only need the forge bump. Not released or tagged here.
+
 ## Explicitly NOT on this roadmap
 
 Per ADR-0001 Tier 3: config **schemas** and **merge semantics**, bifrost's hook runner and

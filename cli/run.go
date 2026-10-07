@@ -28,5 +28,6 @@ func Run(ctx context.Context, cmd *cobra.Command, version string, accent ui.Acce
 		}),
 		fang.WithNotifySignal(os.Interrupt, syscall.SIGTERM),
 		fang.WithoutManpage(),
+		fang.WithErrorHandler(errorHandler),
 	)
 }

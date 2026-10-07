@@ -61,3 +61,13 @@ is deliberately excluded — it cannot be caught, so registering it is a no-op. 
 `RunE` that surfaces `context.Canceled` resolves to `exitcode.Interrupted` (130). This widens
 `cli.Run`'s scope from "wires version + theme" to "+ signal cancellation"; the signature is
 unchanged.
+
+## Amendment (2026-10-07) — verbatim error text
+
+`cli.Run` now passes `fang.WithErrorHandler`. fang's default error style runs the first word of an
+error through `cases.Title`, which rewrites a message that starts with an identifier
+(`--pre-release …` → `--Pre-Release …`, `v1.4.0-beta.1 …` → `V1.4.0-Beta.1 …`). The handler keeps
+fang's layout and usage hint and changes only that transform: the first letter is upper-cased when
+the first word is plain letters (optionally ending in `:`, `,`, `;` or `.`), and the message is
+left untouched otherwise. The signature is unchanged; error text is now rendered as the tool wrote
+it.
