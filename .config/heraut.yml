@@ -1,4 +1,4 @@
-# yaml-language-server: $schema=https://raw.githubusercontent.com/adaouat/heraut/v0.62.0/schema.json
+# yaml-language-server: $schema=https://raw.githubusercontent.com/adaouat/heraut/v0.75.0/schema.json
 
 version: "1"
 
@@ -13,3 +13,14 @@ release: {}
 forges:
   - name: GitHub
     platform: github
+
+commits:
+  rules:
+    - name: no-claude-session
+      deny: '(?i)\bClaude-Session\b'
+      target: footer
+      message: "Claude-Session is not allowed in commit messages"
+    - name: subject-max-72
+      deny: '^.{73,}'
+      target: header
+      message: "commit subject must be at most 72 characters"
