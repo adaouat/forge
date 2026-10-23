@@ -140,43 +140,43 @@ url_api = "https://api.github.com/repos/golangci/golangci-lint/releases/assets/5
 provenance = "github-attestations"
 
 [[tools."packslip:adaouat/heraut"]]
-version = "0.75.0"
+version = "0.80.0"
 backend = "packslip:adaouat/heraut"
 specifiers = ["0"]
 
 [tools."packslip:adaouat/heraut"."platforms.linux-arm64"]
-checksum = "sha256:a6b3a16f0638181468377a501087bada462456e2626a00e6e24acb9fdea288bf"
-url = "https://github.com/adaouat/heraut/releases/download/v0.75.0/heraut_0.75.0_linux_arm64"
+checksum = "sha256:7d3064b255115172ebd01eb4ba91e8beaa0b5ea8d1f6b80cc41ca931f483751c"
+url = "https://github.com/adaouat/heraut/releases/download/v0.80.0/heraut_0.80.0_linux_arm64"
 signer = "sigstore-oidc:https://github.com/adaouat/heraut/.github/workflows/release.yml"
 
 [tools."packslip:adaouat/heraut"."platforms.linux-arm64-musl"]
-checksum = "sha256:a6b3a16f0638181468377a501087bada462456e2626a00e6e24acb9fdea288bf"
-url = "https://github.com/adaouat/heraut/releases/download/v0.75.0/heraut_0.75.0_linux_arm64"
+checksum = "sha256:7d3064b255115172ebd01eb4ba91e8beaa0b5ea8d1f6b80cc41ca931f483751c"
+url = "https://github.com/adaouat/heraut/releases/download/v0.80.0/heraut_0.80.0_linux_arm64"
 signer = "sigstore-oidc:https://github.com/adaouat/heraut/.github/workflows/release.yml"
 
 [tools."packslip:adaouat/heraut"."platforms.linux-x64"]
-checksum = "sha256:0dfd5131ab604622cfbbc89ad93e52210b1f1a5e65ba272389811affd5ccb726"
-url = "https://github.com/adaouat/heraut/releases/download/v0.75.0/heraut_0.75.0_linux_amd64"
+checksum = "sha256:5a538ab871cc92251775001118bf544d8b0f4115885731a1dec9fc93b60de455"
+url = "https://github.com/adaouat/heraut/releases/download/v0.80.0/heraut_0.80.0_linux_amd64"
 signer = "sigstore-oidc:https://github.com/adaouat/heraut/.github/workflows/release.yml"
 
 [tools."packslip:adaouat/heraut"."platforms.linux-x64-musl"]
-checksum = "sha256:0dfd5131ab604622cfbbc89ad93e52210b1f1a5e65ba272389811affd5ccb726"
-url = "https://github.com/adaouat/heraut/releases/download/v0.75.0/heraut_0.75.0_linux_amd64"
+checksum = "sha256:5a538ab871cc92251775001118bf544d8b0f4115885731a1dec9fc93b60de455"
+url = "https://github.com/adaouat/heraut/releases/download/v0.80.0/heraut_0.80.0_linux_amd64"
 signer = "sigstore-oidc:https://github.com/adaouat/heraut/.github/workflows/release.yml"
 
 [tools."packslip:adaouat/heraut"."platforms.macos-arm64"]
-checksum = "sha256:9eb50cb21ac8f4587dac9df545959a1203ccc085a03c9174f621fbac88177f17"
-url = "https://github.com/adaouat/heraut/releases/download/v0.75.0/heraut_0.75.0_darwin_arm64"
+checksum = "sha256:b2f8e946eb67b9af5b939a641eb55ed8efbeb2eddb7886b09c3ad81e8e7f547e"
+url = "https://github.com/adaouat/heraut/releases/download/v0.80.0/heraut_0.80.0_darwin_arm64"
 signer = "sigstore-oidc:https://github.com/adaouat/heraut/.github/workflows/release.yml"
 
 [tools."packslip:adaouat/heraut"."platforms.macos-x64"]
-checksum = "sha256:9f487805f8128b5e957635b125b6210b9db8acadc97cedc9ad507b9a9fe73ba2"
-url = "https://github.com/adaouat/heraut/releases/download/v0.75.0/heraut_0.75.0_darwin_amd64"
+checksum = "sha256:acea13d743ec6c3059119f1377e769f15d8e65aa0bb50ff6f88c3929291bc7b4"
+url = "https://github.com/adaouat/heraut/releases/download/v0.80.0/heraut_0.80.0_darwin_amd64"
 signer = "sigstore-oidc:https://github.com/adaouat/heraut/.github/workflows/release.yml"
 
 [tools."packslip:adaouat/heraut"."platforms.windows-x64"]
-checksum = "sha256:6314d2b1385ac29b2961b1d76f25d8b9f3e2d447e9bd4957f896089b795ca55c"
-url = "https://github.com/adaouat/heraut/releases/download/v0.75.0/heraut_0.75.0_windows_amd64.exe"
+checksum = "sha256:aead077f526ef9da6acf1cdcb95a907bfc61584254419704745f4638e165e32b"
+url = "https://github.com/adaouat/heraut/releases/download/v0.80.0/heraut_0.80.0_windows_amd64.exe"
 signer = "sigstore-oidc:https://github.com/adaouat/heraut/.github/workflows/release.yml"
 
 [[tools."packslip:jdx/hk"]]
