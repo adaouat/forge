@@ -1248,12 +1248,19 @@ places (the app's mise pin and `release-build`'s action pin) and can drift apart
       and skedda, so no `fetch-depth: 0`. Validated offline only: `actionlint` and the detect
       script against forge (skips) and heraut/hermes (found); the job has not run in GitHub
       Actions — the apps-adopt task is the first real run. `docs/guides/new-tool.md` updated.
-- [ ] **Apps adopt.** After the forge tag: bump the `go-ci.yml` SHA in bifrost, heraut, hermes and
+- [x] **Apps adopt.** After the forge tag: bump the `go-ci.yml` SHA in bifrost, heraut, hermes and
       skedda; remove the `goreleaser` entry from heraut's and bifrost's mise config and lock, and
       their own `Check GoReleaser config` CI step; confirm the check runs green in all four. hermes
       and skedda gain the check for free. Mind that heraut's and bifrost's local `goreleaser
       check` / `--snapshot` workflow then needs the tool installed another way (docs note, or keep
       the mise entry for local use only); decide that with the user.
+
+      **Done:** all four apps pin forge v0.19.7 (`5faab04`) in `ci.yml` and `release.yml`;
+      heraut's and bifrost's `Check GoReleaser config` steps are gone, and the `goreleaser` entry
+      is dropped from their mise config and lock (user decision: forge's pin is the only one, no
+      local copy to drift). Local use is `mise x goreleaser@2.19.0 -- goreleaser check`, noted in
+      heraut's `CLAUDE.md`. Validated with `actionlint` only; the shared job's first real run is
+      each app's next push, including forge's own skip path (no `.goreleaser.yml`).
 
 ## Explicitly NOT on this roadmap
 
