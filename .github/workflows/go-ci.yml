@@ -49,3 +49,24 @@ jobs:
                 exit 1
               }
             }'
+
+  goreleaser:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - name: Detect GoReleaser config
+        id: detect
+        run: |-
+          if [ -f .goreleaser.yml ] || [ -f .goreleaser.yaml ]; then
+            echo "found=true" >>"$GITHUB_OUTPUT"
+          else
+            echo "::notice::no .goreleaser.yml, skipping the GoReleaser check"
+          fi
+      - name: Check GoReleaser config
+        if: steps.detect.outputs.found == 'true'
+        uses: goreleaser/goreleaser-action@f06c13b6b1a9625abc9e6e439d9c05a8f2190e94 # v7.2.3
+        with:
+          # Keep in step with release-build's goreleaser version.
+          version: "2.19.0"
+          args: check

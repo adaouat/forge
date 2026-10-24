@@ -59,3 +59,21 @@ Host a reusable **lint + test** workflow at `forge/.github/workflows/go-ci.yml`
   publishes forge (M6-adjacent). The forge-side workflow + forge's own dogfooding call land now.
 - Build/release stay per-app, so this does not entangle forge with goreleaser, Docker, or
   release ownership.
+
+## Amendment (2026-10-24) — `goreleaser check` joins the shared workflow
+
+The scope line above left `goreleaser check` per-app. In practice only heraut and bifrost ran it
+(hermes and skedda never did, so a broken `.goreleaser.yml` surfaced only at release time), and
+the goreleaser version lived twice: the app's mise pin and `release-build`'s action pin.
+
+`go-ci.yml` gains a `goreleaser` job: it runs `goreleaser check` and does nothing when the caller
+has no `.goreleaser.yml`/`.goreleaser.yaml` (forge itself ships none). It installs goreleaser
+through `goreleaser/goreleaser-action` rather than the caller's mise tools, so an app needs no
+`goreleaser` entry in its mise config for CI. The version is pinned in the workflow next to
+`release-build`'s, with a comment in both to bump them together; the check needs no git history.
+
+- **No new input.** Whether to check is derived from the file's presence, in keeping with ADR-0015's
+  no-toggles rule.
+- **Consequence:** every caller's CI now runs goreleaser from forge's pin, so a goreleaser bump is
+  a forge change plus a SHA bump in the apps — the same path as lint and test. Apps keep their own
+  `build` job (`go build`), which stays out of scope.

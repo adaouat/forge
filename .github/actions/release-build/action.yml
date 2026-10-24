@@ -22,6 +22,7 @@ runs:
       with:
         # Exact pin: 2.18.0–2.18.1 broke GORELEASER_CURRENT_TAG for a not-yet-created tag,
         # which this build-then-release order always hits (goreleaser#7124).
+        # Keep in step with go-ci.yml's goreleaser check.
         version: "2.19.0"
         args: release --clean --skip=publish,announce,validate
       env:

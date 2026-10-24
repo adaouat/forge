@@ -1231,7 +1231,7 @@ that gets its binary from a `goreleaser` entry in the app's mise config. hermes 
 neither, so a broken config there only surfaces at release time. The version also lives in two
 places (the app's mise pin and `release-build`'s action pin) and can drift apart.*
 
-- [ ] **Add a `goreleaser check` job to `go-ci.yml`.** A job in the reusable workflow, skipped when
+- [x] **Add a `goreleaser check` job to `go-ci.yml`.** A job in the reusable workflow, skipped when
       the caller has no `.goreleaser.yml`, running the goreleaser version `release-build` pins (one
       source of truth). `go-ci.yml`'s `mise-action` installs the *caller's* tools, so the job must
       install goreleaser itself (e.g. `goreleaser-action` with `args: check`) rather than rely on
@@ -1239,6 +1239,15 @@ places (the app's mise pin and `release-build`'s action pin) and can drift apart
       record it as an ADR-0006 amendment before any code (it changes what `go-ci.yml` runs for
       every caller). Tests: `actionlint` and a scratch caller workflow, with and without a
       `.goreleaser.yml`.
+
+      **Done:** a `goreleaser` job in `go-ci.yml` (checkout, detect `.goreleaser.yml`/`.yaml`, then
+      `goreleaser-action` v7.2.3 `args: check` on 2.19.0), recorded as an ADR-0006 amendment. The
+      version is hardcoded in both `go-ci.yml` and `release-build` with a "keep in step" comment
+      in each — one repo, adjacent files, so no shared mechanism (YAGNI). No new input: presence
+      of the file decides. `goreleaser check` passes on depth-1 clones of heraut, bifrost, hermes
+      and skedda, so no `fetch-depth: 0`. Validated offline only: `actionlint` and the detect
+      script against forge (skips) and heraut/hermes (found); the job has not run in GitHub
+      Actions — the apps-adopt task is the first real run. `docs/guides/new-tool.md` updated.
 - [ ] **Apps adopt.** After the forge tag: bump the `go-ci.yml` SHA in bifrost, heraut, hermes and
       skedda; remove the `goreleaser` entry from heraut's and bifrost's mise config and lock, and
       their own `Check GoReleaser config` CI step; confirm the check runs green in all four. hermes

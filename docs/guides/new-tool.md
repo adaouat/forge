@@ -108,7 +108,7 @@ jobs:
       coverage-threshold: <your %>   # required — no default
   build:
     runs-on: ubuntu-latest
-    # your go build (+ goreleaser check) — stays per-app
+    # your go build — stays per-app (goreleaser check runs in go-ci.yml)
 ```
 
 ## 5. Release + distribution
