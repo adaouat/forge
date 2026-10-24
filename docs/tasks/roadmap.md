@@ -1223,6 +1223,29 @@ a flag or a tag is rewritten (`--pre-release …` → `--Pre-Release …`, `v1.4
       as an [ADR-0010](../adr/0010-cli-framework-foundation.md) amendment; no signature change, so
       consumers only need the forge bump. Not released or tagged here.
 
+## M22 — `goreleaser check` in the shared CI *([ADR-0006](../adr/0006-shared-ci-reusable-workflow.md) amendment)*
+
+*Surfaced while rolling goreleaser 2.19.0 (cask `install_steps`) across the family, 2026-10-24.
+Only heraut and bifrost validate `.goreleaser.yml` in CI, through a per-app `goreleaser check` step
+that gets its binary from a `goreleaser` entry in the app's mise config. hermes and skedda have
+neither, so a broken config there only surfaces at release time. The version also lives in two
+places (the app's mise pin and `release-build`'s action pin) and can drift apart.*
+
+- [ ] **Add a `goreleaser check` job to `go-ci.yml`.** A job in the reusable workflow, skipped when
+      the caller has no `.goreleaser.yml`, running the goreleaser version `release-build` pins (one
+      source of truth). `go-ci.yml`'s `mise-action` installs the *caller's* tools, so the job must
+      install goreleaser itself (e.g. `goreleaser-action` with `args: check`) rather than rely on
+      the apps' mise entry. Decide whether the version is hardcoded in both files or shared, and
+      record it as an ADR-0006 amendment before any code (it changes what `go-ci.yml` runs for
+      every caller). Tests: `actionlint` and a scratch caller workflow, with and without a
+      `.goreleaser.yml`.
+- [ ] **Apps adopt.** After the forge tag: bump the `go-ci.yml` SHA in bifrost, heraut, hermes and
+      skedda; remove the `goreleaser` entry from heraut's and bifrost's mise config and lock, and
+      their own `Check GoReleaser config` CI step; confirm the check runs green in all four. hermes
+      and skedda gain the check for free. Mind that heraut's and bifrost's local `goreleaser
+      check` / `--snapshot` workflow then needs the tool installed another way (docs note, or keep
+      the mise entry for local use only); decide that with the user.
+
 ## Explicitly NOT on this roadmap
 
 Per ADR-0001 Tier 3: config **schemas** and **merge semantics**, bifrost's hook runner and
