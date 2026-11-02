@@ -1262,6 +1262,43 @@ places (the app's mise pin and `release-build`'s action pin) and can drift apart
       heraut's `CLAUDE.md`. Validated with `actionlint` only; the shared job's first real run is
       each app's next push, including forge's own skip path (no `.goreleaser.yml`).
 
+## M23 — SBOMs to BSI TR-03183-2 in `release-build` *([ADR-0018](../adr/0018-release-build-owns-the-sboms.md), amends ADR-0015)*
+
+*Surfaced by scoring heraut v0.82.1's SBOM with sbomqs (demo.interlynk.io), 2026-11-02: 3.3/10
+against BSI TR-03183-2 v2.1, the usual EU CRA yardstick. Each app's goreleaser runs syft at its
+default SPDX 2.3, which BSI v2.1 does not accept. The SBOM names no supplier, its top-level
+component is the binary file versioned by its sha256, and the main module carries a Go
+pseudo-version, because the build precedes the tag. A jq prototype over syft's CycloneDX 1.6
+output scored 9.4/10.*
+
+- [ ] **`release-build` generates, enriches and checksums the SBOMs.** One step after *Collect
+      release binaries* and before *Attest build provenance*. It installs a pinned syft and writes
+      `dist/<asset>.sbom.json` as CycloneDX 1.6 for each collected binary, with module-cache
+      licence search on. It then applies a jq filter shipped with the action, as ADR-0018 lays
+      out:
+      - the owner as author and supplier;
+      - `<app>@$VERSION` as the primary component, with the licence, the release download URL
+        and SHA-512, and the BSI properties;
+      - for each Go module: supplier, `vcs` and proxy `distribution` URLs, the module zip's
+        SHA-512 from the cache, licences marked declared and concluded, and the BSI properties.
+
+      Last, it replaces or appends each SBOM's line in `dist/checksums.txt`. No new input.
+      Tests first:
+      - a fixture test of the filter over a recorded syft SBOM, checking the exact output;
+      - a missing module zip gets no hash and a notice;
+      - the checksum line is replaced when goreleaser wrote one and appended otherwise;
+      - `sbomqs score --profile bsi-v2.1` on the fixture output is at least 9.0.
+
+      Mutation-check the filter. Validate the step with `actionlint` and a scratch caller. Update
+      `distribution.md` and `goreleaser.sample.yml` (no `sboms:` block, no syft pin) and the
+      `new-tool` skill. Flip ADR-0018 to Accepted and add its pointer to ADR-0015's status line.
+- [ ] **Apps adopt.** After the forge tag: bump the `release-build` SHA in bifrost, heraut, hermes
+      and skedda. Drop their `sboms:` block (and its mise-shim `env:`) and their syft entry in the
+      mise config and lock. Confirm that `release.assets` still matches `dist/*.sbom.json`; the
+      Windows SBOM is now named `<asset>.sbom.json`. heraut's roadmap T322 note gets a pointer
+      here. The first release of each app is the real run: score one of its SBOMs with sbomqs
+      and record the result.
+
 ## Explicitly NOT on this roadmap
 
 Per ADR-0001 Tier 3: config **schemas** and **merge semantics**, bifrost's hook runner and
