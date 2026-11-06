@@ -1310,6 +1310,23 @@ also too large for one pass and would need splitting first.
       here. The first release of each app is the real run: score one of its SBOMs with sbomqs
       and record the result.
 
+## M24 — Two UI fixes requested by heraut *(cli, ui)*
+
+*Requested by heraut's roadmap, Phase 92 (T488, T489). Both are small and additive for consumers.*
+
+- [ ] **`cli.Run` error panels no longer end with a double period** (heraut T488). fang's
+      `DefaultErrorHandler` renders `err.Error()+"."` unconditionally, so a message that already
+      ends with a period reads `…(there is no version to promote)..`. The period is added only
+      when the message does not already end with `.`, `!`, `?` or `…`; the leading-word
+      capitalisation stays. On a multi-line message the period goes after the last line. A message
+      ending in a command (`… --force`) still gets a period: forge does not detect commands.
+      Tests first: messages ending in `.`, `)`, `!`, plain text, and a multi-line message.
+- [ ] **`ui.Result.Warnings` renders spinner sub-lines as warnings** (heraut T489). `Result.Subs`
+      lines always render with `Success` (`✓`), so a warning such as "remote enrichment
+      unavailable" reads as a success. Add `Result.Warnings []string`, printed after `Subs` with
+      `ui.Warn` (`!`) at the same indentation, in human and plain modes. `Subs` is unchanged.
+      Tests first: `Subs` only, `Warnings` only, both, with and without colour.
+
 ## Explicitly NOT on this roadmap
 
 Per ADR-0001 Tier 3: config **schemas** and **merge semantics**, bifrost's hook runner and
