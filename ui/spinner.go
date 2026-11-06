@@ -15,10 +15,12 @@ import (
 var spinnerStyle = lipgloss.NewStyle().Foreground(colorSpinner).Bold(true)
 
 // Result is a task's successful outcome: a Detail shown after the task name
-// ("✓ name — Detail") and optional indented sub-result lines.
+// ("✓ name — Detail") and optional indented sub-result lines. Subs render as
+// successes ("✓"); Warnings render after them as advisories ("!").
 type Result struct {
-	Detail string
-	Subs   []string
+	Detail   string
+	Subs     []string
+	Warnings []string
 }
 
 type skipError struct{ detail string }
@@ -139,6 +141,9 @@ func (s *Spinner) render(label string, res Result, runErr error) error {
 		_, _ = fmt.Fprintln(s.out, Success(s.out, line))
 		for _, sub := range res.Subs {
 			_, _ = fmt.Fprintln(s.out, "     "+Success(s.out, sub))
+		}
+		for _, warning := range res.Warnings {
+			_, _ = fmt.Fprintln(s.out, "     "+Warn(s.out, warning))
 		}
 		return nil
 	}

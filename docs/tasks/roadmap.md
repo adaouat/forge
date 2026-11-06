@@ -1330,11 +1330,20 @@ also too large for one pass and would need splitting first.
       failed on exactly the four terminator rows and the multi-line one before the change. Recorded
       as an [ADR-0010](../adr/0010-cli-framework-foundation.md) amendment; no signature change, so
       consumers only need the forge bump. Not released or tagged here.
-- [ ] **`ui.Result.Warnings` renders spinner sub-lines as warnings** (heraut T489). `Result.Subs`
+- [x] **`ui.Result.Warnings` renders spinner sub-lines as warnings** (heraut T489). `Result.Subs`
       lines always render with `Success` (`✓`), so a warning such as "remote enrichment
       unavailable" reads as a success. Add `Result.Warnings []string`, printed after `Subs` with
       `ui.Warn` (`!`) at the same indentation, in human and plain modes. `Subs` is unchanged.
       Tests first: `Subs` only, `Warnings` only, both, with and without colour.
+
+      **Done:** `Result.Warnings` in `ui/spinner.go`, rendered by `Spinner.Run` after `Subs` with
+      `Warn` and the same five-space indent; `Subs` and every existing caller are unchanged. Plain
+      and human modes share the render path (the spinner only animates on a TTY), so one table
+      covers `Subs` only, `Warnings` only, both in order, and plain mode; a second test forces
+      colour with `CLICOLOR_FORCE` and compares each line to `ui.Success`/`ui.Warn` output. It was
+      red as a compile error (no such field) before the change. A failed task still prints no
+      sub-lines, so `Warnings` only appear on success, as `Subs` do. Additive, so no ADR; consumers
+      only need the forge bump. Not released or tagged here.
 
 ## Explicitly NOT on this roadmap
 

@@ -75,6 +75,65 @@ func TestSpinner_SubResults(t *testing.T) {
 	assert.Contains(t, got, "     ✓ assets uploaded")
 }
 
+func TestSpinner_Warnings(t *testing.T) {
+	tests := []struct {
+		name string
+		mode ui.Mode
+		res  ui.Result
+		want string
+	}{
+		{
+			"subs only",
+			ui.Human,
+			ui.Result{Detail: "v1.2.3", Subs: []string{"tag pushed"}},
+			"✓ release — v1.2.3\n     ✓ tag pushed\n",
+		},
+		{
+			"warnings only",
+			ui.Human,
+			ui.Result{Detail: "v1.2.3", Warnings: []string{"remote enrichment unavailable"}},
+			"✓ release — v1.2.3\n     ! remote enrichment unavailable\n",
+		},
+		{
+			"subs then warnings, in order",
+			ui.Human,
+			ui.Result{Detail: "v1.2.3", Subs: []string{"tag pushed", "assets uploaded"}, Warnings: []string{"first", "second"}},
+			"✓ release — v1.2.3\n     ✓ tag pushed\n     ✓ assets uploaded\n     ! first\n     ! second\n",
+		},
+		{
+			"plain mode renders warnings the same",
+			ui.Plain,
+			ui.Result{Detail: "v1.2.3", Subs: []string{"tag pushed"}, Warnings: []string{"heads up"}},
+			"✓ release — v1.2.3\n     ✓ tag pushed\n     ! heads up\n",
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			var w bytes.Buffer
+			err := ui.NewSpinner(&w, tc.mode).Run("release", func() (ui.Result, error) { return tc.res, nil })
+			require.NoError(t, err)
+			assert.Equal(t, tc.want, w.String())
+		})
+	}
+}
+
+func TestSpinner_Warnings_Color(t *testing.T) {
+	t.Setenv("CLICOLOR_FORCE", "1")
+	t.Setenv("NO_COLOR", "")
+
+	var w bytes.Buffer
+	err := ui.NewSpinner(&w, ui.Human).Run("release", func() (ui.Result, error) {
+		return ui.Result{Subs: []string{"tag pushed"}, Warnings: []string{"heads up"}}, nil
+	})
+	require.NoError(t, err)
+
+	lines := strings.Split(strings.TrimRight(w.String(), "\n"), "\n")
+	require.Len(t, lines, 3)
+	assert.Equal(t, "     "+ui.Success(&w, "tag pushed"), lines[1])
+	assert.Equal(t, "     "+ui.Warn(&w, "heads up"), lines[2])
+	assert.NotEqual(t, "     ! heads up", lines[2], "warning symbol is styled when colour is on")
+}
+
 func TestSpinner_TotalCounter(t *testing.T) {
 	var w bytes.Buffer
 	sp := ui.NewSpinner(&w, ui.Human).Total(3)
