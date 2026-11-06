@@ -1269,7 +1269,18 @@ against BSI TR-03183-2 v2.1, the usual EU CRA yardstick. Each app's goreleaser r
 default SPDX 2.3, which BSI v2.1 does not accept. The SBOM names no supplier, its top-level
 component is the binary file versioned by its sha256, and the main module carries a Go
 pseudo-version, because the build precedes the tag. A jq prototype over syft's CycloneDX 1.6
-output scored 9.4/10.*
+output scored 9.4/10. The prototype and its input are in [`docs/plans/m23-sbom/`](../plans/m23-sbom/):
+`enrich.jq` (invocation in its header) and `syft-cyclonedx.json` (syft 1.52.0, CycloneDX 1.6, a local
+darwin/arm64 build of heraut, so its main module carries a pseudo-version). Start from them; the
+fixture becomes the filter's test input.*
+
+**Deferred (2026-11-06).** The design is not settled, so neither task is started and ADR-0018 stays
+Proposed. Open points from the review of the prototype: the derived supplier and `vcs` URLs for
+vanity module paths are unchecked approximations; `concluded` licences are syft's scan relabelled;
+generators that read `go.mod` (e.g. cyclonedx-gomod) were not evaluated; the prototype hardcodes
+heraut's name, owner and licence and mishandles `stdlib`; and releases are immutable, so the step
+needs a CI dry run before it can be trusted. Revisit when a better approach is found; the task is
+also too large for one pass and would need splitting first.
 
 - [ ] **`release-build` generates, enriches and checksums the SBOMs.** One step after *Collect
       release binaries* and before *Attest build provenance*. It installs a pinned syft and writes

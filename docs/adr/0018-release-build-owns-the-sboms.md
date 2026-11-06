@@ -32,7 +32,8 @@ public SBOM profile and the usual EU CRA yardstick. The gaps:
 
 Switching syft to CycloneDX alone scores *lower* (2.8), because its CycloneDX output also drops
 the licences it found. A post-processing prototype, written in jq over syft's CycloneDX 1.6
-output, scored **9.4/10 (A)** on the same binary, using only values that can be checked.
+output, scored **9.4/10 (A)** on the same binary, using only values that can be checked
+(`docs/plans/m23-sbom/enrich.jq`, run over `docs/plans/m23-sbom/syft-cyclonedx.json`).
 
 The CRA itself does not mandate BSI TR-03183-2. It asks for a machine-readable SBOM in a common
 format, covering at least the top-level dependencies, and its main obligations apply from
