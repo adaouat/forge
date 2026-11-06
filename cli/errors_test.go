@@ -53,3 +53,48 @@ func TestRun_errorTextKeepsIdentifiersVerbatim(t *testing.T) {
 		})
 	}
 }
+
+func TestRun_errorTextEndsWithOnePeriod(t *testing.T) {
+	a := ui.Accent{
+		Light: lipgloss.Color("#0AAAAA"), Dark: lipgloss.Color("#0AAAAA"),
+		SecondaryLight: lipgloss.Color("#AA00AA"), SecondaryDark: lipgloss.Color("#AA00AA"),
+	}
+	tests := []struct {
+		name string
+		msg  string
+		want string
+	}{
+		{"plain text gets a period", "no version to promote", "No version to promote."},
+		{"closing parenthesis gets a period", "nothing to do (no version to promote)", "Nothing to do (no version to promote)."},
+		{"trailing period is kept once", "nothing to do (no version to promote).", "Nothing to do (no version to promote)."},
+		{"trailing exclamation mark is kept", "release failed!", "Release failed!"},
+		{"trailing question mark is kept", "really release?", "Really release?"},
+		{"trailing ellipsis is kept", "waiting for the remote…", "Waiting for the remote…"},
+		{"trailing command still gets a period", "tag exists; re-run with --force", "Tag exists; re-run with --force."},
+		{"multi-line, period after the last line", "tag exists\nre-run with --force", "Tag exists\nre-run with --force."},
+		{"multi-line ending in a period is kept once", "tag exists\nnothing to do.", "Tag exists\nnothing to do."},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			cmd := &cobra.Command{
+				Use:  "x",
+				RunE: func(*cobra.Command, []string) error { return errors.New(tc.msg) },
+			}
+			var out bytes.Buffer
+			cmd.SetOut(&out)
+			cmd.SetErr(&out)
+			cmd.SetArgs([]string{})
+
+			require.Error(t, Run(context.Background(), cmd, "1.0.0", a))
+
+			var panel []string
+			for _, line := range strings.Split(ansi.Strip(out.String()), "\n") {
+				if line = strings.TrimSpace(line); line != "" {
+					panel = append(panel, line)
+				}
+			}
+			require.NotEmpty(t, panel)
+			assert.Equal(t, tc.want, strings.Join(panel[1:], "\n"), "panel after the ERROR header")
+		})
+	}
+}

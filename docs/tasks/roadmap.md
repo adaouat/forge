@@ -1314,13 +1314,22 @@ also too large for one pass and would need splitting first.
 
 *Requested by heraut's roadmap, Phase 92 (T488, T489). Both are small and additive for consumers.*
 
-- [ ] **`cli.Run` error panels no longer end with a double period** (heraut T488). fang's
+- [x] **`cli.Run` error panels no longer end with a double period** (heraut T488). fang's
       `DefaultErrorHandler` renders `err.Error()+"."` unconditionally, so a message that already
       ends with a period reads `…(there is no version to promote)..`. The period is added only
       when the message does not already end with `.`, `!`, `?` or `…`; the leading-word
       capitalisation stays. On a multi-line message the period goes after the last line. A message
       ending in a command (`… --force`) still gets a period: forge does not detect commands.
       Tests first: messages ending in `.`, `)`, `!`, plain text, and a multi-line message.
+
+      **Done:** `dropRedundantPeriod` in `cli/errors.go`, chained after `capitalizeLeadingWord` in the
+      handler's transform. fang appends the period before the style's transform runs, and lipgloss
+      hands the transform the whole string, so the period it sees last is the appended one even on a
+      multi-line message; no replacement of fang's layout was needed. The nine-row end-to-end test
+      (plain, `)`, `.`, `!`, `?`, `…`, trailing `--force`, multi-line, multi-line ending in `.`)
+      failed on exactly the four terminator rows and the multi-line one before the change. Recorded
+      as an [ADR-0010](../adr/0010-cli-framework-foundation.md) amendment; no signature change, so
+      consumers only need the forge bump. Not released or tagged here.
 - [ ] **`ui.Result.Warnings` renders spinner sub-lines as warnings** (heraut T489). `Result.Subs`
       lines always render with `Success` (`✓`), so a warning such as "remote enrichment
       unavailable" reads as a success. Add `Result.Warnings []string`, printed after `Subs` with

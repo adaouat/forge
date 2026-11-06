@@ -9,10 +9,29 @@ import (
 )
 
 // errorHandler renders errors with fang's default layout but without its title-casing of the
-// first word, which rewrites a leading flag or tag (--pre-release → --Pre-Release).
+// first word, which rewrites a leading flag or tag (--pre-release → --Pre-Release), and without
+// the second period it adds to a message that already ends with punctuation.
 func errorHandler(w io.Writer, styles fang.Styles, err error) {
-	styles.ErrorText = styles.ErrorText.Transform(capitalizeLeadingWord)
+	styles.ErrorText = styles.ErrorText.Transform(func(s string) string {
+		return dropRedundantPeriod(capitalizeLeadingWord(s))
+	})
 	fang.DefaultErrorHandler(w, styles, err)
+}
+
+// dropRedundantPeriod removes the final period when it follows ".", "!", "?" or "…". fang renders
+// err.Error()+"." and runs the transform on that whole string, so the period it appended is the
+// last rune, after the final line of a multi-line message.
+func dropRedundantPeriod(s string) string {
+	runes := []rune(s)
+	n := len(runes)
+	if n < 2 || runes[n-1] != '.' {
+		return s
+	}
+	switch runes[n-2] {
+	case '.', '!', '?', '…':
+		return string(runes[:n-1])
+	}
+	return s
 }
 
 // capitalizeLeadingWord upper-cases the first letter of s when its first word is plain letters

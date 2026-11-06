@@ -71,3 +71,11 @@ fang's layout and usage hint and changes only that transform: the first letter i
 the first word is plain letters (optionally ending in `:`, `,`, `;` or `.`), and the message is
 left untouched otherwise. The signature is unchanged; error text is now rendered as the tool wrote
 it.
+
+## Amendment (2026-11-06) — one period at the end of an error
+
+fang renders `err.Error()+"."`, so a message that already ends with punctuation printed two
+(`…(there is no version to promote)..`). The error handler's transform now also drops that appended
+period when the message ends with `.`, `!`, `?` or `…`; on a multi-line message the period sits
+after the last line. Any other ending, including a trailing command (`… --force`), still gets the
+period. The signature is unchanged.
