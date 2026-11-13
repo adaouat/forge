@@ -1345,6 +1345,29 @@ also too large for one pass and would need splitting first.
       sub-lines, so `Warnings` only appear on success, as `Subs` do. Additive, so no ADR; consumers
       only need the forge bump. Not released or tagged here.
 
+## M25 — `release-setup` strips commit rules for the bootstrap heraut *(actions)*
+
+*heraut's Release run failed on main, 2026-11-13: `Config: line 20: unknown key "is_breaking" in
+commits.rules[2]; line 21: unknown key "refuse" in commits.rules[2].` `release-setup` resolves the
+version with the latest released heraut (v1.0.1), which parses its config strictly and predates the
+`commits.rules` keys `is_breaking`, `refuse`, `except_types`, `except_scopes`, `tickets` and the
+`commits.tickets[].name` key. Only `release` was stripped; `--set-version` does not help, since the
+config is loaded either way.*
+
+- [x] **Strip `commits.rules` and `commits.tickets` before `heraut version next`.** The yq expression
+      becomes `del(.release) | del(.commits.rules) | del(.commits.tickets)`; the rest of `commits`
+      (e.g. `types`) is kept. The comment says why each block goes. Nothing else in the action
+      changes.
+
+      **Done:** verified offline with yq 4.47.2 and the released heraut v1.0.1 (darwin/arm64) in a
+      temp repo with one commit after a `v1.0.0` tag, on three synthetic configs: a `commits` block
+      with rules (using every newer key) and tickets, one with only `types`, and none at all. The
+      expression removes exactly those two keys and is a no-op on the other two. With the old
+      strip, the first fixture and heraut's own config exit 2 with the CI error; with the new one,
+      all resolve (`v1.1.0`, and `v2.0.0` with `--set-version`). `actionlint` and `hk check` pass.
+      The real run is heraut's next release after the forge tag and its `release-setup` SHA bump.
+      Not released or tagged here.
+
 ## Explicitly NOT on this roadmap
 
 Per ADR-0001 Tier 3: config **schemas** and **merge semantics**, bifrost's hook runner and

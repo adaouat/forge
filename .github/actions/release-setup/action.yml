@@ -57,9 +57,12 @@ runs:
       env:
         VERSION_INPUT: ${{ inputs.version }}
       run: |-
-        # Strip the release block so the bootstrap heraut (which predates fields added in the
-        # version being released) does not fail on unknown YAML keys.
-        yq 'del(.release)' .config/heraut.yml > /tmp/heraut-version.yml
+        # The bootstrap heraut (the latest release, not the version being built) parses its config
+        # strictly, so a key newer than it is a hard error even with --set-version. Strip the
+        # blocks that never affect version resolution: release (publishing), and commits.rules and
+        # commits.tickets (commit verify/check and changelog ticket links). The rest of commits
+        # (e.g. types) stays.
+        yq 'del(.release) | del(.commits.rules) | del(.commits.tickets)' .config/heraut.yml > /tmp/heraut-version.yml
         if [[ -n "$VERSION_INPUT" ]]; then
           # Normalize the tag prefix (e.g. "1.2.3" -> "v1.2.3"): the raw input would otherwise
           # reach GORELEASER_CURRENT_TAG unprefixed and be baked into main.Version and the
